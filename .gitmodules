@@ -1,0 +1,6 @@
+[submodule "blazingsql"]
+	path = blazingsql
+	url = https://github.com/BlazingDB/blazingsql.git
+[submodule "heavydb"]
+	path = heavydb
+	url = https://github.com/heavyai/heavydb.git
