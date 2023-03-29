@@ -1,1 +1,4 @@
 cuda/volume/.*
+.python_history
+python/volume/ssb-pandas/data/tables
+**/__pycache__
