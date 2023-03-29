@@ -1,0 +1,11 @@
+Permutation [0 4 3 2 1] produces (((lineorderXdate)X(supplier𝜎s_region∊['AMERICA']))X(part𝜎p_category∊['MFGR#12'])) takes 6.327824115753174 seconds.
+Permutation [4 3 2 0 1] produces (((lineorderX(supplier𝜎s_region∊['AMERICA']))Xdate)X(part𝜎p_category∊['MFGR#12'])) takes 2.2936770915985107 seconds.
+Permutation [0 3 2 4 1] produces ((((lineorderXdate)Xsupplier)𝜎s_region∊['AMERICA'])X(part𝜎p_category∊['MFGR#12'])) takes 18.504180908203125 seconds.
+Permutation [1 4 3 0 2] produces ((((lineorderXpart)𝜎p_category∊['MFGR#12'])Xdate)X(supplier𝜎s_region∊['AMERICA'])) takes 7.114818096160889 seconds.
+Permutation [4 2 3 0 1] produces (((lineorderX(supplier𝜎s_region∊['AMERICA']))Xdate)X(part𝜎p_category∊['MFGR#12'])) takes 2.162402868270874 seconds.
+Permutation [3 4 1 2 0] produces (((lineorderX(part𝜎p_category∊['MFGR#12']))X(supplier𝜎s_region∊['AMERICA']))Xdate) takes 0.8538248538970947 seconds.
+Permutation [4 1 3 2 0] produces ((((lineorderXpart)𝜎p_category∊['MFGR#12'])X(supplier𝜎s_region∊['AMERICA']))Xdate) takes 7.530300855636597 seconds.
+Permutation [3 2 0 4 1] produces ((((lineorderXsupplier)Xdate)𝜎s_region∊['AMERICA'])X(part𝜎p_category∊['MFGR#12'])) takes 18.67203712463379 seconds.
+Permutation [2 1 4 0 3] produces (((((lineorderXsupplier)Xpart)𝜎s_region∊['AMERICA'])Xdate)𝜎p_category∊['MFGR#12']) takes 17.99591588973999 seconds.
+Permutation [4 0 2 1 3] produces ((((lineorderXdate)X(supplier𝜎s_region∊['AMERICA']))Xpart)𝜎p_category∊['MFGR#12']) takes 8.303606986999512 seconds.
+Permutation [0 1 3 4 2] produces ((((lineorderXdate)Xpart)𝜎p_category∊['MFGR#12'])X(supplier𝜎s_region∊['AMERICA'])) takes 18.66420030593872 seconds.

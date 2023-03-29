@@ -19,38 +19,33 @@ def get_instruction_set(query):
         return None
 
 def main(query):
-    print(f'Started running benchmark for query {query}')
+    out_file = open(f"results(MBP)/{query}.txt", "a")
+    print_write(f'Started running benchmark for query {query}.', out_file)
     
     dfs = load_files()
     instructions = get_instruction_set(query)
 
     jobs = np.array([j for j in itertools.permutations(range(len(instructions[1])))])
     np.random.shuffle(jobs)
-    print(f'Generated {factorial(len(instructions[1]))} permutations.')
+    print_write(f'Generated {factorial(len(instructions[1]))} permutations.', out_file)
     
     permutations = calc_permutations(dfs, jobs, instructions)
     
-    print(f'With {len(permutations)} unique execution paths.')
+    print_write(f'With {len(permutations)} unique execution paths.', out_file)
     
-    out_file = open(f"results(MBP)/{query}.txt", "a")
+    unique_jobs = [p[0] for p in permutations.values()]
     
-    for job in jobs:
-        copy = clone(dfs)
-        start_time = time.time()
-        instructions[0][0](copy)
-        for ins in job:
-            instructions[1][ins](copy)
-            pass
-        stop_time = time.time()
-        msg = f'Permutation {job} produces {list(copy.keys())[0]} takes {stop_time - start_time} seconds.'
-        print(msg)
-        out_file.write(f'{msg}\n')
-        out_file.flush()
+    time_all_jobs(dfs, instructions, unique_jobs, out_file)
     
-    print("done")
+    print_write(f'Done', out_file)
     
 def clone(dfs: dict[str, DataFrame]) -> dict[str, DataFrame]:
     return {key: dfs[key].copy() for key in dfs}
+
+def print_write(msg, out_file):
+    print(msg)
+    out_file.write(f'{msg}\n')
+    out_file.flush()
 
 def calc_permutations(dfs, jobs, instructions):
     empty = clone(dfs)
@@ -70,3 +65,14 @@ def calc_permutations(dfs, jobs, instructions):
         permutations[end_tbl].append(job)
     
     return permutations
+
+def time_all_jobs(dfs, instructions, jobs, out_file):
+    for job in jobs:
+        copy = clone(dfs)
+        start_time = time.time()
+        instructions[0][0](copy)
+        for ins in job:
+            instructions[1][ins](copy)
+            pass
+        stop_time = time.time()
+        print_write(f'Permutation {job} produces {list(copy.keys())[0]} takes {stop_time - start_time} seconds.', out_file)

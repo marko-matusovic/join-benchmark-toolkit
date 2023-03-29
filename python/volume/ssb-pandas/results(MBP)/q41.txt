@@ -423,3 +423,4 @@ Permutation [6 4 2 5 1 0 3] produces ((((lineorderX(part𝜎p_mfgr∊['MFGR#1', 
 Permutation [0 5 1 4 2 3 6] produces ((((((lineorderXcustomer)X(supplier𝜎s_region∊['AMERICA']))𝜎c_region∊['AMERICA'])Xpart)Xdate)𝜎p_mfgr∊['MFGR#1', 'MFGR#2']) takes 6.725342035293579 seconds.
 Permutation [3 5 6 1 4 2 0] produces ((((lineorderXdate)X(supplier𝜎s_region∊['AMERICA']))X(part𝜎p_mfgr∊['MFGR#1', 'MFGR#2']))X(customer𝜎c_region∊['AMERICA'])) takes 6.476229190826416 seconds.
 Permutation [6 3 5 2 4 0 1] produces ((((lineorderXdate)X(part𝜎p_mfgr∊['MFGR#1', 'MFGR#2']))X(customer𝜎c_region∊['AMERICA']))X(supplier𝜎s_region∊['AMERICA'])) takes 9.268685102462769 seconds.
+Permutation [6 2 3 4 5 1 0] produces ((((lineorderX(part𝜎p_mfgr∊['MFGR#1', 'MFGR#2']))Xdate)X(supplier𝜎s_region∊['AMERICA']))X(customer𝜎c_region∊['AMERICA'])) takes 6.640239000320435 seconds.

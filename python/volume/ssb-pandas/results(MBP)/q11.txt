@@ -2,3 +2,15 @@ Permutation [4 2 3 1 0] produces ((((lineorder𝜎lo_quantity<25)𝜎lo_discount
 Permutation [3 1 2 4 0] produces ((((lineorder𝜎lo_discount≤3)𝜎lo_discount≥1)𝜎lo_quantity<25)X(date𝜎d_year∊[1993])) takes 0.7018120288848877 seconds.
 Permutation [2 0 3 4 1] produces (((((lineorder𝜎lo_discount≥1)Xdate)𝜎lo_discount≤3)𝜎lo_quantity<25)𝜎d_year∊[1993]) takes 8.051491022109985 seconds.
 Permutation [1 2 0 3 4] produces ((((lineorder𝜎lo_discount≥1)X(date𝜎d_year∊[1993]))𝜎lo_discount≤3)𝜎lo_quantity<25) takes 1.6979458332061768 seconds.
+Started running benchmark for query q11.
+Generated 120 permutations.
+With 84 unique execution paths.
+Permutation [2 1 4 0 3] produces ((((lineorder𝜎lo_discount≥1)𝜎lo_quantity<25)X(date𝜎d_year∊[1993]))𝜎lo_discount≤3) takes 1.4105401039123535 seconds.
+Permutation [4 3 1 0 2] produces ((((lineorder𝜎lo_quantity<25)𝜎lo_discount≤3)X(date𝜎d_year∊[1993]))𝜎lo_discount≥1) takes 0.7404060363769531 seconds.
+Permutation [3 0 2 4 1] produces (((((lineorder𝜎lo_discount≤3)Xdate)𝜎lo_discount≥1)𝜎lo_quantity<25)𝜎d_year∊[1993]) takes 3.0135271549224854 seconds.
+Permutation [2 3 1 0 4] produces ((((lineorder𝜎lo_discount≥1)𝜎lo_discount≤3)X(date𝜎d_year∊[1993]))𝜎lo_quantity<25) takes 1.3431549072265625 seconds.
+Permutation [4 0 3 1 2] produces (((((lineorder𝜎lo_quantity<25)Xdate)𝜎lo_discount≤3)𝜎d_year∊[1993])𝜎lo_discount≥1) takes 3.6813910007476807 seconds.
+Permutation [4 3 1 2 0] produces ((((lineorder𝜎lo_quantity<25)𝜎lo_discount≤3)𝜎lo_discount≥1)X(date𝜎d_year∊[1993])) takes 0.7135822772979736 seconds.
+Permutation [2 0 1 4 3] produces (((((lineorder𝜎lo_discount≥1)Xdate)𝜎d_year∊[1993])𝜎lo_quantity<25)𝜎lo_discount≤3) takes 6.475888967514038 seconds.
+Permutation [4 1 2 3 0] produces ((((lineorder𝜎lo_quantity<25)𝜎lo_discount≥1)𝜎lo_discount≤3)X(date𝜎d_year∊[1993])) takes 0.8247690200805664 seconds.
+Permutation [1 0 4 3 2] produces ((((lineorderX(date𝜎d_year∊[1993]))𝜎lo_quantity<25)𝜎lo_discount≤3)𝜎lo_discount≥1) takes 1.2422449588775635 seconds.
