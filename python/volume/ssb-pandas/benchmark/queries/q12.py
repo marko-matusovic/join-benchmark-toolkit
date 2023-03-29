@@ -1,7 +1,7 @@
 from typing import Callable
 from pandas import DataFrame
 
-from benchmark.instructions import filter_field_eq, filter_field_ge, filter_field_le, filter_field_lt, join_fields
+from benchmark.instructions import filter_field_eq, filter_field_ge, filter_field_le, filter_field_lt, from_tables, join_fields
 '''
 # QUERY
 | select sum(lo_extendedprice*lo_discount) as revenue
@@ -13,6 +13,9 @@ from benchmark.instructions import filter_field_eq, filter_field_ge, filter_fiel
 '''
 def instruction_set() -> list[list[Callable[[dict[str, DataFrame]], None]]]:
     return [
+        [
+            from_tables(["lineorder", "date"])
+        ],
         [
             join_fields("lo_orderdate", "d_datekey"),
             filter_field_eq("d_yearmonthnum", [199401]),

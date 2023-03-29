@@ -1,7 +1,7 @@
 from typing import Callable
 from pandas import DataFrame
 
-from benchmark.instructions import filter_field_eq, join_fields
+from benchmark.instructions import filter_field_eq, from_tables, join_fields
 
 '''
 # QUERY
@@ -19,6 +19,9 @@ from benchmark.instructions import filter_field_eq, join_fields
 '''
 def instruction_set() -> list[list[Callable[[dict[str, DataFrame]], None]]]:
     return [
+        [
+            from_tables(["lineorder", "date", "part", "supplier", "customer"])
+        ],
         [
             join_fields("lo_custkey", "c_custkey"),
             join_fields("lo_suppkey", "s_suppkey"),

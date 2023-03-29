@@ -1,49 +1,72 @@
-from io import TextIOWrapper
 from math import factorial
 from benchmark.load import load_files
-from benchmark.queries.q31 import *
+from benchmark.queries import q11, q21, q31, q41
+from pandas import DataFrame
 import itertools
 import numpy as np
 import time
-import threading
 
-def main():
+def get_instruction_set(query):
+    if query == 'q11':
+        return q11.instruction_set()
+    elif query == 'q21':
+        return q21.instruction_set()
+    elif query == 'q31':
+        return q31.instruction_set()
+    elif query == 'q41':
+        return q41.instruction_set()
+    else:
+        return None
+
+def main(query):
+    print(f'Started running benchmark for query {query}')
+    
     dfs = load_files()
-    instructions = instruction_set()
+    instructions = get_instruction_set(query)
 
-    jobs = np.array([j for j in itertools.permutations(range(len(instructions[0])))])
+    jobs = np.array([j for j in itertools.permutations(range(len(instructions[1])))])
     np.random.shuffle(jobs)
-    print(f'Generated {factorial(len(instructions[0]))} permutations.')
+    print(f'Generated {factorial(len(instructions[1]))} permutations.')
     
-    thread_count = 1
+    permutations = calc_permutations(dfs, jobs, instructions)
     
-    out_file = open("results(MBP)/q31.txt", "a")
-    write_lock = threading.Lock()
-    jobs_chunks = np.array_split(jobs, thread_count)
+    print(f'With {len(permutations)} unique execution paths.')
     
-    threads = {}
-    for i in range(thread_count):
-        threads[i] = threading.Thread(target=execute_job_pool, args=(dfs, instructions, jobs_chunks[i], out_file, write_lock))
-        threads[i].start()
+    out_file = open(f"results(MBP)/{query}.txt", "a")
     
-    for i in range(thread_count):
-        threads[i].join()
-    
-    print("done")
-    
-def execute_job_pool(dfs, instructions, jobs, out_file: TextIOWrapper, write_lock):
-    for job in jobs:    
+    for job in jobs:
         copy = clone(dfs)
         start_time = time.time()
+        instructions[0][0](copy)
         for ins in job:
-            instructions[0][ins](copy)
+            instructions[1][ins](copy)
             pass
         stop_time = time.time()
         msg = f'Permutation {job} produces {list(copy.keys())[0]} takes {stop_time - start_time} seconds.'
-        with write_lock:
-            print(msg)
-            out_file.write(f'{msg}\n')
-            out_file.flush()
-
+        print(msg)
+        out_file.write(f'{msg}\n')
+        out_file.flush()
+    
+    print("done")
+    
 def clone(dfs: dict[str, DataFrame]) -> dict[str, DataFrame]:
     return {key: dfs[key].copy() for key in dfs}
+
+def calc_permutations(dfs, jobs, instructions):
+    empty = clone(dfs)
+    for key in empty:
+        empty[key].drop(empty[key].index, inplace=True)
+    
+    permutations = {}
+    for job in jobs:
+        empty_copy = clone(empty)
+        instructions[0][0](empty_copy)
+        for ins in job:
+            instructions[1][ins](empty_copy)
+        
+        end_tbl = list(empty_copy.keys())[0]
+        if end_tbl not in permutations:
+            permutations[end_tbl] = []
+        permutations[end_tbl].append(job)
+    
+    return permutations

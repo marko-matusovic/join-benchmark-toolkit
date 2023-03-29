@@ -1,7 +1,7 @@
 from typing import Callable
 from pandas import DataFrame
 
-from benchmark.instructions import filter_field_eq, filter_field_ge, filter_field_le, filter_field_lt, join_fields
+from benchmark.instructions import filter_field_eq, filter_field_ge, filter_field_le, filter_field_lt, from_tables, join_fields
 '''
 # QUERY
 select c_nation, s_nation, d_year, sum(lo_revenue)
@@ -16,6 +16,9 @@ order by d_year asc, revenue desc
 '''
 def instruction_set() -> list[list[Callable[[dict[str, DataFrame]], None]]]:
     return [
+        [
+            from_tables(["lineorder", "date", "supplier", "customer"])
+        ],
         [
             join_fields("lo_custkey", "c_custkey"),
             join_fields("lo_suppkey", "s_suppkey"),

@@ -1,6 +1,14 @@
 from typing import Callable
 from pandas import DataFrame
 
+def from_tables(tables):
+    def from_tbls(dfs: dict[str, DataFrame]) -> None:
+        names = list(dfs.keys())
+        for name in names:
+            if name not in tables:
+                del dfs[name]
+    return from_tbls
+
 def join_fields(field_1, field_2) -> Callable[[dict[str, DataFrame]], None]:
     def join(dfs: dict[str, DataFrame]) -> None:
         name_1 = find_table(dfs, field_1)

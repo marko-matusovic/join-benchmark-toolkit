@@ -1,1 +1,0 @@
-Permutation [4 6 3 1 5 2 0] produces part takes 2.8784120082855225 seconds.
