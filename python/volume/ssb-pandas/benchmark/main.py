@@ -1,7 +1,7 @@
 from io import TextIOWrapper
 from math import factorial
 from benchmark.load import load_files
-from benchmark.queries.q11 import *
+from benchmark.queries.q31 import *
 import itertools
 import numpy as np
 import time
@@ -17,7 +17,7 @@ def main():
     
     thread_count = 1
     
-    out_file = open("results/q11.txt", "a")
+    out_file = open("results(MBP)/q31.txt", "a")
     write_lock = threading.Lock()
     jobs_chunks = np.array_split(jobs, thread_count)
     

@@ -1,0 +1,2 @@
+Permutation [4 3 0 2 1] produces customer takes 6.2325849533081055 seconds.
+Permutation [1 4 0 2 3] produces customer takes 18.706839084625244 seconds.
