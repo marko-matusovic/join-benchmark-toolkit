@@ -8,6 +8,15 @@
             "console": "integratedTerminal",
             "justMyCode": true,
             "args": ["q11"]
+        },
+        {
+            "name": "Q41",
+            "type": "python",
+            "request": "launch",
+            "program": "main.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": ["q41"]
         }
     ]
 }
