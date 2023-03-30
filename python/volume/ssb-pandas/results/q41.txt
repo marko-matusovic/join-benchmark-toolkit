@@ -1,3 +1,8 @@
+Started running benchmark for query q41.
+Generated 5040 permutations.
+With 1374 unique execution paths.
+Permutation [5 0 6 2 3 4 1] produces (((((lineorderXcustomer)X(part𝜎p_mfgr∊['MFGR#1', 'MFGR#2']))Xdate)𝜎c_region∊['AMERICA'])X(supplier𝜎s_region∊['AMERICA'])) takes 9.146236658096313 seconds.
+Permutation [5 6 1 4 0 2 3] produces ((((lineorderX(supplier𝜎s_region∊['AMERICA']))X(customer𝜎c_region∊['AMERICA']))X(part𝜎p_mfgr∊['MFGR#1', 'MFGR#2']))Xdate) takes 1.102698802947998 seconds.
 Permutation [6 1 2 0 4 5 3] produces ((((((lineorderXsupplier)X(part𝜎p_mfgr∊['MFGR#1', 'MFGR#2']))Xcustomer)𝜎c_region∊['AMERICA'])𝜎s_region∊['AMERICA'])Xdate) takes 10.739697217941284 seconds.
 Permutation [3 6 0 1 5 2 4] produces ((((((lineorderXdate)Xcustomer)Xsupplier)𝜎s_region∊['AMERICA'])X(part𝜎p_mfgr∊['MFGR#1', 'MFGR#2']))𝜎c_region∊['AMERICA']) takes 19.501543045043945 seconds.
 Permutation [0 2 5 1 4 6 3] produces ((((((lineorderXcustomer)Xpart)X(supplier𝜎s_region∊['AMERICA']))𝜎c_region∊['AMERICA'])𝜎p_mfgr∊['MFGR#1', 'MFGR#2'])Xdate) takes 11.945549011230469 seconds.

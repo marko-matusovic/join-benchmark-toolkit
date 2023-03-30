@@ -1,6 +1,6 @@
 from math import factorial
 from benchmark.load import load_files
-from benchmark.queries import q11, q21, q31, q41
+from benchmark.queries import q11, q12, q13, q21, q31, q41
 from pandas import DataFrame
 import itertools
 import numpy as np
@@ -9,6 +9,10 @@ import time
 def get_instruction_set(query):
     if query == 'q11':
         return q11.instruction_set()
+    if query == 'q12':
+        return q12.instruction_set()
+    if query == 'q13':
+        return q13.instruction_set()
     elif query == 'q21':
         return q21.instruction_set()
     elif query == 'q31':
@@ -19,7 +23,7 @@ def get_instruction_set(query):
         return None
 
 def main(query):
-    out_file = open(f"results(MBP)/{query}.txt", "a")
+    out_file = open(f"results/{query}.txt", "a")
     print_write(f'Started running benchmark for query {query}.', out_file)
     
     dfs = load_files()
