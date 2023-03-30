@@ -3,6 +3,7 @@ ext=${1:-"0"}
 docker run \
     --name mm_python_$ext \
     -ti \
+    --memory 16GB \
     --privileged \
     --runtime=nvidia \
     -e NVIDIA_VISIBLE_DEVICES=0 \
