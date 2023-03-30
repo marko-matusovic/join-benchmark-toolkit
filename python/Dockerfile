@@ -1,23 +1,26 @@
-FROM continuumio/miniconda3:master
+FROM nvidia/cuda:11.8.0-devel-ubuntu20.04
 
-SHELL ["bash", "-lc"]
+# Install base utilities
+RUN apt-get update && \
+    apt-get install -y wget && \
+    apt-get install -y git && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
-RUN apt update
-RUN apt-get update
-RUN apt-get install -y git
+# Install miniconda
+ENV CONDA_DIR /opt/conda
+RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh && \
+     /bin/bash ~/miniconda.sh -b -p /opt/conda
+
+# Put conda in path so we can use conda activate
+ENV PATH=$CONDA_DIR/bin:$PATH
 
 RUN conda init bash
 RUN conda update conda
 # RUN conda config --set channel_priority strict
 
-RUN conda create -n env
-
-# RUN conda install Cython==0.29.28 matplotlib numpy pandas plotly scipy setuptools tqdm
-# RUN conda install -c intel mkl
-
-RUN conda activate env
-RUN pip install numpy
-RUN pip install pandas
+RUN conda install Cython matplotlib numpy pandas plotly scipy setuptools tqdm
+RUN conda install -c intel mkl
 
 # NVIDIA Nsight Systems 2020.2.1
 RUN apt-get update -y && \
