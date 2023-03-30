@@ -1,7 +1,8 @@
 from typing import Callable
 from pandas import DataFrame
+from benchmark.operations.approximations import Approx_Instructions
+from benchmark.operations.instructions import Instructions
 
-from benchmark.instructions import filter_field_eq, filter_field_ge, filter_field_le, filter_field_lt, from_tables, join_fields
 '''
 # QUERY
 select c_nation, s_nation, d_year, sum(lo_revenue)
@@ -14,19 +15,19 @@ and d_year >= 1992 and d_year <= 1997
 group by c_nation, s_nation, d_year
 order by d_year asc, revenue desc
 '''
-def instruction_set() -> list[list[Callable[[dict[str, DataFrame]], None]]]:
+def instruction_set(operation_set):
     return [
         [
-            from_tables(["lineorder", "date", "supplier", "customer"])
+            operation_set.from_tables(["lineorder", "date", "supplier", "customer"])
         ],
         [
-            join_fields("lo_custkey", "c_custkey"),
-            join_fields("lo_suppkey", "s_suppkey"),
-            join_fields("lo_orderdate", "d_datekey"),
-            filter_field_eq("c_region", ["ASIA"]),
-            filter_field_eq("s_region", ["ASIA"]),
-            filter_field_ge("d_year", 1992),
-            filter_field_le("d_year", 1997),
+            operation_set.join_fields("lo_custkey", "c_custkey"),
+            operation_set.join_fields("lo_suppkey", "s_suppkey"),
+            operation_set.join_fields("lo_orderdate", "d_datekey"),
+            operation_set.filter_field_eq("c_region", ["ASIA"]),
+            operation_set.filter_field_eq("s_region", ["ASIA"]),
+            operation_set.filter_field_ge("d_year", 1992),
+            operation_set.filter_field_le("d_year", 1997),
         ],
         [
             # group by
