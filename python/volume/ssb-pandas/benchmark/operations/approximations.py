@@ -2,6 +2,7 @@ from copy import deepcopy
 from benchmark.schema import get_schema
 
 TIME_CONSTANT = 1/1_000_000_000 * 42
+TIME_JOIN_POW = 1.2
 TIME_JOIN = TIME_CONSTANT * 1.5
 TIME_COMP = TIME_CONSTANT * 0.9
 
@@ -19,9 +20,13 @@ class Approx_Instructions:
             name_2 = self.find_table(data, field_2)
 
             res = f'({name_1}X{name_2})'
+            data["schema"][res] = data["schema"][name_1] + data["schema"][name_2]
+            
+            del data["schema"][name_1]
+            del data["schema"][name_2]
 
             if res not in data["times"]:
-                data["times"][res] = TIME_JOIN * (data["stats"][name_1]["length"] + data["stats"][name_2]["length"])
+                data["times"][res] = TIME_JOIN * (data["stats"][name_1]["length"] ** TIME_JOIN_POW + data["stats"][name_2]["length"] ** TIME_JOIN_POW)
                 
                 joined_unique = data["stats"][name_1]["unique"] | data["stats"][name_2]["unique"]
                 mult = max(data["stats"][name_1]["length"], data["stats"][name_2]["length"]) / min(data["stats"][name_1]["length"], data["stats"][name_2]["length"])
@@ -36,10 +41,12 @@ class Approx_Instructions:
     def filter_eq(self, data, field, values):
         name = self.find_table(data, field)
         res = f'({name}𝜎{field}={values})'
+        data["schema"][res] = data["schema"][name]
+        del data["schema"][name]
         
         if res not in data["times"]:
-            reduction = 1.0 * data["stats"][name]["length"] / data["stats"][name]["unique"][field] * len(values)
-            data["times"][res] = TIME_COMP * reduction * data["stats"][name]["length"]
+            reduction = 1.0 * len(values) / data["stats"][name]["unique"][field]
+            data["times"][res] = TIME_COMP * data["stats"][name]["length"]
             data["stats"][res] = {
                 "length": data["stats"][name]["length"] * reduction,
                 "unique": data["stats"][name]["unique"].copy()
@@ -51,10 +58,12 @@ class Approx_Instructions:
     def filter_comp(self, data, field, value):
         name = self.find_table(data, field)
         res = f'({name}𝜎{field}<>)'
+        data["schema"][res] = data["schema"][name]
+        del data["schema"][name]
         
         if res not in data["times"]:
             reduction = 0.5
-            data["times"][res] = TIME_COMP * reduction * data["stats"][name]["length"]
+            data["times"][res] = TIME_COMP * data["stats"][name]["length"]
             unique = data["stats"][name]["unique"].copy()
             data["stats"][res] = {
                 "length": data["stats"][name]["length"] * reduction,
