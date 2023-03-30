@@ -10,7 +10,7 @@ def load_tables(names) -> dict[str, DataFrame]:
 	schema = get_schema()
 	for name in names:
 		dfs[name] = pandas.read_table( \
-			f'{root_path}/lineorder.tbl',  \
+			f'{root_path}/{name}.tbl',  \
 			sep='|',  \
 			header=None,  \
 			names=schema[name],  \
