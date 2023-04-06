@@ -7,7 +7,7 @@ from benchmark.operations.get import get_approx_instructs, get_instructions
 from benchmark.tools import clone, get_stats, print_write
 
 def main(query):
-    out_file = open(f"results/{query}.txt", "a")
+    out_file = open(f"results/{query}.csv", "a")
     # print_write(f'Started running benchmark for query {query}.', out_file)
     print(f'Started running benchmark for query {query}.')
     

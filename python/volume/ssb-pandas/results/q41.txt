@@ -1,0 +1,8 @@
+permutation;execution_tree;approx_time;actual_time
+permutation;execution_tree;approx_time;actual_time
+[3 0 5 4 2 1 6];((((((lineorderXdate)Xcustomer)𝜎c_region∊['AMERICA'])Xpart)X(supplier𝜎s_region∊['AMERICA']))𝜎p_mfgr∊['MFGR#1', 'MFGR#2']);630961.9155550684;16.730101108551025
+[4 0 6 5 3 1 2];((((lineorderX(customer𝜎c_region∊['AMERICA']))Xdate)X(supplier𝜎s_region∊['AMERICA']))X(part𝜎p_mfgr∊['MFGR#1', 'MFGR#2']));630359.4298804775;2.2751376628875732
+permutation;execution_tree;approx_time;actual_time
+[2 1 5 4 3 0 6];((((((lineorderXpart)Xsupplier)𝜎s_region∊['AMERICA'])Xdate)X(customer𝜎c_region∊['AMERICA']))𝜎p_mfgr∊['MFGR#1', 'MFGR#2']);43.9606661480427;18.89311695098877
+[2 1 5 0 6 4 3];(((((((lineorderXpart)Xsupplier)𝜎s_region∊['AMERICA'])Xcustomer)𝜎p_mfgr∊['MFGR#1', 'MFGR#2'])𝜎c_region∊['AMERICA'])Xdate);43.98367759879738;19.920451164245605
+[3 4 1 2 6 0 5];((((((lineorderXdate)Xsupplier)Xpart)𝜎p_mfgr∊['MFGR#1', 'MFGR#2'])X(customer𝜎c_region∊['AMERICA']))𝜎s_region∊['AMERICA']);43.592615074157834;35.579895973205566

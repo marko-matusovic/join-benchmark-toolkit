@@ -1,10 +1,10 @@
 from copy import deepcopy
 from benchmark.schema import get_schema
 
-TIME_CONSTANT = 1/1_000_000_000 * 42
-TIME_JOIN_POW = 1.2
-TIME_JOIN = TIME_CONSTANT * 1.5
-TIME_COMP = TIME_CONSTANT * 0.9
+TIME_CONSTANT = 1/1_000_000_000 * 7
+TIME_JOIN_POW = 1.4
+TIME_JOIN = TIME_CONSTANT * 2
+TIME_COMP = TIME_CONSTANT * 1
 
 class Approx_Instructions:
     
