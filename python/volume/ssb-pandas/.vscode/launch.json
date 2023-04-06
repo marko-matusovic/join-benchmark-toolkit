@@ -35,6 +35,24 @@
             "console": "integratedTerminal",
             "justMyCode": true,
             "args": ["q41"]
+        },
+        {
+            "name": "Mem Q11",
+            "type": "python",
+            "request": "launch",
+            "program": "mem.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": ["q11"]
+        },
+        {
+            "name": "Mem Q41",
+            "type": "python",
+            "request": "launch",
+            "program": "mem.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": ["q41"]
         }
     ]
 }
