@@ -1,9 +1,3 @@
-from typing import Callable
-from pandas import DataFrame
-from benchmark.operations.approximations import Approx_Instructions
-from benchmark.operations.instructions import Instructions
-
-
 '''
 # QUERY
 | select d_year, c_nation, sum(lo_revenue - lo_supplycost) as profit
@@ -24,13 +18,13 @@ def instruction_set(operation_set):
             operation_set.from_tables(["lineorder", "date", "part", "supplier", "customer"])
         ],
         [
-            operation_set.join_fields("lo_custkey", "c_custkey"),
-            operation_set.join_fields("lo_suppkey", "s_suppkey"),
-            operation_set.join_fields("lo_partkey", "p_partkey"),
-            operation_set.join_fields("lo_orderdate", "d_datekey"),
-            operation_set.filter_field_eq("c_region", ["AMERICA"]),
-            operation_set.filter_field_eq("s_region", ["AMERICA"]),
-            operation_set.filter_field_eq("p_mfgr", ['MFGR#1', 'MFGR#2'])
+            operation_set.join_fields("lo_custkey", "c_custkey"),           # 0
+            operation_set.join_fields("lo_suppkey", "s_suppkey"),           # 1
+            operation_set.join_fields("lo_partkey", "p_partkey"),           # 2
+            operation_set.join_fields("lo_orderdate", "d_datekey"),         # 3
+            operation_set.filter_field_eq("c_region", ["AMERICA"]),         # 4
+            operation_set.filter_field_eq("s_region", ["AMERICA"]),         # 5
+            operation_set.filter_field_eq("p_mfgr", ['MFGR#1', 'MFGR#2'])   # 6
         ],
         [
             # group by

@@ -1,10 +1,12 @@
-from copy import deepcopy
 from benchmark.schema import get_schema
 
-TIME_CONSTANT = 1/1_000_000_000 * 7
-TIME_JOIN_POW = 1.4
-TIME_JOIN = TIME_CONSTANT * 2
-TIME_COMP = TIME_CONSTANT * 1
+TIME_CONSTANT = 1.0 / 1_000_000_000
+
+TIME_JOIN = TIME_CONSTANT * 300.0
+TIME_JOIN_POW = 1.0
+
+TIME_COMP = TIME_CONSTANT * 100.0
+TIME_COMP_POW = 1.0
 
 class Approx_Instructions:
     
@@ -26,13 +28,14 @@ class Approx_Instructions:
             del data["schema"][name_2]
 
             if res not in data["times"]:
-                data["times"][res] = TIME_JOIN * (data["stats"][name_1]["length"] ** TIME_JOIN_POW + data["stats"][name_2]["length"] ** TIME_JOIN_POW)
+                sm = min(data["stats"][name_1]["length"], data["stats"][name_2]["length"])
+                bg = max(data["stats"][name_1]["length"], data["stats"][name_2]["length"])
                 
-                joined_unique = data["stats"][name_1]["unique"] | data["stats"][name_2]["unique"]
-                mult = max(data["stats"][name_1]["length"], data["stats"][name_2]["length"]) / min(data["stats"][name_1]["length"], data["stats"][name_2]["length"])
+                data["times"][res] =  ((sm + bg) ** TIME_JOIN_POW) * TIME_JOIN
+        
                 data["stats"][res] = {
-                    "length": min(data["stats"][name_1]["length"], data["stats"][name_2]["length"]),
-                    "unique":  {col: joined_unique[col] * mult for col in joined_unique}
+                    "length": bg,
+                    "unique": data["stats"][name_1]["unique"] | data["stats"][name_2]["unique"]
                 }
 
             return data["times"][res]
@@ -46,7 +49,7 @@ class Approx_Instructions:
         
         if res not in data["times"]:
             reduction = 1.0 * len(values) / data["stats"][name]["unique"][field]
-            data["times"][res] = TIME_COMP * data["stats"][name]["length"]
+            data["times"][res] = (data["stats"][name]["length"] ** TIME_COMP_POW) * TIME_COMP
             data["stats"][res] = {
                 "length": data["stats"][name]["length"] * reduction,
                 "unique": data["stats"][name]["unique"].copy()
@@ -63,7 +66,7 @@ class Approx_Instructions:
         
         if res not in data["times"]:
             reduction = 0.5
-            data["times"][res] = TIME_COMP * data["stats"][name]["length"]
+            data["times"][res] = (data["stats"][name]["length"] ** TIME_COMP_POW) * TIME_COMP
             unique = data["stats"][name]["unique"].copy()
             data["stats"][res] = {
                 "length": data["stats"][name]["length"] * reduction,

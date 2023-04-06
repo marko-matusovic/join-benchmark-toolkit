@@ -55,18 +55,30 @@ def run_all_jobs(instructions, approx_ins, jobs, out_file):
         "times": {}
     }
     
-    print_write(f'permutation;execution_tree;approx_time;actual_time', out_file)
+    # print_write(f'permutation;execution_tree;approx_time;actual_time', out_file)
+    print(f'permutation;execution_tree;approx_time;actual_time')
     for job in jobs:
+        
         dfs = instructions[0][0]()
         approx_data["schema"] = approx_ins[0][0]()
         
+        print("approx: ", end="")
         approx_time = 0
         for ins in job:
-            approx_time += approx_ins[1][ins](approx_data)
+            t = approx_ins[1][ins](approx_data)
+            print(f'I[{ins}]={t:5f}', end=", ")
+            approx_time += t
+        print()
         
         start_time = time.time()
+        print("actual: ", end="")
         for ins in job:
+            part_time = time.time()
             instructions[1][ins](dfs)
+            t = time.time() - part_time
+            print(f'I[{ins}]={t:5f}', end=", ")
+        print()
         actual_time = time.time() - start_time
         
-        print_write(f'{job};{list(dfs.keys())[0]};{approx_time};{actual_time}', out_file)
+        print(f'{job};{list(dfs.keys())[0]};{approx_time};{actual_time}')
+        # print_write(f'{job};{list(dfs.keys())[0]};{approx_time};{actual_time}', out_file)

@@ -1,7 +1,7 @@
 {
     "configurations": [
         {
-            "name": "Q11",
+            "name": "Actual Q11",
             "type": "python",
             "request": "launch",
             "program": "main.py",
@@ -10,10 +10,28 @@
             "args": ["q11"]
         },
         {
-            "name": "Q41",
+            "name": "Actual Q41",
             "type": "python",
             "request": "launch",
             "program": "main.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": ["q41"]
+        },
+        {
+            "name": "Approx Q11",
+            "type": "python",
+            "request": "launch",
+            "program": "approx.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": ["q11"]
+        },
+        {
+            "name": "Approx Q41",
+            "type": "python",
+            "request": "launch",
+            "program": "approx.py",
             "console": "integratedTerminal",
             "justMyCode": true,
             "args": ["q41"]
