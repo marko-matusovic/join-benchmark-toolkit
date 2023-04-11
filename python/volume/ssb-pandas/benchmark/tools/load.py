@@ -1,7 +1,7 @@
 import pandas
 from pandas import DataFrame
 
-from benchmark.schema import get_schema
+from benchmark.tools.schema import get_schema
 
 def load_tables(names) -> dict[str, DataFrame]:
 	dfs = {}

@@ -1,8 +1,8 @@
 from typing import Callable
 from pandas import DataFrame
 
-from benchmark.load import load_tables
-from benchmark.tools import clone
+from benchmark.tools.load import load_tables
+from benchmark.tools.tools import clone
 
 class Instructions:
     def from_tables(self, tables):

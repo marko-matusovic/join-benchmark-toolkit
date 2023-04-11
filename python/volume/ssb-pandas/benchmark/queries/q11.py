@@ -17,11 +17,13 @@ def instruction_set(operation_set):
             operation_set.from_tables(["lineorder", "date"])
         ],
         [
-            operation_set.join_fields("lo_orderdate", "d_datekey"),
             operation_set.filter_field_eq("d_year", [1993]),
             operation_set.filter_field_ge("lo_discount", 1),
             operation_set.filter_field_le("lo_discount", 3),
             operation_set.filter_field_lt("lo_quantity", 25),
+        ],
+        [
+            operation_set.join_fields("lo_orderdate", "d_datekey"),
         ],
         [
             # select

@@ -1,5 +1,10 @@
-from sys import argv
-from benchmark import main
 
-if __name__ == '__main__':
-    main.main(argv[1])
+import sys
+
+from benchmark.run import main_time_mem
+
+
+if __name__ == "__main__":
+    run_config = sys.argv[1]
+    if run_config == 'time_mem':
+        main_time_mem.main(sys.argv[2:])

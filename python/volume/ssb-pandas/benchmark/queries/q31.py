@@ -21,13 +21,15 @@ def instruction_set(operation_set):
             operation_set.from_tables(["lineorder", "date", "supplier", "customer"])
         ],
         [
-            operation_set.join_fields("lo_custkey", "c_custkey"),
-            operation_set.join_fields("lo_suppkey", "s_suppkey"),
-            operation_set.join_fields("lo_orderdate", "d_datekey"),
             operation_set.filter_field_eq("c_region", ["ASIA"]),
             operation_set.filter_field_eq("s_region", ["ASIA"]),
             operation_set.filter_field_ge("d_year", 1992),
             operation_set.filter_field_le("d_year", 1997),
+        ],
+        [
+            operation_set.join_fields("lo_custkey", "c_custkey"),
+            operation_set.join_fields("lo_suppkey", "s_suppkey"),
+            operation_set.join_fields("lo_orderdate", "d_datekey"),
         ],
         [
             # group by

@@ -4,7 +4,7 @@ import numpy as np
 import time
 import tracemalloc
 from benchmark.operations.get import get_approx_instructs, get_instructions
-from benchmark.tools import get_stats, print_write
+from benchmark.util import get_stats, print_write
 
 def main(query):
     out_file = open(f"results(mem)/{query}.csv", "a")

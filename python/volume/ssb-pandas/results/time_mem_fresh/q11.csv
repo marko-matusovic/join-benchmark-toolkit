@@ -1,0 +1,8 @@
+[0];((((lineorder𝜎lo_discount≥1)𝜎lo_discount≤3)𝜎lo_quantity<25)X(date𝜎d_year∊[1993]));10.375373840332031;3072830033
+[0];((((lineorder𝜎lo_discount≥1)𝜎lo_discount≤3)𝜎lo_quantity<25)X(date𝜎d_year∊[1993]));10.924585103988647;3072830600
+[0];((((lineorder𝜎lo_discount≥1)𝜎lo_discount≤3)𝜎lo_quantity<25)X(date𝜎d_year∊[1993]));11.622637748718262;3072830272
+[0];((((lineorder𝜎lo_discount≥1)𝜎lo_discount≤3)𝜎lo_quantity<25)X(date𝜎d_year∊[1993]));10.846338033676147;3072830229
+[0];((((lineorder𝜎lo_discount≥1)𝜎lo_discount≤3)𝜎lo_quantity<25)X(date𝜎d_year∊[1993]));11.150070905685425;3072830139
+[0];((((lineorder𝜎lo_discount≥1)𝜎lo_discount≤3)𝜎lo_quantity<25)X(date𝜎d_year∊[1993]));10.320142984390259;3072830346
+[0];((((lineorder𝜎lo_discount≥1)𝜎lo_discount≤3)𝜎lo_quantity<25)X(date𝜎d_year∊[1993]));10.532381057739258;3072829868
+[0];((((lineorder𝜎lo_discount≥1)𝜎lo_discount≤3)𝜎lo_quantity<25)X(date𝜎d_year∊[1993]));10.540564060211182;3072830437

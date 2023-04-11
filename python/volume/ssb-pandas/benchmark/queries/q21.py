@@ -21,11 +21,13 @@ def instruction_set(operation_set):
             operation_set.from_tables(["lineorder", "date", "part", "supplier"])
         ],
         [
+            operation_set.filter_field_eq("p_category", ["MFGR#12"]),
+            operation_set.filter_field_eq("s_region", ["AMERICA"]),
+        ],
+        [
             operation_set.join_fields("lo_orderdate", "d_datekey"),
             operation_set.join_fields("lo_partkey", "p_partkey"),
             operation_set.join_fields("lo_suppkey", "s_suppkey"),
-            operation_set.filter_field_eq("p_category", ["MFGR#12"]),
-            operation_set.filter_field_eq("s_region", ["AMERICA"]),
         ],
         [
             # group by

@@ -1,0 +1,6 @@
+[1, 0, 2];(((lineorderX(supplier𝜎s_region∊['ASIA']))X(customer𝜎c_region∊['ASIA']))X((date𝜎d_year≥1992)𝜎d_year≤1997));11.580034971237183;3072829456
+[2, 1, 0];(((lineorderX((date𝜎d_year≥1992)𝜎d_year≤1997))X(supplier𝜎s_region∊['ASIA']))X(customer𝜎c_region∊['ASIA']));15.5106840133667;4747250875
+[1, 2, 0];(((lineorderX(supplier𝜎s_region∊['ASIA']))X((date𝜎d_year≥1992)𝜎d_year≤1997))X(customer𝜎c_region∊['ASIA']));11.749207973480225;3072829990
+[2, 0, 1];(((lineorderX((date𝜎d_year≥1992)𝜎d_year≤1997))X(customer𝜎c_region∊['ASIA']))X(supplier𝜎s_region∊['ASIA']));14.10417103767395;4747252093
+[0, 2, 1];(((lineorderX(customer𝜎c_region∊['ASIA']))X((date𝜎d_year≥1992)𝜎d_year≤1997))X(supplier𝜎s_region∊['ASIA']));12.047116994857788;3072831268
+[0, 1, 2];(((lineorderX(customer𝜎c_region∊['ASIA']))X(supplier𝜎s_region∊['ASIA']))X((date𝜎d_year≥1992)𝜎d_year≤1997));10.980438947677612;3072830887

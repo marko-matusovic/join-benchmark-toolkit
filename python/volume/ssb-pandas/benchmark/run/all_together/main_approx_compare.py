@@ -2,7 +2,7 @@ import time
 from benchmark.operations.get import get_approx_instructs
 from benchmark.operations.get import get_instructions
 import pandas as pd
-from benchmark.tools import clone, get_stats, print_write
+from benchmark.util import clone, get_stats, print_write
 
 def main(query):
     in_file = open(f"results/{query}.csv", "r")

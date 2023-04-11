@@ -1,4 +1,6 @@
-from benchmark.schema import get_schema
+
+from benchmark.tools.schema import get_schema
+
 
 TIME_CONSTANT = 1.0 / 1_000_000_000
 
