@@ -5,4 +5,5 @@ cuda/volume/.*
 
 **/__pycache__
 
-python/volume/ssb-pandas/data/tables
+python/volume/ssb-pandas/data/ssb/tables
+python/volume/ssb-pandas/data/job/tables
