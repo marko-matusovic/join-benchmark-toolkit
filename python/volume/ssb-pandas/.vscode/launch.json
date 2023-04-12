@@ -1,58 +1,31 @@
 {
     "configurations": [
         {
-            "name": "Actual Q11",
+            "name": "TM SSB Q41",
             "type": "python",
             "request": "launch",
             "program": "main.py",
             "console": "integratedTerminal",
             "justMyCode": true,
-            "args": ["q11"]
+            "args": ["time_mem", "ssb/q41", "0,1,2,3"]
         },
         {
-            "name": "Actual Q41",
+            "name": "TM SSB Q42",
             "type": "python",
             "request": "launch",
             "program": "main.py",
             "console": "integratedTerminal",
             "justMyCode": true,
-            "args": ["q41"]
+            "args": ["time_mem", "ssb/q42", "0,1,2,3"]
         },
         {
-            "name": "Approx Q11",
+            "name": "TM JOB Q20A",
             "type": "python",
             "request": "launch",
-            "program": "approx.py",
+            "program": "main.py",
             "console": "integratedTerminal",
             "justMyCode": true,
-            "args": ["q11"]
+            "args": ["time_mem", "job/20a", "0,1,2,3,4,5,6,7,8,9,10,11"]
         },
-        {
-            "name": "Approx Q41",
-            "type": "python",
-            "request": "launch",
-            "program": "approx.py",
-            "console": "integratedTerminal",
-            "justMyCode": true,
-            "args": ["q41"]
-        },
-        {
-            "name": "Mem Q11",
-            "type": "python",
-            "request": "launch",
-            "program": "mem.py",
-            "console": "integratedTerminal",
-            "justMyCode": true,
-            "args": ["q11"]
-        },
-        {
-            "name": "Mem Q41",
-            "type": "python",
-            "request": "launch",
-            "program": "mem.py",
-            "console": "integratedTerminal",
-            "justMyCode": true,
-            "args": ["q41"]
-        }
     ]
 }

@@ -5,5 +5,8 @@
         "**/.hg": true,
         "**/CVS": true,
         "**/__pycache__": true
-    }
+    },
+    "python.analysis.extraPaths": [
+        "./benchmark/queries/ssb"
+    ]
 }

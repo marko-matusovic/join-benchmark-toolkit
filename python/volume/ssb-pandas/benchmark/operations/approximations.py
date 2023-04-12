@@ -13,9 +13,12 @@ TIME_COMP_POW = 1.0
 class Approx_Instructions:
     
     
-    def from_tables(self, tables):
+    def from_tables(self, db_name, tables, aliases=[]):
+        if len(aliases) < len(tables):
+            aliases = tables
+        schema = get_schema(db_name)
         def from_tbls():
-            return {key: get_schema()[key] for key in get_schema() if key in tables}
+            return {aliases[tables.index(key)]: schema[key] for key in schema if key in tables}
         return from_tbls
 
     def join_fields(self, field_1, field_2):
