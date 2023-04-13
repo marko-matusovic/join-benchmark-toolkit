@@ -21,6 +21,7 @@ RUN conda update conda
 
 RUN conda install Cython matplotlib numpy pandas plotly scipy setuptools tqdm
 RUN conda install -c intel mkl
+RUN conda install sqlparse
 
 # # NVIDIA Nsight Systems 2020.2.1
 # # from this guide
