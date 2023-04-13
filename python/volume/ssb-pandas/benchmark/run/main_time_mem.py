@@ -20,6 +20,9 @@ def main(db_set, query, perm):
     actual_time = time.time() - start_time
     mem_peak = tracemalloc.get_traced_memory()[1]
 
+
+    # dfs[list(dfs.keys())[0]].to_csv('output-job-20a.csv', header=True, index=True)
+    
     print(f'{perm};{list(dfs.keys())[0]};{actual_time};{mem_peak}')
     with open(f'results/time_mem_fresh/{query}.csv', 'a') as file:
         file.write(f'{perm};{actual_time};{mem_peak}\n')
