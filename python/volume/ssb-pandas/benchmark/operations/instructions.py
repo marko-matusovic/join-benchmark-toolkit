@@ -1,5 +1,6 @@
 from benchmark.tools.load import load_tables
 
+
 class Instructions:
     def from_tables(self, db_name, tables, aliases=[]):
         def load():
@@ -11,7 +12,8 @@ class Instructions:
             table_name_1 = self.find_names(dfs, field_name_1)
             table_name_2 = self.find_names(dfs, field_name_2)
             if table_name_1 == table_name_2:
-                return
+                self.filter_field_field_eq(
+                    dfs, table_name_1, field_name_1, field_name_2)
             table_1 = dfs[table_name_1]
             table_2 = dfs[table_name_2]
             del dfs[table_name_1]
@@ -20,12 +22,20 @@ class Instructions:
                 table_2, how='inner', left_on=field_name_1, right_on=field_name_2)
         return join
 
+    # PRIVATE
+    def join_filter_eq(self, dfs, table_name, field_name_1, field_name_2):
+        table = dfs[table_name]
+        del dfs[table_name]
+        dfs[f'({table_name}[XS]{field_name_1}={field_name_2}'] = \
+            table.loc[table[field_name_1] == table[field_name_2]]
+
     def filter_field_eq(self, field_name, values):
         def filter(dfs):
             table_name = self.find_names(dfs, field_name)
             table = dfs[table_name]
             del dfs[table_name]
-            dfs[f'({table_name}[s]{field_name}[in]{values})'] = table.loc[table[field_name].isin(values)]
+            dfs[f'({table_name}[s]{field_name}[in]{values})'] = table.loc[table[field_name].isin(
+                values)]
         return filter
 
     def filter_field_ge(self, field_name, value):
@@ -59,7 +69,7 @@ class Instructions:
             del dfs[table_name]
             dfs[f'({table_name}[s]{field_name}[<]{value})'] = table.loc[table[field_name] < value]
         return filter
-    
+
     def filter_field_like(self, field_name, values):
         def filter(dfs):
             table_name = self.find_names(dfs, field_name)
@@ -80,11 +90,12 @@ class Instructions:
             dfs[f'({table_name}[s]{field_name}[not-like]{value})'] = table.loc[index]
         return filter
 
+    # PRIVATE
     def like_index(self, col, value):
         reg = f'^{value.replace("%", ".*")}$'
         return col.str.contains(reg)
 
-    # Hurrah spaghetti code
+    # PRIVATE
     def find_names(self, dfs, field_name):
         for table_name in dfs:
             if field_name in dfs[table_name]:
