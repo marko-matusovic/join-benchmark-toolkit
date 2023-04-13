@@ -15,7 +15,7 @@ def load_tables(db_name, table_names, table_aliases=[]) -> dict[str, DataFrame]:
 			f'data/{db_name}/tables/{t_name}.{get_extension(db_name)}',  \
 			sep=get_separator(db_name),  \
 			header=None,  \
-			names=schema[t_name],  \
+			names=[f'{t_alias}.{col}' for col in schema[t_name]],  \
 			index_col=False, \
 			low_memory=False)
 	

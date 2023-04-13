@@ -22,5 +22,5 @@ def main(db_set, query, perm):
 
     print(f'{perm};{list(dfs.keys())[0]};{actual_time};{mem_peak}')
     with open(f'results/time_mem_fresh/{query}.csv', 'a') as file:
-        file.write(f'{perm};{list(dfs.keys())[0]};{actual_time};{mem_peak}\n')
+        file.write(f'{perm};{actual_time};{mem_peak}\n')
     
