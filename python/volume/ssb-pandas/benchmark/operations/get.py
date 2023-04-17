@@ -1,7 +1,7 @@
 from benchmark.operations.approximations import Approx_Instructions
 from benchmark.operations.instructions import Instructions
 from benchmark.queries.ssb import q11, q12, q13, q21, q31, q41
-from benchmark.queries.job import q1b, q20a, q22a, q2a, q30a
+from benchmark.queries.job import q1b, q20a, q22a, q28a, q2a, q30a
 from benchmark.tools.parser import parse
 
 
@@ -35,6 +35,8 @@ def get_set(db_set, query, operation_class):
             return q20a.instruction_set(operation_class)
         if query == '22a':
             return q22a.instruction_set(operation_class)
+        if query == '28a':
+            return q28a.instruction_set(operation_class)
         if query == '30a':
             return q30a.instruction_set(operation_class)
     
