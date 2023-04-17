@@ -22,6 +22,7 @@ echo "Removing from kind_type.csv"
 sed -i '' 's/\\\"//g' tables/kind_type.csv       
 echo "Removing from movie_info.csv"
 sed -i '' 's/\\\"//g' tables/movie_info.csv      
+sed -i '' 's/\\,/",/g' tables/movie_info.csv
 echo "Removing from movie_link.csv"
 sed -i '' 's/\\\"//g' tables/movie_link.csv      
 echo "Removing from role_type.csv"
@@ -38,7 +39,7 @@ echo "Removing from movie_info_idx.csv"
 sed -i '' 's/\\\"//g' tables/movie_info_idx.csv  
 echo "Removing from name.csv"
 sed -i '' 's/\\\"//g' tables/name.csv            
-echo "Removing from tables/title.csv"
+echo "Removing from title.csv"
 sed -i '' 's/\\\"//g' tables/title.csv
 
 echo "Complete"

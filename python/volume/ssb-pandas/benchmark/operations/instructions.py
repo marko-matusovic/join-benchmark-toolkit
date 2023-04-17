@@ -12,8 +12,9 @@ class Instructions:
             table_name_1 = self.find_names(dfs, field_name_1)
             table_name_2 = self.find_names(dfs, field_name_2)
             if table_name_1 == table_name_2:
-                self.filter_field_field_eq(
+                self.join_filter_eq(
                     dfs, table_name_1, field_name_1, field_name_2)
+                return
             table_1 = dfs[table_name_1]
             table_2 = dfs[table_name_2]
             del dfs[table_name_1]
@@ -36,6 +37,14 @@ class Instructions:
             del dfs[table_name]
             dfs[f'({table_name}[s]{field_name}[in]{values})'] = table.loc[table[field_name].isin(
                 values)]
+        return filter
+    
+    def filter_field_ne(self, field_name, value):
+        def filter(dfs):
+            table_name = self.find_names(dfs, field_name)
+            table = dfs[table_name]
+            del dfs[table_name]
+            dfs[f'({table_name}[s]{field_name}[!=]{value})'] = table.loc[table[field_name] != value]
         return filter
 
     def filter_field_ge(self, field_name, value):

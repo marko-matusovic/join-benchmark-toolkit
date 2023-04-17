@@ -19,14 +19,40 @@
             "args": ["time_mem", "ssb/q42", "0,1,2,3"]
         },
         {
+            "name": "TM JOB Q1B",
+            "type": "python",
+            "request": "launch",
+            "program": "main.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": ["time_mem", "job/1b", "0,1,2,3,4"]
+        },
+        {
+            "name": "TM JOB Q2A",
+            "type": "python",
+            "request": "launch",
+            "program": "main.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": ["time_mem", "job/2a", "0,1,2,3,4"]
+        },
+        {
             "name": "TM JOB Q20A",
             "type": "python",
             "request": "launch",
             "program": "main.py",
             "console": "integratedTerminal",
             "justMyCode": true,
-            // "args": ["time_mem", "job/20a", "0,1,2,3,4,5,6,7,8,9,10,11"]
-            "args": ["time_mem", "job/20a", "5,4,7,6,2,0,3,9,8,11,1,10"]
+            "args": ["time_mem", "job/20a", "0,1,2,3,4,5,6,7,8,9,10,11"]
+        },
+        {
+            "name": "TM JOB Q22A",
+            "type": "python",
+            "request": "launch",
+            "program": "main.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": ["time_mem", "job/22a", "0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15"]
         },
     ]
 }

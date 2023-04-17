@@ -1,7 +1,7 @@
 from benchmark.operations.approximations import Approx_Instructions
 from benchmark.operations.instructions import Instructions
 from benchmark.queries.ssb import q11, q12, q13, q21, q31, q41
-from benchmark.queries.job import q20a
+from benchmark.queries.job import q1b, q20a, q22a, q2a
 from benchmark.tools.parser import parse
 
 
@@ -27,8 +27,14 @@ def get_set(db_set, query, operation_class):
             return q41.instruction_set(operation_class)
         pass
     elif db_set == "job":
+        if query == '1b':
+            return q1b.instruction_set(operation_class)
+        if query == '2a':
+            return q2a.instruction_set(operation_class)
         if query == '20a':
             return q20a.instruction_set(operation_class)
+        if query == '22a':
+            return q22a.instruction_set(operation_class)
     
     # No manual parsing found, attempting automatic parsing
     
