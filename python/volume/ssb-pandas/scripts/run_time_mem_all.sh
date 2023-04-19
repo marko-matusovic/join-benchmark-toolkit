@@ -11,4 +11,5 @@
 ./scripts/run_time_mem.sh job/2a 5
 ./scripts/run_time_mem.sh job/20a 12
 ./scripts/run_time_mem.sh job/22a 16
+./scripts/run_time_mem.sh job/28a 23
 ./scripts/run_time_mem.sh job/30a 21
