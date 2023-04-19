@@ -1,6 +1,15 @@
 {
     "configurations": [
         {
+            "name": "PLT JT job/22a 0",
+            "type": "python",
+            "request": "launch",
+            "program": "benchmark/util/plot_join_times_of_nth_ordering.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": ["job/22a", "0", "-e"]
+        },
+        {
             "name": "TM SSB Q41",
             "type": "python",
             "request": "launch",
