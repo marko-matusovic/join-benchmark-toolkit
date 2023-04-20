@@ -8,7 +8,7 @@ if __name__ == '__main__':
     
     # 'join_order;execution_tree;time_total;mem_peak;time_load;mem_load;time_filters;mem_filters;time_joins;mem_joins'
     df = pd.read_csv(f"results/time_mem/{query}.csv", sep=';')
-    df[df['join_order'].str.startswith("//") == False]
+    df = df[df['join_order'].str.startswith("//") == False]
     
     grouped = df.groupby(['join_order'])
     
@@ -21,6 +21,10 @@ if __name__ == '__main__':
     mem_mean = np.array(grouped.mean()['mem_peak'])
     mem_max = np.array(grouped.max()['mem_peak'])
     mem_err = [mem_mean - mem_min, mem_max - mem_mean]
+    
+    plt.title(f'Execution Time vs Peak Memory Use\nper Random Join Orders of {query}')
+    plt.xlabel('time [s]')
+    plt.ylabel('memory [B]')
     
     if '-e' in sys.argv:
         plt.errorbar(x=times_mean, y=mem_mean, xerr=times_err, yerr=mem_err, fmt='o')

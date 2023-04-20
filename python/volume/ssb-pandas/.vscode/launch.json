@@ -1,13 +1,40 @@
 {
     "configurations": [
         {
-            "name": "PLT JT job/22a 0",
+            "name": "PLT TStart job/22a",
             "type": "python",
             "request": "launch",
-            "program": "benchmark/util/plot_join_times_of_nth_ordering.py",
+            "program": "benchmark/util/plot_time_start_dist.py",
             "console": "integratedTerminal",
             "justMyCode": true,
-            "args": ["job/22a", "0", "-e"]
+            "args": ["job/22a"]
+        },
+        {
+            "name": "PLT TvM job/22a",
+            "type": "python",
+            "request": "launch",
+            "program": "benchmark/util/plot_time_vs_mem.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": ["job/22a"]
+        },
+        {
+            "name": "PLT TOrd job/22a",
+            "type": "python",
+            "request": "launch",
+            "program": "benchmark/util/plot_time_for_order.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": ["job/22a", "-e", "-m"]
+        },
+        {
+            "name": "PLT TPos job/22a",
+            "type": "python",
+            "request": "launch",
+            "program": "benchmark/util/plot_time_for_join_pos.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": ["job/22a", "-e"]
         },
         {
             "name": "TM SSB Q41",
