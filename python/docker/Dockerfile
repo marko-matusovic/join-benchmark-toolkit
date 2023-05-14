@@ -19,9 +19,21 @@ RUN conda init bash
 RUN conda update conda
 # RUN conda config --set channel_priority strict
 
-RUN conda install Cython matplotlib numpy pandas plotly scipy setuptools tqdm
-RUN conda install -c intel mkl
-RUN conda install sqlparse
+# With version to make build faster
+RUN conda install -c rapidsai -c conda-forge -c nvidia -c intel \
+    python=3.10.11 \
+    cudf=23.04.01 \
+    cudatoolkit=11.8.0 \
+    Cython=0.29.33 \
+    matplotlib=3.7.1 \
+    numpy=1.23.5 \
+    pandas=1.5.3 \
+    plotly=5.9.0 \
+    scipy=1.10.0 \
+    setuptools=65.6.3 \
+    tqdm=4.65.0 \
+    sqlparse=0.4.3 \
+    mkl=2021.4.0
 
 # # NVIDIA Nsight Systems 2020.2.1
 # # from this guide
