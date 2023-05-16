@@ -69,5 +69,8 @@ RUN  echo "deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu18
          nsight-compute-2020.1.0 && \
      rm -rf /var/lib/apt/lists/*
 
+RUN apt update
+RUN apt install bc
+
 # RUN WITH
 # docker build -t mm_python_img .

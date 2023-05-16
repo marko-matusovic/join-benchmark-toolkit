@@ -4,12 +4,14 @@ echo "// Timestamp "`date +"%Y-%m-%dT%H:%M:%S"` >> "results/external_log/"$1".cs
 while read p; do
     for i in {1..5}   # you can also use {0..9}
     do
-        start=`date +%s`
-        python3 main.py run $1 $p
-        end=`date +%s`
-
-        runtime=$((end-start))
+        start=$(date +%s.%N)
         
-        echo $p";"$runtime";" >> "results/external_log/"$1".csv"
+        python main.py run $1 $p
+        
+        runtime=$(echo "$(date +%s.%N) - $start" | bc)
+        
+        log="["$p"];"$runtime";"
+        echo $log
+        echo $log >> "results/external_log/"$1".csv"
     done
 done <scripts/perms/$2.csv

@@ -101,8 +101,26 @@ class Real_Instructions:
 
     # PRIVATE
     def like_index(self, col, value):
-        reg = f'^{value.replace("%", ".*")}$'
-        return col.str.contains(reg)
+        # disallow regex expresions
+        value = value.replace('\\','\\\\')
+        value = value.replace('.','\\.')
+        value = value.replace('(','\\(')
+        value = value.replace(')','\\)')
+        value = value.replace('[','\\[')
+        value = value.replace(']','\\]')
+        value = value.replace('|','\\|')
+        value = value.replace('{','\\{')
+        value = value.replace('}','\\}')
+        value = value.replace('*','\\*')
+        value = value.replace('+','\\+')
+        value = value.replace('?','\\?')
+        value = value.replace('^','\\^')
+        value = value.replace('$','\\$')
+        value = value.replace('/','\\/')
+        value = value.replace('-','\\-')
+        # allow wildcards
+        value = value.replace("%",".*")
+        return col.str.contains(f'^{value}$')
 
     # PRIVATE
     def find_names(self, dfs, field_name):
