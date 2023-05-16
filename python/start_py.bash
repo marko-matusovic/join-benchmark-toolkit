@@ -7,4 +7,16 @@ else
     echo "Creating new container"
 fi
 
-./make_py.bash $ext
+docker run \
+    --name mm_python_$ext \
+    -ti \
+    --memory 32GB \
+    --privileged \
+    --runtime=nvidia \
+    -e NVIDIA_VISIBLE_DEVICES=0 \
+    -d --gpus '"device=0"' \
+    -v "/workspace/mmatusovic/projects/python/join-benchmark:/app/join-benchmark" \
+    mm_python_img
+
+docker exec -it mm_python_$ext bash
+
