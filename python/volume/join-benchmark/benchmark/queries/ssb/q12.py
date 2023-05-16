@@ -1,7 +1,7 @@
 from typing import Callable
 from pandas import DataFrame
 from benchmark.operations.approximations import Approx_Instructions
-from benchmark.operations.instructions import Instructions
+from benchmark.operations.instructions import Real_Instructions
 
 '''
 # QUERY

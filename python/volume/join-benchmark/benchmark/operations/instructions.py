@@ -1,7 +1,7 @@
 from benchmark.tools.load import load_tables
 
 
-class Instructions:
+class Real_Instructions:
     def from_tables(self, db_name, tables, aliases=[]):
         def load():
             return load_tables(db_name, tables, aliases)

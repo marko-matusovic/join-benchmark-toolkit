@@ -1,13 +1,13 @@
 import time
 import tracemalloc
-from benchmark.operations.get import get_instructions
+from benchmark.operations.get import get_real_instructions
 
 
 def main(db_set, query, perm):
     tracemalloc.start()
     start_time = time.time()
     
-    instructions = get_instructions(db_set, query)
+    instructions = get_real_instructions(db_set, query)
 
     dfs = instructions[0][0]()
     

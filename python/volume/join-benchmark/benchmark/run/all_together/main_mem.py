@@ -3,7 +3,7 @@ import itertools
 import numpy as np
 import time
 import tracemalloc
-from benchmark.operations.get import get_approx_instructs, get_instructions
+from benchmark.operations.get import get_approx_instructs, get_real_instructions
 from benchmark.util import get_stats, print_write
 
 def main(query):
@@ -11,7 +11,7 @@ def main(query):
     # print_write(f'Started running benchmark for query {query}.', out_file)
     print(f'Started running benchmark for query {query}.')
     
-    instructions = get_instructions(query)
+    instructions = get_real_instructions(query)
     approx_ins = get_approx_instructs(query)
 
     jobs = np.array([j for j in itertools.permutations(range(len(instructions[1])))])

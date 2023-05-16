@@ -1,6 +1,6 @@
 import time
 from benchmark.operations.get import get_approx_instructs
-from benchmark.operations.get import get_instructions
+from benchmark.operations.get import get_real_instructions
 import pandas as pd
 from benchmark.util import clone, get_stats, print_write
 
@@ -12,7 +12,7 @@ def main(query):
     
     stats = pd.read_csv(in_file, sep=";")
     
-    instructions = get_instructions(query)
+    instructions = get_real_instructions(query)
     approx_ins = get_approx_instructs(query)
 
     run_all_jobs(instructions, approx_ins, out_file, stats)
