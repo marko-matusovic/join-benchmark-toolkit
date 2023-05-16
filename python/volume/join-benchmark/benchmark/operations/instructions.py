@@ -95,7 +95,7 @@ class Real_Instructions:
             table_name = self.find_names(dfs, field_name)
             table = dfs[table_name]
             del dfs[table_name]
-            index = self.like_index(table[field_name], value) == False
+            index = self.like_index(table[field_name], value) != True
             dfs[f'({table_name}[s]{field_name}[not-like]{value})'] = table.loc[index]
         return filter
 

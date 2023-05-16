@@ -14,4 +14,12 @@ def main(db_set, query, perm):
     for p in perm:
         instructions[2][p](dfs)
 
-    print(f'Completed succesfully')
+    if len(dfs) == 1:
+        print('Completed succesfully')
+        tree = list(dfs.keys())[0]
+        print(f'Tree: {tree}')
+        print(f'# of rows: {len(dfs[tree])}')
+        dfs[tree].to_csv('result.csv')
+    else:
+        print('Failed execution')
+        exit(1)
