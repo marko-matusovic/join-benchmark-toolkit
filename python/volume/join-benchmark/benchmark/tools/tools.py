@@ -1,8 +1,4 @@
-from pandas import DataFrame
-import pandas
-
-
-def clone(dfs: dict[str, DataFrame]) -> dict[str, DataFrame]:
+def clone(dfs):
     return {key: dfs[key].copy() for key in dfs}
 
 def print_write(msg, out_file):

@@ -1,8 +1,8 @@
 import time
 from benchmark.operations.get import get_approx_instructs
 from benchmark.operations.get import get_real_instructions
-import pandas as pd
 from benchmark.util import clone, get_stats, print_write
+from pandas import read_csv
 
 def main(query):
     in_file = open(f"results/{query}.csv", "r")
@@ -10,7 +10,7 @@ def main(query):
     # print_write(f'Started running benchmark for query {query}.', out_file)
     print(f'Started running benchmark for query {query}.')
     
-    stats = pd.read_csv(in_file, sep=";")
+    stats = read_csv(in_file, sep=";")
     
     instructions = get_real_instructions(query)
     approx_ins = get_approx_instructs(query)

@@ -1,13 +1,14 @@
 import numpy as np
-import pandas as pd
 import matplotlib.pyplot as plt
 import sys
+
+from pandas import read_csv
 
 def main():
     query = sys.argv[1]
     
     # 'join_order;execution_tree;time_total;mem_peak;time_load;mem_load;time_filters;mem_filters;time_joins;mem_joins'
-    df = pd.read_csv(f"results/time_mem/{query}.csv", sep=';')
+    df = read_csv(f"results/time_mem/{query}.csv", sep=';')
     df = df[df['join_order'].str.startswith("//") == False]
     
     join_count = df['join_order'][1][1:-1].count(', ') + 1
