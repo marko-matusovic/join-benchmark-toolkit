@@ -3,6 +3,7 @@ import sys
 
 from benchmark.run.individual import main_time_mem
 from benchmark.run.individual import main_run
+from benchmark.engine.engine import set_engine
 
 # This program accepts a number of positional arguments. 
 # The first argument is the name of the program to run, it can be one of the following:
@@ -14,6 +15,11 @@ from benchmark.run.individual import main_run
 #     2nd arg: db_set/query 
 #     3rd arg: order of joins
 if __name__ == "__main__":
+    if '--gpu' in [a.lower() for a in sys.argv]:
+        set_engine('cudf')
+    else:
+        set_engine('pandas')
+        
     run_config = sys.argv[1]
     if run_config == 'run':
         [db_set, query] = sys.argv[2].split("/")

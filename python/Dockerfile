@@ -1,4 +1,4 @@
-FROM nvidia/cuda:11.8.0-devel-ubuntu20.04
+FROM nvidia/cuda:12.1.1-devel-ubuntu20.04
 
 # Install base utilities
 RUN apt-get update && \
@@ -7,33 +7,25 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Install miniconda
-ENV CONDA_DIR /opt/conda
-RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh && \
-     /bin/bash ~/miniconda.sh -b -p /opt/conda
+# Install more base utilities
+RUN apt update && \
+    apt install bc
 
-# Put conda in path so we can use conda activate
-ENV PATH=$CONDA_DIR/bin:$PATH
+# To avoid interactions install tzdata beforehand
+ENV TZ=Europe/Amsterdam
+ENV DEBIAN_FRONTEND=noninteractive
+RUN echo "Europe/Amsterdam" > /etc/timezone
+RUN apt-get install -y tzdata
 
-RUN conda init bash
-RUN conda update conda
-# RUN conda config --set channel_priority strict
-
-# With version to make build faster
-RUN conda install -c rapidsai -c conda-forge -c nvidia -c intel \
-    python=3.10.11 \
-    cudf=23.04.01 \
-    cudatoolkit=11.8.0 \
-    Cython=0.29.33 \
-    matplotlib=3.7.1 \
-    numpy=1.23.5 \
-    pandas=1.5.3 \
-    plotly=5.9.0 \
-    scipy=1.10.0 \
-    setuptools=65.6.3 \
-    tqdm=4.65.0 \
-    sqlparse=0.4.3 \
-    mkl=2021.4.0
+# Manual install Nsight compute (Use this instead the boys below, because this works. Don't ask me why the others don't.)
+# In theory most of this should come pre-installed in the img this file is based on, but it doesn't contain nsight compute, this adds it.
+RUN wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/cuda-ubuntu2004.pin \
+    && mv cuda-ubuntu2004.pin /etc/apt/preferences.d/cuda-repository-pin-600 \
+    && wget https://developer.download.nvidia.com/compute/cuda/12.1.1/local_installers/cuda-repo-ubuntu2004-12-1-local_12.1.1-530.30.02-1_amd64.deb \
+    && dpkg -i cuda-repo-ubuntu2004-12-1-local_12.1.1-530.30.02-1_amd64.deb \
+    && cp /var/cuda-repo-ubuntu2004-12-1-local/cuda-*-keyring.gpg /usr/share/keyrings/ \
+    && apt-get update \
+    && apt-get -y install cuda
 
 # # NVIDIA Nsight Systems 2020.2.1
 # # from this guide
@@ -52,35 +44,47 @@ RUN conda install -c rapidsai -c conda-forge -c nvidia -c intel \
 #         nsight-systems-2020.2.1 && \
 #     rm -rf /var/lib/apt/lists/* 
 
-# Nsight Compute 
-# from guide
-# https://developer.nvidia.com/blog/using-nsight-compute-in-containers/
-RUN apt-get update -y && \
-     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-         apt-transport-https \
-         ca-certificates \
-         gnupg \
-         wget && \
-     rm -rf /var/lib/apt/lists/*
-RUN  echo "deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64 /" > /etc/apt/sources.list.d/cuda.list && \
-     wget -qO - https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/7fa2af80.pub | apt-key add - && \
-         apt-get update -y && \
-     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-         nsight-compute-2020.1.0 && \
-     rm -rf /var/lib/apt/lists/*
+# # Nsight Compute 
+# # from guide
+# # https://developer.nvidia.com/blog/using-nsight-compute-in-containers/
+# RUN apt-get update -y && \
+#      DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+#          apt-transport-https \
+#          ca-certificates \
+#          gnupg \
+#          wget && \
+#      rm -rf /var/lib/apt/lists/*
+# RUN  echo "deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64 /" > /etc/apt/sources.list.d/cuda.list && \
+#      wget -qO - https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/7fa2af80.pub | apt-key add - && \
+#          apt-get update -y && \
+#      DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+#          nsight-compute-2020.1.0 && \
+#      rm -rf /var/lib/apt/lists/*
 
-RUN apt update
-RUN apt install bc
+# Install miniconda
+ENV CONDA_DIR /opt/conda
+RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh && \
+     /bin/bash ~/miniconda.sh -b -p /opt/conda
 
-# # Keeps Python from generating .pyc files in the container
-# ENV PYTHONDONTWRITEBYTECODE=1
+# Put conda in path so we can use conda activate
+ENV PATH=$CONDA_DIR/bin:$PATH
 
-# # Turns off buffering for easier container logging
-# ENV PYTHONUNBUFFERED=1
+RUN conda init bash
+RUN conda update conda
+# RUN conda config --set channel_priority strict
 
-# WORKDIR /app
-
-# Creates a non-root user with an explicit UID and adds permission to access the /app folder
-# For more info, please refer to https://aka.ms/vscode-docker-python-configure-containers
-# RUN adduser -u 5678 --disabled-password --gecos "" appuser && chmod -R  appuser /app
-# USER appuser
+# With version to make build faster
+RUN conda install -c rapidsai -c conda-forge -c nvidia -c intel \
+    python=3.10.11 \
+    cudf \
+    cudatoolkit \
+    Cython \
+    matplotlib \
+    numpy \
+    pandas \
+    plotly \
+    scipy \
+    setuptools \
+    tqdm \
+    sqlparse \
+    mkl
