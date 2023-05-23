@@ -28,7 +28,7 @@ docker run \
     -d --gpus '"device=0"' \
     -v "/workspace/mmatusovic/heavyai-storage/$db_volume:/var/lib/heavyai" \
     -p 6273-6278:6273-6278 \
-    mm_heavydb_profiler:latest
+    mmatusovic/heavydb_profiler:latest
 
 echo 'Entering bash...'
 docker exec -it mm_heavydb bash

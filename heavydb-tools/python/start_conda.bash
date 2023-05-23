@@ -8,4 +8,4 @@ docker run \
     --name mm_conda_heavydb \
     --network=mm_heavydb_network \
     -v /workspace/mmatusovic/projects/heavydb-tools/python/scripts:/root/scripts \
-    -i -t mm_conda_heavydb_img /bin/bash
+    -i -t mmatusovic/conda_heavydb /bin/bash

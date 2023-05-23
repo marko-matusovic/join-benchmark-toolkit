@@ -1,3 +1,5 @@
+# mmatusovic/heavydb_profiler IMAGE
+
 FROM heavyai/core-os-cuda:v6.4.0
 
 # NVIDIA Nsight Systems 2020.2.1

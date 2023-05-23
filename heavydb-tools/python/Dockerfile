@@ -1,3 +1,5 @@
+# mmatusovic/conda_heavydb IMAGE
+
 # FROM continuumio/miniconda3:latest
 FROM continuumio/miniconda3:master
 

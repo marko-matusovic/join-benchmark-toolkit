@@ -1,3 +1,5 @@
+# This script runs a benchmark for INTERNAL measuring with DETAILED time stats
+# 
 # 1st arg: data-set/query
 # 2nd arg: number of joins (permutations read from file with # perms)
 # 3rd arg: additional args to pass on to python (usually --gpu to run on GPU)
