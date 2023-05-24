@@ -2,13 +2,13 @@ from math import ceil, floor
 import numpy as np
 import matplotlib.pyplot as plt
 import sys
-from benchmark.engine.engine import get_engine
+import pandas as pd
 
 if __name__ == '__main__':
     query = sys.argv[1]
     
     # 'join_order;execution_tree;time_total;mem_peak;time_load;mem_load;time_filters;mem_filters;time_joins;mem_joins'
-    df = get_engine().read_csv(f"results/time_mem/{query}.csv", sep=';')
+    df = pd.read_csv(f"results/time_mem/{query}.csv", sep=';')
     df = df[df['join_order'].str.startswith("//") == False]
     
     b_min = floor(df['time_filters'].min())

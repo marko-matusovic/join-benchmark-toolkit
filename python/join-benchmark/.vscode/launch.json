@@ -37,6 +37,15 @@
             "args": ["job/22a", "-e"]
         },
         {
+            "name": "PLT GPU TvM job/22a",
+            "type": "python",
+            "request": "launch",
+            "program": "benchmark/util/plot_gpu_time_vs_mem.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": ["job/22a", "-e"]
+        },
+        {
             "name": "TM SSB Q41",
             "type": "python",
             "request": "launch",
