@@ -5,7 +5,12 @@
 
 echo "Benchmarking $1 ..."
 echo "// Timestamp "`date +"%Y-%m-%dT%H:%M:%S"` >> "results/external_log/gpu/"$1".csv"
-echo "join_order;times..." >> "results/external_log/gpu/"$1".csv"
+HEAD="join_order"
+for i in $(seq $N_REPEAT)
+do
+    HEAD=$HEAD";time_"$1
+done
+echo $HEAD >> "results/external_log/gpu/"$1".csv"
 
 QUERY=$1
 NUM_JOINS=$2
