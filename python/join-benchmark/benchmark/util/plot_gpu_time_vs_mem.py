@@ -3,6 +3,9 @@ import matplotlib.pyplot as plt
 import sys
 import pandas as pd
 
+sys.path.append( 'benchmark' )
+from tools.pareto import find_pareto_front
+
 if __name__ == '__main__':
     query = sys.argv[1]
     
@@ -60,55 +63,23 @@ if __name__ == '__main__':
                 }
             }
         except:
+            del stats[perm]
             break
     
-    # Read Sum
-    plt.title(f'Execution Time vs Total DRAM Read\nper Random Join Orders of {query}')
-    plt.xlabel('time [s]')
-    plt.ylabel('memory [B]')
     
-    plt.scatter( \
-        x=[stats[perm]["time"]['mean'] for perm in stats], \
-        y=[stats[perm]["memory"]['read']['sum'] for perm in stats] \
-    )
-    
-    plt.savefig(f'results/figs/gpu/TvM/{query}/time-mean-vs-mem-read-sum.png')
-    
-    # Read Max
-    plt.figure()
-    plt.title(f'Execution Time vs Max DRAM Read\nper Random Join Orders of {query}')
-    plt.xlabel('time [s]')
-    plt.ylabel('memory [B]')
-    
-    plt.scatter( \
-        x=[stats[perm]["time"]['mean'] for perm in stats], \
-        y=[stats[perm]["memory"]['read']['max'] for perm in stats] \
-    )
-    
-    plt.savefig(f'results/figs/gpu/TvM/{query}/time-mean-vs-mem-read-max.png')
-    
-    # Write Sum
-    plt.figure()
-    plt.title(f'Execution Time vs Total DRAM Write\nper Random Join Orders of {query}')
-    plt.xlabel('time [s]')
-    plt.ylabel('memory [B]')
-    
-    plt.scatter( \
-        x=[stats[perm]["time"]['mean'] for perm in stats], \
-        y=[stats[perm]["memory"]['write']['sum'] for perm in stats] \
-    )
-    
-    plt.savefig(f'results/figs/gpu/TvM/{query}/time-mean-vs-mem-write-sum.png')
-    
-    # Write Max
-    plt.figure()
-    plt.title(f'Execution Time vs Max DRAM Write\nper Random Join Orders of {query}')
-    plt.xlabel('time [s]')
-    plt.ylabel('memory [B]')
-    
-    plt.scatter( \
-        x=[stats[perm]["time"]['mean'] for perm in stats], \
-        y=[stats[perm]["memory"]['write']['max'] for perm in stats] \
-    )
-    
-    plt.savefig(f'results/figs/gpu/TvM/{query}/time-mean-vs-mem-write-max.png')
+    for rw in ['read', 'write']:
+        for item in ['sum', 'max']:
+            plt.figure(figsize=(8,6))
+            plt.title(f'Execution Time vs DRAM {rw.capitalize()} {item.capitalize()}\nper Random Join Orders of {query}')
+            plt.xlabel('time [s]')
+            plt.ylabel('memory [B]')
+            
+            points = np.array([[stats[perm]["time"]['mean'], stats[perm]["memory"][rw][item]] for perm in stats])
+            front_mask = find_pareto_front(points, return_mask=True)
+            plt.scatter(x=points.T[0], y=points.T[1], label='All Points')
+            front_points = points[front_mask == True]
+            plt.scatter(x=front_points.T[0], y=front_points.T[1], label='Pareto-Front')
+            
+            plt.legend()
+            
+            plt.savefig(f'results/figs/gpu/TvM/{query}/time-mean-vs-mem-{rw}-{item}.png')
