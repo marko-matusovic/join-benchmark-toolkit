@@ -43,7 +43,16 @@
             "program": "benchmark/util/plot_gpu_time_vs_mem.py",
             "console": "integratedTerminal",
             "justMyCode": true,
-            "args": ["job/22a", "-e"]
+            "args": ["job/22a"]
+        },
+        {
+            "name": "PLT Comp Time job/22a",
+            "type": "python",
+            "request": "launch",
+            "program": "benchmark/util/plot_compare_time.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": ["job/22a"]
         },
         {
             "name": "TM SSB Q41",
@@ -125,6 +134,24 @@
             "console": "integratedTerminal",
             "justMyCode": true,
             "args": ["run", "job/30a", "0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20", "--gpu"]
+        },
+        {
+            "name": "COST TM JOB Q28A",
+            "type": "python",
+            "request": "launch",
+            "program": "main.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": ["approx_time_mem", "job/28a", "5,13,22,4,15,19,14,1,9,10,16,2,0,12,3,7,8,11,18,21,6,20,17"]
+        },
+        {
+            "name": "OPTIM NSGA-II JOB Q22A",
+            "type": "python",
+            "request": "launch",
+            "program": "main.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": ["optim_nsga_ii", "job/22a"]
         },
     ]
 }

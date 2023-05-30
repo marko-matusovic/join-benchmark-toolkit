@@ -31,3 +31,9 @@ def get_schema(db_name):
             "title": ["id", "title", "imdb_index", "kind_id", "production_year", "imdb_id", "phonetic_code", "episode_of_id", "season_nr", "episode_nr", "series_years", "md5sum",],
         }
     }[db_name]
+
+def rename_schema(schema, tables, labels):
+    return {
+        label: [ f'{label}.{col}' for col in schema[table] ]
+        for (table, label) in zip(tables, labels)
+    }

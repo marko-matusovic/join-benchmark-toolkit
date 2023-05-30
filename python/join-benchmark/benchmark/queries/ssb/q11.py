@@ -1,5 +1,5 @@
 from typing import Callable
-from benchmark.operations.approximations import Approx_Instructions
+from benchmark.operations.time_approximations import Approx_Instructions
 from benchmark.operations.instructions import Real_Instructions
 '''
 # QUERY

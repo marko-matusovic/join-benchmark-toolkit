@@ -1,10 +1,10 @@
-from benchmark.tools.load import load_tables
+from benchmark.tools.load import load_named_tables
 
 
 class Real_Instructions:
     def from_tables(self, db_name, tables, aliases=[]):
         def load():
-            return load_tables(db_name, tables, aliases)
+            return load_named_tables(db_name, tables, aliases)
         return load
 
     def join_fields(self, field_name_1, field_name_2):

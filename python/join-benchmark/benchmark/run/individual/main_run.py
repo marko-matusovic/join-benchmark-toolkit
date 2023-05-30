@@ -15,7 +15,7 @@ def main(db_set, query, perm):
         instructions[2][p](dfs)
 
     if len(dfs) == 1:
-        print('Completed succesfully')
+        print('Completed successfully')
         tree = list(dfs.keys())[0]
         print(f'Tree: {tree}')
         print(f'# of rows: {len(dfs[tree])}')
