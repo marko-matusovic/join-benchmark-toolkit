@@ -1,3 +1,4 @@
+import time
 import numpy as np
 from pymoo.core.problem import ElementwiseProblem
 from pymoo.algorithms.moo.nsga2 import NSGA2
@@ -6,7 +7,7 @@ from pymoo.visualization.scatter import Scatter
 from pymoo.operators.sampling.rnd import PermutationRandomSampling
 from pymoo.operators.crossover.ox import OrderCrossover
 from pymoo.operators.mutation.inversion import InversionMutation
-from pymoo.problems.single.traveling_salesman import create_random_tsp_problem
+from pymoo.termination.default import DefaultMultiObjectiveTermination
 
 from benchmark.operations.get import get_time_mem_approx_instructions
 
@@ -49,7 +50,7 @@ class Join_Order_Problem(ElementwiseProblem):
         xu = np.ones(n_joins) * (n_joins - 1)
         super().__init__(elementwise=True, n_var=n_joins, n_obj=2, n_ieq_constr=0, n_eq_constr=0, xl=xl, xu=xu)
     
-    def _evaluate(self, x, out):
+    def _evaluate(self, x, out, *args, **kwargs):
         out['F'] = self.cost_model.evaluate(x)
 
 def main(db_name, query_name):
@@ -63,12 +64,15 @@ def main(db_name, query_name):
         eliminate_duplicates=True
     )
     
-    result = minimize(problem, algorithm, verbose=True)
+    result = minimize(problem, algorithm, verbose=False)
     
-    plot = Scatter()
-    plot.add(problem.pareto_front(), plot_type="line", color="black", alpha=0.7)
-    plot.add(result.F, facecolor="none", edgecolor="red")
-    plot.show()
+    # plot = Scatter()
+    # plot.add(problem.pareto_front(), plot_type="line", color="black", alpha=0.7)
+    # plot.add(result.F, facecolor="none", edgecolor="red")
+    # plot.show()
     
-    print(1)
-    
+    with open(f'results/optimization/{db_name}/{query_name}.csv', 'a') as file:
+        file.write(f'\\\\Timestamp {time.ctime()}\n')
+        file.write('permutation;time_cost;memory_sum_cost\n')
+        for (perm, [t, m]) in zip(result.X, result.F):
+            file.write(f'{",".join([p.__str__() for p in perm])};{t};{m}\n')

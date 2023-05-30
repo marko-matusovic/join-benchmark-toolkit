@@ -46,10 +46,28 @@
             "args": ["job/22a"]
         },
         {
-            "name": "PLT Comp Time job/22a",
+            "name": "PLT Comp job/22a bin size",
             "type": "python",
             "request": "launch",
-            "program": "benchmark/util/plot_compare_time.py",
+            "program": "benchmark/util/plot_compare.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": ["job/22a", "-m", "bin_size", "-b", "10"]
+        },
+        {
+            "name": "PLT Comp job/22a bin width",
+            "type": "python",
+            "request": "launch",
+            "program": "benchmark/util/plot_compare.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": ["job/22a"]
+        },
+        {
+            "name": "PLT OPT Search Space job/22a",
+            "type": "python",
+            "request": "launch",
+            "program": "benchmark/util/plot_optim_time_vs_mem_front.py",
             "console": "integratedTerminal",
             "justMyCode": true,
             "args": ["job/22a"]
