@@ -1,5 +1,6 @@
 
 from typing import Any
+from benchmark.operations.operations import Operations
 from benchmark.tools.schema import get_schema
 
 
@@ -11,10 +12,11 @@ TIME_JOIN_POW = 1.0
 TIME_COMP = TIME_CONSTANT * 100.0
 TIME_COMP_POW = 1.0
 
-class Approx_Instructions(Operations[Any,Any]):
+TData = dict[str, Any]
+
+class Approx_Instructions(Operations[TData,float]):
     
-    
-    def from_tables(self, db_name, tables, aliases=[]):
+    def from_tables(self, db_name:str, tables:list[str], aliases:list[str]=[]):
         if len(aliases) < len(tables):
             aliases = tables
         schema = get_schema(db_name)
@@ -22,10 +24,10 @@ class Approx_Instructions(Operations[Any,Any]):
             return {aliases[tables.index(key)]: schema[key] for key in schema if key in tables}
         return from_tbls
 
-    def join_fields(self, field_1, field_2):
-        def join(data):
-            name_1 = self.find_table(data, field_1)
-            name_2 = self.find_table(data, field_2)
+    def join_fields(self, field_name_1:str, field_name_2:str):
+        def join(data:TData) -> float:
+            name_1 = self.find_table(data, field_name_1)
+            name_2 = self.find_table(data, field_name_2)
 
             res = f'({name_1}X{name_2})'
             data["schema"][res] = data["schema"][name_1] + data["schema"][name_2]
@@ -47,7 +49,7 @@ class Approx_Instructions(Operations[Any,Any]):
             return data["times"][res]
         return join
     
-    def filter_eq(self, data, field, values):
+    def filter_eq(self, data:TData, field:str, values:list[Any]):
         name = self.find_table(data, field)
         res = f'({name}𝜎{field}={values})'
         data["schema"][res] = data["schema"][name]
@@ -64,7 +66,7 @@ class Approx_Instructions(Operations[Any,Any]):
             
         return data["times"][res]
                 
-    def filter_comp(self, data, field, value):
+    def filter_comp(self, data:TData, field:str, value:Any):
         name = self.find_table(data, field)
         res = f'({name}𝜎{field}<>)'
         data["schema"][res] = data["schema"][name]
@@ -81,33 +83,33 @@ class Approx_Instructions(Operations[Any,Any]):
             
         return data["times"][res]
 
-    def filter_field_eq(self, field, values):
-        def filter(data):
-            return self.filter_eq(data, field, values)
+    def filter_field_eq(self, field_name:str, values:list[Any]):
+        def filter(data:TData):
+            return self.filter_eq(data, field_name, values)
         return filter
 
-    def filter_field_ge(self, field, value):
-        def filter(data):
-            return self.filter_comp(data, field, value)
+    def filter_field_ge(self, field_name:str, value:Any):
+        def filter(data:TData):
+            return self.filter_comp(data, field_name, value)
         return filter
 
-    def filter_field_gt(self, field, value):
-        def filter(data):
-            return self.filter_comp(data, field, value)
+    def filter_field_gt(self, field_name:str, value:Any):
+        def filter(data:TData):
+            return self.filter_comp(data, field_name, value)
         return filter
 
-    def filter_field_le(self, field, value):
-        def filter(data):
-            return self.filter_comp(data, field, value)
+    def filter_field_le(self, field_name:str, value:Any):
+        def filter(data:TData):
+            return self.filter_comp(data, field_name, value)
         return filter
 
-    def filter_field_lt(self, field, value):
-        def filter(data):
-            return self.filter_comp(data, field, value)
+    def filter_field_lt(self, field_name:str, value:Any):
+        def filter(data:TData):
+            return self.filter_comp(data, field_name, value)
         return filter
     
-    def find_table(self, data, field):
+    def find_table(self, data:TData, field_name:str) -> str:
         for name in data["schema"]:
-            if field in data["schema"][name]:
+            if field_name in data["schema"][name]:
                 return name
-        return None
+        exit(1)
