@@ -14,10 +14,10 @@ def main(query):
     instructions = get_real_instructions(query)
     approx_ins = get_approx_instructs(query)
 
-    jobs = np.array([j for j in itertools.permutations(range(len(instructions[1])))])
+    jobs = np.array([j for j in itertools.permutations(range(len(instructions.s2_filters)))])
     np.random.shuffle(jobs)
-    # print_write(f'Generated {factorial(len(instructions[1]))} permutations.', out_file)
-    print(f'Generated {factorial(len(instructions[1]))} permutations.')
+    # print_write(f'Generated {factorial(len(instructions.s2_filters))} permutations.', out_file)
+    print(f'Generated {factorial(len(instructions.s2_filters))} permutations.')
     
     run_all_jobs(instructions, jobs, out_file)
     
@@ -31,12 +31,12 @@ def run_all_jobs(instructions, jobs, out_file):
         tracemalloc.start()
         cur_mem = tracemalloc.get_traced_memory()[0]
         
-        dfs = instructions[0][0]()
+        dfs = instructions.s1_init()
         
         start_time = time.time()
         
         for ins in job:
-            instructions[1][ins](dfs)
+            instructions.s2_filters[ins](dfs)
         
         actual_time = time.time() - start_time
         actual_mem_pk = tracemalloc.get_traced_memory()[1] - cur_mem

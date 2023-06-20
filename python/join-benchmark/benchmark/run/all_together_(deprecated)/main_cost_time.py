@@ -14,10 +14,10 @@ def main(query):
     instructions = get_real_instructions(query)
     approx_ins = get_approx_instructs(query)
 
-    jobs = np.array([j for j in itertools.permutations(range(len(instructions[1])))])
+    jobs = np.array([j for j in itertools.permutations(range(len(instructions.s2_filters)))])
     np.random.shuffle(jobs)
-    # print_write(f'Generated {factorial(len(instructions[1]))} permutations.', out_file)
-    print(f'Generated {factorial(len(instructions[1]))} permutations.')
+    # print_write(f'Generated {factorial(len(instructions.s2_filters))} permutations.', out_file)
+    print(f'Generated {factorial(len(instructions.s2_filters))} permutations.')
     
     permutations = calc_permutations(instructions, jobs)
     
@@ -30,7 +30,7 @@ def main(query):
     print(f'Done')
     
 def calc_permutations(instructions, jobs):
-    dfs = instructions[0][0]()
+    dfs = instructions.s1_init()
     for key in dfs:
         dfs[key].drop(dfs[key].index, inplace=True)
     
@@ -38,7 +38,7 @@ def calc_permutations(instructions, jobs):
     for job in jobs:
         copy = clone(dfs)
         for ins in job:
-            instructions[1][ins](copy)
+            instructions.s2_filters[ins](copy)
         
         end_tbl = list(copy.keys())[0]
         if end_tbl not in permutations:
@@ -49,7 +49,7 @@ def calc_permutations(instructions, jobs):
 
 def run_all_jobs(instructions, approx_ins, jobs, out_file):
     
-    dfs = instructions[0][0]()
+    dfs = instructions.s1_init()
     approx_data = {
         "stats": {key: get_stats(dfs[key]) for key in dfs},
         "times": {}
@@ -59,7 +59,7 @@ def run_all_jobs(instructions, approx_ins, jobs, out_file):
     print(f'permutation;execution_tree;approx_time;actual_time')
     for job in jobs:
         
-        dfs = instructions[0][0]()
+        dfs = instructions.s1_init()
         approx_data["schema"] = approx_ins[0][0]()
         
         print("approx: ", end="")
@@ -74,7 +74,7 @@ def run_all_jobs(instructions, approx_ins, jobs, out_file):
         print("actual: ", end="")
         for ins in job:
             part_time = time.time()
-            instructions[1][ins](dfs)
+            instructions.s2_filters[ins](dfs)
             t = time.time() - part_time
             print(f'I[{ins}]={t:5f}', end=", ")
         print()

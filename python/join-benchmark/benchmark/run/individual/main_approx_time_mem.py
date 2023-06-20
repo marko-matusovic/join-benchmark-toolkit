@@ -1,15 +1,15 @@
 from benchmark.operations.get import get_time_mem_approx_instructions
 
-def main(db_set, query, perm):
+def main(db_set:str, query:str, perm:list[int]):
     print(f'Running {db_set}/{query} with perm {perm}')
     
     instructions = get_time_mem_approx_instructions(db_set, query)
 
     # Load and initialize
-    data = instructions[0][0]()
+    data = instructions.s1_init()
     
     # Apply filters
-    for instruction in instructions[1]:
+    for instruction in instructions.s2_filters:
         instruction(data)
 
     t_total = 0
@@ -17,7 +17,7 @@ def main(db_set, query, perm):
     m_max = 0
     # Approximate joins
     for p in perm:
-        (t_cost, m_cost) = instructions[2][p](data)
+        (t_cost, m_cost) = instructions.s3_joins[p](data)
         t_total += t_cost
         m_sum += m_cost
         m_max = max(m_max, m_cost)

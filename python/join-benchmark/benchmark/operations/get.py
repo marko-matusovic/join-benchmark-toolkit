@@ -12,23 +12,28 @@ from benchmark.tools.parser import parse
 I = TypeVar('I')
 O = TypeVar('O')
 
-class QueryInstructions(NamedTuple, Generic[I,O]):
+
+class QueryInstructions(NamedTuple, Generic[I, O]):
     s1_init: Callable[[], I]
     s2_filters: list[Callable[[I], Any]]
     s3_joins: list[Callable[[I], O]]
     s4_aggregation: list[Callable[[I], Any]]
 
-def get_real_instructions(db_set:str, query:str):
+
+def get_real_instructions(db_set: str, query: str):
     return get_set(db_set, query, Real_Instructions())
 
-def get_approx_instructs(db_set:str, query:str):
+
+def get_approx_instructs(db_set: str, query: str):
     return get_set(db_set, query, Approx_Instructions())
 
-def get_time_mem_approx_instructions(db_set:str, query:str):
+
+def get_time_mem_approx_instructions(db_set: str, query: str):
     return get_set(db_set, query, Time_Mem_Approx_Instructions())
-    
-def get_set(db_set:str, query:str, operation_class:Operations[I,O]) -> QueryInstructions[I,O]:
-    
+
+
+def get_set(db_set: str, query: str, operation_class: Operations[I, O]) -> QueryInstructions[I, O]:
+
     if db_set == "ssb":
         if query == 'q11':
             return q11.instruction_set(operation_class)
@@ -56,9 +61,9 @@ def get_set(db_set:str, query:str, operation_class:Operations[I,O]) -> QueryInst
             return q28a.instruction_set(operation_class)
         if query == '30a':
             return q30a.instruction_set(operation_class)
-    
+
     # No manual parsing found, attempting automatic parsing
-    
+
     with open(f"data/{db_set}/queries/{query}.sql") as file:
         query = ' '.join([line.strip() for line in file.readlines()]).lower()
         return parse(query, operation_class)

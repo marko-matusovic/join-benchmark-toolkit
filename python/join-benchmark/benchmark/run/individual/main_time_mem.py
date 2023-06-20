@@ -9,24 +9,24 @@ def main(db_set:str, query:str, perm:list[int]):
     
     instructions = get_real_instructions(db_set, query)
 
-    dfs = instructions[0][0]()
+    dfs = instructions.s1_init()
     
     mem_load = tracemalloc.get_traced_memory()[1]
     tracemalloc.reset_peak()
     time_load = time.time() - start_time
 
-    for instruction in instructions[1]:
+    for instruction in instructions.s2_filters:
         instruction(dfs)
 
     mem_filters = tracemalloc.get_traced_memory()[1]
     time_filters = time.time() - start_time
     
-    time_joins = []
-    mem_joins = []
+    time_joins:list[float] = []
+    mem_joins:list[float] = []
     
     for p in perm:
         tracemalloc.reset_peak()
-        instructions[2][p](dfs)
+        instructions.s3_joins[p](dfs)
         time_joins.append(time.time() - start_time)
         mem_joins.append(tracemalloc.get_traced_memory()[1])
 

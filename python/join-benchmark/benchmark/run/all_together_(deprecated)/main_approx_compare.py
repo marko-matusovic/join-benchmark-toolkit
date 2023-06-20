@@ -20,7 +20,7 @@ def main(query):
     
 def run_all_jobs(instructions, approx_ins, out_file, stats):
     
-    dfs = instructions[0][0]()
+    dfs = instructions.s1_init()
     approx_data = {
         "stats": {key: get_stats(dfs[key]) for key in dfs},
         "times": {}
@@ -30,7 +30,7 @@ def run_all_jobs(instructions, approx_ins, out_file, stats):
     for (i, job) in enumerate(stats['permutation']):
         job = [int(j) for j in job[1:-1].split(" ")]
         
-        dfs = instructions[0][0]()
+        dfs = instructions.s1_init()
         approx_data["schema"] = approx_ins[0][0]()
         
         
