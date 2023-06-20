@@ -1,4 +1,6 @@
-def get_schema(db_name):
+TSchema = dict[str, list[str]]
+
+def get_schema(db_name:str) -> TSchema:
     return {
         "ssb": {
             "lineorder": ["lo_orderkey", "lo_linenumber", "lo_custkey", "lo_partkey", "lo_suppkey", "lo_orderdate", "lo_orderpriority", "lo_shippriority", "lo_quantity", "lo_extendedprice", "lo_ordtotalprice", "lo_discount", "lo_revenue", "lo_supplycost", "lo_tax", "lo_commitdate", "lo_shopmode"],
@@ -32,7 +34,7 @@ def get_schema(db_name):
         }
     }[db_name]
 
-def rename_schema(schema, tables, labels):
+def rename_schema(schema: TSchema, tables: list[str], labels: list[str]) -> TSchema:
     return {
         label: [ f'{label}.{col}' for col in schema[table] ]
         for (table, label) in zip(tables, labels)

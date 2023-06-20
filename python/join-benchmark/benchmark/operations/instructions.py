@@ -1,15 +1,18 @@
+from typing import Any
+from benchmark.engine.engine import DataFrame
 from benchmark.operations.operations import Operations
 from benchmark.tools.load import load_named_tables
 
+TDFs = dict[str, DataFrame]
 
-class Real_Instructions(Operations):
-    def from_tables(self, db_name, tables, aliases=[]):
-        def load():
+class Real_Instructions(Operations[TDFs , None]):
+    def from_tables(self, db_name:str, tables:list[str], aliases:list[str]=[]):
+        def load() -> dict[str, DataFrame]:
             return load_named_tables(db_name, tables, aliases)
         return load
 
-    def join_fields(self, field_name_1, field_name_2):
-        def join(dfs):
+    def join_fields(self, field_name_1:str, field_name_2:str):
+        def join(dfs: TDFs) -> None:
             table_name_1 = self.find_names(dfs, field_name_1)
             table_name_2 = self.find_names(dfs, field_name_2)
             if table_name_1 == table_name_2:
@@ -25,63 +28,62 @@ class Real_Instructions(Operations):
         return join
 
     # PRIVATE
-    def join_filter_eq(self, dfs, table_name, field_name_1, field_name_2):
+    def join_filter_eq(self, dfs:TDFs , table_name:str , field_name_1:str , field_name_2:str):
         table = dfs[table_name]
         del dfs[table_name]
         dfs[f'({table_name}[XS]{field_name_1}={field_name_2}'] = \
             table.loc[table[field_name_1] == table[field_name_2]]
 
-    def filter_field_eq(self, field_name, values):
-        def filter(dfs):
+    def filter_field_eq(self, field_name:str, values:list[Any]):
+        def filter(dfs: TDFs) -> None:
             table_name = self.find_names(dfs, field_name)
             table = dfs[table_name]
             del dfs[table_name]
-            dfs[f'({table_name}[s]{field_name}[in]{values})'] = table.loc[table[field_name].isin(
-                values)]
+            dfs[f'({table_name}[s]{field_name}[in]{values})'] = table.loc[table[field_name].isin(values)]
         return filter
     
-    def filter_field_ne(self, field_name, value):
-        def filter(dfs):
+    def filter_field_ne(self, field_name:str, value:Any):
+        def filter(dfs: TDFs) -> None:
             table_name = self.find_names(dfs, field_name)
             table = dfs[table_name]
             del dfs[table_name]
             dfs[f'({table_name}[s]{field_name}[!=]{value})'] = table.loc[table[field_name] != value]
         return filter
 
-    def filter_field_ge(self, field_name, value):
-        def filter(dfs):
+    def filter_field_ge(self, field_name:str, value:Any):
+        def filter(dfs: TDFs) -> None:
             table_name = self.find_names(dfs, field_name)
             table = dfs[table_name]
             del dfs[table_name]
             dfs[f'({table_name}[s]{field_name}[>=]{value})'] = table.loc[table[field_name] >= value]
         return filter
 
-    def filter_field_gt(self, field_name, value):
-        def filter(dfs):
+    def filter_field_gt(self, field_name:str, value:Any):
+        def filter(dfs: TDFs) -> None:
             table_name = self.find_names(dfs, field_name)
             table = dfs[table_name]
             del dfs[table_name]
             dfs[f'({table_name}[s]{field_name}[>]{value})'] = table.loc[table[field_name] > value]
         return filter
 
-    def filter_field_le(self, field_name, value):
-        def filter(dfs):
+    def filter_field_le(self, field_name:str, value:Any):
+        def filter(dfs: TDFs) -> None:
             table_name = self.find_names(dfs, field_name)
             table = dfs[table_name]
             del dfs[table_name]
             dfs[f'({table_name}[s]{field_name}[<=]{value})'] = table.loc[table[field_name] <= value]
         return filter
 
-    def filter_field_lt(self, field_name, value):
-        def filter(dfs):
+    def filter_field_lt(self, field_name:str, value:Any):
+        def filter(dfs: TDFs) -> None:
             table_name = self.find_names(dfs, field_name)
             table = dfs[table_name]
             del dfs[table_name]
             dfs[f'({table_name}[s]{field_name}[<]{value})'] = table.loc[table[field_name] < value]
         return filter
 
-    def filter_field_like(self, field_name, values):
-        def filter(dfs):
+    def filter_field_like(self, field_name:str, values:list[Any]):
+        def filter(dfs: TDFs) -> None:
             table_name = self.find_names(dfs, field_name)
             table = dfs[table_name]
             del dfs[table_name]
@@ -91,8 +93,8 @@ class Real_Instructions(Operations):
             dfs[f'({table_name}[s]{field_name}[like]{values})'] = table.loc[index]
         return filter
 
-    def filter_field_not_like(self, field_name, value):
-        def filter(dfs):
+    def filter_field_not_like(self, field_name:str, value:Any):
+        def filter(dfs: TDFs) -> None:
             table_name = self.find_names(dfs, field_name)
             table = dfs[table_name]
             del dfs[table_name]
@@ -101,7 +103,7 @@ class Real_Instructions(Operations):
         return filter
 
     # PRIVATE
-    def like_index(self, col, value):
+    def like_index(self, col:Any, value:Any) -> Any:
         # disallow regex expresions
         value = value.replace('\\','\\\\')
         value = value.replace('.','\\.')
@@ -124,7 +126,9 @@ class Real_Instructions(Operations):
         return col.str.contains(f'^{value}$')
 
     # PRIVATE
-    def find_names(self, dfs, field_name):
+    def find_names(self, dfs:TDFs , field_name:str) -> str:
         for table_name in dfs:
             if field_name in dfs[table_name]:
                 return table_name
+        print("ERROR: No table found for field '{}'".format(field_name))
+        exit(1)

@@ -1,7 +1,7 @@
+from typing import NamedTuple
 from benchmark.tools.load import load_named_tables, load_table
 from os.path import exists
 import pickle
-
 
 def clone(dfs):
     return {key: dfs[key].copy() for key in dfs}
@@ -13,48 +13,58 @@ def print_write(msg, out_file):
     out_file.flush()
 
 
-def get_stats(df):
+
+# Stats for one table
+class TableStats(NamedTuple):
+    length: float
+    unique: dict[str, float]
+    dtype: dict[str, float]
+
+# All stats 
+TStats = dict[str, TableStats]
+
+def calc_stats(df):
     return {
         "length": len(df.index),
         "unique": dict(df.nunique())
     }
 
 
-def load_stats(db_name, tables, aliases):
+def load_stats(db_name: str, tables: list[str], aliases: list[str]) -> TStats:
 
-    stats = {}
+    stats: TStats = {}
 
     for table in tables:
         file_name = f'data/{db_name}/stats/{table}.pickle'
 
         # try to load stats from cache
         if exists(file_name):
-            table_stats = pickle.load(open(file_name, 'rb'))
+            table_stats: TableStats = pickle.load(open(file_name, 'rb'))
 
         # If there is no cache, calculate new stats and create cache file
         else:
             df = load_table(db_name, table)
-            table_stats = {
-                'length': len(df.index),
-                'unique': dict(df.nunique()),
-                'dtype': {k: get_size_of_type(f'{v}') for (k, v) in dict(df.dtypes).items()},
-            }
+            table_stats = TableStats(
+                length = len(df.index),
+                unique = dict(df.nunique()),
+                dtype = {k: get_size_of_type(f'{v}') for (k, v) in dict(df.dtypes).items()},
+            )
             pickle.dump(table_stats, open(file_name, 'wb'))
 
         stats[table] = table_stats
 
     # rename stats to use aliases
     return {
-        alias: {
-            'length': stats[table]['length'],
-            'unique': {f'{alias}.{k}': v for (k, v) in stats[table]['unique'].items()}, # here we have to rename columns
-            'dtype': {f'{alias}.{k}': v for (k, v) in stats[table]['dtype'].items()}, # here we have to rename columns
-        }
+        alias: TableStats(
+            length = stats[table].length,
+            unique = {f'{alias}.{k}': v for (k, v) in stats[table].unique.items()}, # here we have to rename columns
+            dtype = {f'{alias}.{k}': v for (k, v) in stats[table].dtype.items()}, # here we have to rename columns
+        )
         for (table, alias) in zip(tables, aliases)
     }
 
 
-def get_size_of_type(type):
+def get_size_of_type(type: str) -> int:
     return {
         "bool": 8,
         "int8": 8,
@@ -71,5 +81,5 @@ def get_size_of_type(type):
     }[f'{type}']
 
 
-def bound(low, value, high):
+def bound(low:float, value:float, high:float) -> float:
     return min(max(low, value), high)

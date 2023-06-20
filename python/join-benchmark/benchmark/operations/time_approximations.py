@@ -1,5 +1,5 @@
 
-from benchmark.operations.operations import Operations
+from typing import Any
 from benchmark.tools.schema import get_schema
 
 
@@ -11,7 +11,7 @@ TIME_JOIN_POW = 1.0
 TIME_COMP = TIME_CONSTANT * 100.0
 TIME_COMP_POW = 1.0
 
-class Approx_Instructions(Operations):
+class Approx_Instructions(Operations[Any,Any]):
     
     
     def from_tables(self, db_name, tables, aliases=[]):
