@@ -1,4 +1,5 @@
-from benchmark.operations.approximations import Approx_Instructions
+from benchmark.operations.approx_time import Approx_Time_Instructions
+from benchmark.operations.approx_time_mem import Approx_Time_Memory_Instructions
 from benchmark.operations.instructions import Real_Instructions
 from benchmark.queries.ssb import q11, q12, q13, q21, q31, q41
 from benchmark.queries.job import q1b, q20a, q22a, q28a, q2a, q30a
@@ -8,8 +9,11 @@ from benchmark.tools.parser import parse
 def get_real_instructions(db_set, query):
     return get_set(db_set, query, Real_Instructions())
 
-def get_approx_instructs(db_set, query):    
-    return get_set(db_set, query, Approx_Instructions())
+def get_approx_time_instructions(db_set, query):    
+    return get_set(db_set, query, Approx_Time_Instructions())
+    
+def get_approx_time_memory_instructions(db_set, query):    
+    return get_set(db_set, query, Approx_Time_Memory_Instructions())
     
 def get_set(db_set, query, operation_class):
     if db_set == "ssb":

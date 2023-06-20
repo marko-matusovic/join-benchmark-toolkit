@@ -2,7 +2,7 @@ from math import factorial
 import itertools
 import numpy as np
 import time
-from benchmark.operations.get import get_approx_instructs, get_real_instructions
+from benchmark.operations.get import get_approx_time_instructions, get_real_instructions
 
 from benchmark.util import clone, get_stats, print_write
 
@@ -12,7 +12,7 @@ def main(query):
     print(f'Started running benchmark for query {query}.')
     
     instructions = get_real_instructions(query)
-    approx_ins = get_approx_instructs(query)
+    approx_ins = get_approx_time_instructions(query)
 
     jobs = np.array([j for j in itertools.permutations(range(len(instructions[1])))])
     np.random.shuffle(jobs)

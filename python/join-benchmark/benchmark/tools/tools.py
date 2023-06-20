@@ -6,8 +6,5 @@ def print_write(msg, out_file):
     out_file.write(f'{msg}\n')
     out_file.flush()
     
-def get_stats(df):
-    return {
-        "length": len(df.index),
-        "unique": dict(df.nunique())
-    }
+def bound(low, value, high):
+    return max(low, min(high, value))

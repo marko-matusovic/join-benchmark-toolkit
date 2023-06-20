@@ -1,4 +1,4 @@
-from benchmark.operations.get import get_approx_instructs
+from benchmark.operations.get import get_approx_time_instructions
 from benchmark.operations.get import get_real_instructions
 from benchmark.util import get_stats, print_write
 from benchmark.engine.engine import get_engine
@@ -12,7 +12,7 @@ def main(query):
     stats = get_engine().read_csv(in_file, sep=";")
     
     instructions = get_real_instructions(query)
-    approx_ins = get_approx_instructs(query)
+    approx_ins = get_approx_time_instructions(query)
 
     run_all_jobs(instructions, approx_ins, out_file, stats)
     

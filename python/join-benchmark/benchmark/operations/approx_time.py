@@ -1,7 +1,6 @@
 
 from benchmark.tools.schema import get_schema
 
-
 TIME_CONSTANT = 1.0 / 1_000_000_000
 
 TIME_JOIN = TIME_CONSTANT * 300.0
@@ -10,7 +9,7 @@ TIME_JOIN_POW = 1.0
 TIME_COMP = TIME_CONSTANT * 100.0
 TIME_COMP_POW = 1.0
 
-class Approx_Instructions:
+class Approx_Time_Instructions:
     
     
     def from_tables(self, db_name, tables, aliases=[]):
