@@ -1,6 +1,6 @@
 
 from typing import Any
-from benchmark.operations.operations import Operations
+from benchmark.operations.operations import Operations, TVal
 from benchmark.tools.schema import get_schema
 
 
@@ -49,7 +49,7 @@ class Approx_Instructions(Operations[TData,float]):
             return data["times"][res]
         return join
     
-    def filter_eq(self, data:TData, field:str, values:list[Any]):
+    def filter_eq(self, data:TData, field:str, values:list[TVal]):
         name = self.find_table(data, field)
         res = f'({name}𝜎{field}={values})'
         data["schema"][res] = data["schema"][name]
@@ -65,8 +65,8 @@ class Approx_Instructions(Operations[TData,float]):
             data["stats"][res]["unique"][field] = len(values)
             
         return data["times"][res]
-                
-    def filter_comp(self, data:TData, field:str, value:Any):
+    
+    def filter_comp(self, data:TData, field:str, value:TVal):
         name = self.find_table(data, field)
         res = f'({name}𝜎{field}<>)'
         data["schema"][res] = data["schema"][name]
@@ -83,29 +83,46 @@ class Approx_Instructions(Operations[TData,float]):
             
         return data["times"][res]
 
-    def filter_field_eq(self, field_name:str, values:list[Any]):
+    def filter_field_eq(self, field_name:str, values:list[TVal]):
         def filter(data:TData):
             return self.filter_eq(data, field_name, values)
         return filter
+    
+    def filter_field_ne(self, field_name:str, value:TVal):
+        def filter(data:TData):
+            return self.filter_eq(data, field_name, [value])
+        return filter
 
-    def filter_field_ge(self, field_name:str, value:Any):
+    def filter_field_ge(self, field_name:str, value:TVal):
         def filter(data:TData):
             return self.filter_comp(data, field_name, value)
         return filter
 
-    def filter_field_gt(self, field_name:str, value:Any):
+    def filter_field_gt(self, field_name:str, value:TVal):
         def filter(data:TData):
             return self.filter_comp(data, field_name, value)
         return filter
 
-    def filter_field_le(self, field_name:str, value:Any):
+    def filter_field_le(self, field_name:str, value:TVal):
         def filter(data:TData):
             return self.filter_comp(data, field_name, value)
         return filter
 
-    def filter_field_lt(self, field_name:str, value:Any):
+    def filter_field_lt(self, field_name:str, value:TVal):
         def filter(data:TData):
             return self.filter_comp(data, field_name, value)
+        return filter
+    
+    def filter_field_like(self, field_name:str, values:list[TVal]):
+        def filter(data:TData):
+            print("Not implemented!")
+            exit(1)
+        return filter
+    
+    def filter_field_not_like(self, field_name:str, value:TVal):
+        def filter(data:TData):
+            print("Not implemented!")
+            exit(1)
         return filter
     
     def find_table(self, data:TData, field_name:str) -> str:

@@ -3,7 +3,7 @@ import tracemalloc
 from benchmark.operations.get import get_real_instructions
 
 
-def main(db_set, query, perm):
+def main(db_set:str, query:str, perm:list[int]):
     tracemalloc.start()
     start_time = time.time()
     

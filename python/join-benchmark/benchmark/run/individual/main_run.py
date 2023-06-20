@@ -1,18 +1,18 @@
 from benchmark.operations.get import get_real_instructions
 
 
-def main(db_set, query, perm):
+def main(db_set:str, query:str, perm:list[int]):
     print(f'Running {db_set}/{query} with perm {perm}')
     
     instructions = get_real_instructions(db_set, query)
 
-    dfs = instructions[0][0]()
+    dfs = instructions.s1_init()
     
-    for instruction in instructions[1]:
+    for instruction in instructions.s2_filters:
         instruction(dfs)
 
     for p in perm:
-        instructions[2][p](dfs)
+        instructions.s3_joins[p](dfs)
 
     if len(dfs) == 1:
         print('Completed successfully')

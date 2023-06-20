@@ -1,3 +1,7 @@
+from typing import TypeVar
+from benchmark.operations.get import QueryInstructions
+from benchmark.operations.operations import Operations
+
 # SELECT MIN(cn.name) AS movie_company,
 #        MIN(mi_idx.info) AS rating,
 #        MIN(t.title) AS western_violent_movie
@@ -47,13 +51,13 @@
 #   AND cn.id = mc.company_id;
 
 
+I = TypeVar('I')
+O = TypeVar('O')
 
-def instruction_set(operation_set):
-    return [
-        [
-            operation_set.from_tables('job', ['company_name','company_type','info_type','info_type','keyword','kind_type','movie_companies','movie_info','movie_info_idx','movie_keyword','title'], ['cn','ct','it1','it2','k','kt','mc','mi','mi_idx','mk','t',])
-        ],
-        [
+def instruction_set(operation_set: Operations[I,O]) -> QueryInstructions[I, O]:
+    return QueryInstructions(
+        s1_init = operation_set.from_tables('job', ['company_name','company_type','info_type','info_type','keyword','kind_type','movie_companies','movie_info','movie_info_idx','movie_keyword','title'], ['cn','ct','it1','it2','k','kt','mc','mi','mi_idx','mk','t',]),
+        s2_filters = [
             operation_set.filter_field_ne('cn.country_code', '[us]'),
             operation_set.filter_field_eq('it1.info', ['countries']),
             operation_set.filter_field_eq('it2.info', ['rating']),
@@ -65,7 +69,7 @@ def instruction_set(operation_set):
             operation_set.filter_field_lt('mi_idx.info', "7.0"),
             operation_set.filter_field_gt('t.production_year', 2008)
         ],
-        [ # 16 JOINS
+        s3_joins = [ # 16 JOINS
             operation_set.join_fields('kt.id', 't.kind_id'),
             operation_set.join_fields('t.id', 'mi.movie_id'),
             operation_set.join_fields('t.id', 'mk.movie_id'),
@@ -83,7 +87,7 @@ def instruction_set(operation_set):
             operation_set.join_fields('ct.id', 'mc.company_type_id'),
             operation_set.join_fields('cn.id', 'mc.company_id'),
         ],
-        [
+        s4_aggregation = [
             # select
         ]
-    ]
+    )

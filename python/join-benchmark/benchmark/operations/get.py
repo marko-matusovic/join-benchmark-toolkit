@@ -1,3 +1,7 @@
+from typing import Callable, Generic, NamedTuple, TypeVar
+
+from pyparsing import Any
+from benchmark.operations.operations import Operations
 from benchmark.operations.time_approximations import Approx_Instructions
 from benchmark.operations.instructions import Real_Instructions
 from benchmark.operations.time_mem_approximations import Time_Mem_Approx_Instructions
@@ -5,17 +9,25 @@ from benchmark.queries.ssb import q11, q12, q13, q21, q31, q41
 from benchmark.queries.job import q1b, q20a, q22a, q28a, q2a, q30a
 from benchmark.tools.parser import parse
 
+I = TypeVar('I')
+O = TypeVar('O')
 
-def get_real_instructions(db_set, query):
+class QueryInstructions(NamedTuple, Generic[I,O]):
+    s1_init: Callable[[], I]
+    s2_filters: list[Callable[[I], Any]]
+    s3_joins: list[Callable[[I], O]]
+    s4_aggregation: list[Callable[[I], Any]]
+
+def get_real_instructions(db_set:str, query:str):
     return get_set(db_set, query, Real_Instructions())
 
-def get_approx_instructs(db_set, query):    
+def get_approx_instructs(db_set:str, query:str):
     return get_set(db_set, query, Approx_Instructions())
 
-def get_time_mem_approx_instructions(db_set, query):    
+def get_time_mem_approx_instructions(db_set:str, query:str):
     return get_set(db_set, query, Time_Mem_Approx_Instructions())
     
-def get_set(db_set, query, operation_class):
+def get_set(db_set:str, query:str, operation_class:Operations[I,O]) -> QueryInstructions[I,O]:
     
     if db_set == "ssb":
         if query == 'q11':

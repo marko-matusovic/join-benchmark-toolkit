@@ -1,6 +1,6 @@
-from typing import Callable
-from benchmark.operations.time_approximations import Approx_Instructions
-from benchmark.operations.instructions import Real_Instructions
+from typing import TypeVar
+from benchmark.operations.get import QueryInstructions
+from benchmark.operations.operations import Operations
 '''
 # QUERY
 | select sum(lo_extendedprice*lo_discount) as revenue
@@ -10,21 +10,23 @@ from benchmark.operations.instructions import Real_Instructions
 | and lo_discount between 1 and 3
 | and lo_quantity < 25
 '''
-def instruction_set(operation_set):
-    return [
-        [
-            operation_set.from_tables('ssb', ["lineorder", "date"], [])
-        ],
-        [
+
+I = TypeVar('I')
+O = TypeVar('O')
+
+def instruction_set(operation_set: Operations[I,O]) -> QueryInstructions[I, O]:
+    return QueryInstructions(
+        s1_init = operation_set.from_tables('ssb', ["lineorder", "date"], []),
+        s2_filters = [
             operation_set.filter_field_eq("d_year", [1993]),
             operation_set.filter_field_ge("lo_discount", 1),
             operation_set.filter_field_le("lo_discount", 3),
             operation_set.filter_field_lt("lo_quantity", 25),
         ],
-        [
+        s3_joins = [
             operation_set.join_fields("lo_orderdate", "d_datekey"),
         ],
-        [
+        s4_aggregation = [
             # select
         ]
-    ]
+    )

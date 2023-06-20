@@ -1,3 +1,6 @@
+from typing import TypeVar
+from benchmark.operations.get import QueryInstructions
+from benchmark.operations.operations import Operations
 # SELECT MIN(mc.note) AS production_note,
 #        MIN(t.title) AS movie_title,
 #        MIN(t.production_year) AS movie_year
@@ -16,26 +19,27 @@
 #   AND mc.movie_id = mi_idx.movie_id
 #   AND it.id = mi_idx.info_type_id;
 
-def instruction_set(operation_set):
-    return [
-        [
-            operation_set.from_tables('job', ["company_type","info_type","movie_companies","movie_info_idx","title"], ["ct","it","mc","mi_idx","t"])
-        ],
-        [
+I = TypeVar('I')
+O = TypeVar('O')
+
+def instruction_set(operation_set: Operations[I,O]) -> QueryInstructions[I, O]:
+    return QueryInstructions(
+        s1_init = operation_set.from_tables('job', ["company_type","info_type","movie_companies","movie_info_idx","title"], ["ct","it","mc","mi_idx","t"]),
+        s2_filters = [
             operation_set.filter_field_eq('ct.kind', ['production companies']),
             operation_set.filter_field_eq('it.info', ['bottom 10 rank']),
             operation_set.filter_field_not_like('mc.note', '%(as Metro-Goldwyn-Mayer Pictures)%'),
             operation_set.filter_field_ge('t.production_year', 2005),
             operation_set.filter_field_le('t.production_year', 2010),
         ],
-        [ # 5 JOINS
+        s3_joins = [ # 5 JOINS
             operation_set.join_fields("ct.id", "mc.company_type_id"),
             operation_set.join_fields("t.id", "mc.movie_id"),
             operation_set.join_fields("t.id", "mi_idx.movie_id"),
             operation_set.join_fields("mc.movie_id", "mi_idx.movie_id"),
             operation_set.join_fields("it.id", "mi_idx.info_type_id"),
         ],
-        [
+        s4_aggregation = [
             # select
         ]
-    ]
+    )

@@ -1,9 +1,9 @@
 
+from typing import Any
 from benchmark.operations.operations import Operations
-from benchmark.tools.factor_join_parser import parse_query_simple
 
 
-def parse(query_str, operation_set:Operations):
+def parse(query_str:str, operation_set:Operations[Any,Any]):
     print("General parsing not implemented!")
     exit(1)
     

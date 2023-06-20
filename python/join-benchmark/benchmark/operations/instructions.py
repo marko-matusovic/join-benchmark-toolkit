@@ -1,6 +1,6 @@
 from typing import Any
 from benchmark.engine.engine import DataFrame
-from benchmark.operations.operations import Operations
+from benchmark.operations.operations import Operations, TVal
 from benchmark.tools.load import load_named_tables
 
 TDFs = dict[str, DataFrame]
@@ -34,7 +34,7 @@ class Real_Instructions(Operations[TDFs , None]):
         dfs[f'({table_name}[XS]{field_name_1}={field_name_2}'] = \
             table.loc[table[field_name_1] == table[field_name_2]]
 
-    def filter_field_eq(self, field_name:str, values:list[Any]):
+    def filter_field_eq(self, field_name:str, values:list[TVal]):
         def filter(dfs: TDFs) -> None:
             table_name = self.find_names(dfs, field_name)
             table = dfs[table_name]
@@ -42,7 +42,7 @@ class Real_Instructions(Operations[TDFs , None]):
             dfs[f'({table_name}[s]{field_name}[in]{values})'] = table.loc[table[field_name].isin(values)]
         return filter
     
-    def filter_field_ne(self, field_name:str, value:Any):
+    def filter_field_ne(self, field_name:str, value:TVal):
         def filter(dfs: TDFs) -> None:
             table_name = self.find_names(dfs, field_name)
             table = dfs[table_name]
@@ -50,7 +50,7 @@ class Real_Instructions(Operations[TDFs , None]):
             dfs[f'({table_name}[s]{field_name}[!=]{value})'] = table.loc[table[field_name] != value]
         return filter
 
-    def filter_field_ge(self, field_name:str, value:Any):
+    def filter_field_ge(self, field_name:str, value:TVal):
         def filter(dfs: TDFs) -> None:
             table_name = self.find_names(dfs, field_name)
             table = dfs[table_name]
@@ -58,7 +58,7 @@ class Real_Instructions(Operations[TDFs , None]):
             dfs[f'({table_name}[s]{field_name}[>=]{value})'] = table.loc[table[field_name] >= value]
         return filter
 
-    def filter_field_gt(self, field_name:str, value:Any):
+    def filter_field_gt(self, field_name:str, value:TVal):
         def filter(dfs: TDFs) -> None:
             table_name = self.find_names(dfs, field_name)
             table = dfs[table_name]
@@ -66,7 +66,7 @@ class Real_Instructions(Operations[TDFs , None]):
             dfs[f'({table_name}[s]{field_name}[>]{value})'] = table.loc[table[field_name] > value]
         return filter
 
-    def filter_field_le(self, field_name:str, value:Any):
+    def filter_field_le(self, field_name:str, value:TVal):
         def filter(dfs: TDFs) -> None:
             table_name = self.find_names(dfs, field_name)
             table = dfs[table_name]
@@ -74,7 +74,7 @@ class Real_Instructions(Operations[TDFs , None]):
             dfs[f'({table_name}[s]{field_name}[<=]{value})'] = table.loc[table[field_name] <= value]
         return filter
 
-    def filter_field_lt(self, field_name:str, value:Any):
+    def filter_field_lt(self, field_name:str, value:TVal):
         def filter(dfs: TDFs) -> None:
             table_name = self.find_names(dfs, field_name)
             table = dfs[table_name]
@@ -82,7 +82,7 @@ class Real_Instructions(Operations[TDFs , None]):
             dfs[f'({table_name}[s]{field_name}[<]{value})'] = table.loc[table[field_name] < value]
         return filter
 
-    def filter_field_like(self, field_name:str, values:list[Any]):
+    def filter_field_like(self, field_name:str, values:list[TVal]):
         def filter(dfs: TDFs) -> None:
             table_name = self.find_names(dfs, field_name)
             table = dfs[table_name]
@@ -93,7 +93,7 @@ class Real_Instructions(Operations[TDFs , None]):
             dfs[f'({table_name}[s]{field_name}[like]{values})'] = table.loc[index]
         return filter
 
-    def filter_field_not_like(self, field_name:str, value:Any):
+    def filter_field_not_like(self, field_name:str, value:TVal):
         def filter(dfs: TDFs) -> None:
             table_name = self.find_names(dfs, field_name)
             table = dfs[table_name]
@@ -103,7 +103,7 @@ class Real_Instructions(Operations[TDFs , None]):
         return filter
 
     # PRIVATE
-    def like_index(self, col:Any, value:Any) -> Any:
+    def like_index(self, col:Any, value:TVal) -> Any:
         # disallow regex expresions
         value = value.replace('\\','\\\\')
         value = value.replace('.','\\.')

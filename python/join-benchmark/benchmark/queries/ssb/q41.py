@@ -1,3 +1,6 @@
+from typing import TypeVar
+from benchmark.operations.get import QueryInstructions
+from benchmark.operations.operations import Operations
 '''
 # QUERY
 | select d_year, c_nation, sum(lo_revenue - lo_supplycost) as profit
@@ -12,27 +15,26 @@
 | group by d_year, c_nation
 | order by d_year, c_nation
 '''
-def instruction_set(operation_set):
-    return [
-        [
-            operation_set.from_tables("ssb", ["lineorder", "date", "part", "supplier", "customer"], [])
-        ],
-        [
+I = TypeVar('I')
+O = TypeVar('O')
+
+def instruction_set(operation_set: Operations[I,O]) -> QueryInstructions[I, O]:
+    return QueryInstructions(
+        s1_init = operation_set.from_tables("ssb", ["lineorder", "date", "part", "supplier", "customer"], []),
+        s2_filters = [
             operation_set.filter_field_eq("c_region", ["AMERICA"]),
             operation_set.filter_field_eq("s_region", ["AMERICA"]),
             operation_set.filter_field_eq("p_mfgr", ['MFGR#1', 'MFGR#2'])
         ],
-        [
+        s3_joins = [
             operation_set.join_fields("lo_custkey", "c_custkey"),           # 0
             operation_set.join_fields("lo_suppkey", "s_suppkey"),           # 1
             operation_set.join_fields("lo_partkey", "p_partkey"),           # 2
             operation_set.join_fields("lo_orderdate", "d_datekey"),         # 3
         ],
-        [
+        s4_aggregation = [
             # group by
             # order by
-        ],
-        [
             # select
         ]
-    ]
+    )

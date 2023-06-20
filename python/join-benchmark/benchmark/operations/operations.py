@@ -1,8 +1,10 @@
 from abc import ABC, abstractmethod
-from typing import Any, Callable, Generic, TypeVar
+from typing import Callable, Generic, TypeAlias, TypeVar
 
 I = TypeVar('I')
 O = TypeVar('O')
+
+TVal: TypeAlias = str | int | float | bool
 
 class Operations(ABC, Generic[I,O]):
     
@@ -15,33 +17,33 @@ class Operations(ABC, Generic[I,O]):
         ...
 
     @abstractmethod
-    def filter_field_eq(self, field_name: str, values: list[Any]) -> Callable[[I], O]:
+    def filter_field_eq(self, field_name: str, values: list[TVal]) -> Callable[[I], O]:
         ...
 
     @abstractmethod
-    def filter_field_ne(self, field_name: str, value: Any) -> Callable[[I], O]: 
+    def filter_field_ne(self, field_name: str, value: TVal) -> Callable[[I], O]: 
         ...
 
     @abstractmethod
-    def filter_field_ge(self, field_name: str, value: Any) -> Callable[[I], O]:
+    def filter_field_ge(self, field_name: str, value: TVal) -> Callable[[I], O]:
         ...
 
     @abstractmethod
-    def filter_field_gt(self, field_name: str, value: Any) -> Callable[[I], O]:
+    def filter_field_gt(self, field_name: str, value: TVal) -> Callable[[I], O]:
         ...
 
     @abstractmethod
-    def filter_field_le(self, field_name: str, value: Any) -> Callable[[I], O]:
+    def filter_field_le(self, field_name: str, value: TVal) -> Callable[[I], O]:
         ...
 
     @abstractmethod
-    def filter_field_lt(self, field_name: str, value: Any) -> Callable[[I], O]:
+    def filter_field_lt(self, field_name: str, value: TVal) -> Callable[[I], O]:
         ...
 
     @abstractmethod
-    def filter_field_like(self, field_name: str, values: list[Any]) -> Callable[[I], O]:
+    def filter_field_like(self, field_name: str, values: list[TVal]) -> Callable[[I], O]:
         ...
 
     @abstractmethod
-    def filter_field_not_like(self, field_name: str, value: Any) -> Callable[[I], O]:
+    def filter_field_not_like(self, field_name: str, value: TVal) -> Callable[[I], O]:
         ...

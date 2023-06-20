@@ -1,6 +1,6 @@
 
 from typing import Any, NamedTuple
-from benchmark.operations.operations import Operations
+from benchmark.operations.operations import Operations, TVal
 from benchmark.tools.schema import TSchema, get_schema, rename_schema
 from benchmark.tools.tools import TStats, TableStats, bound, load_stats
 
@@ -153,7 +153,7 @@ class Time_Mem_Approx_Instructions(Operations[Data, TRes]):
             dtype = stats.dtype
         )
 
-    def filter_field_eq(self, field_name: str, values: list[Any]):
+    def filter_field_eq(self, field_name: str, values: list[TVal]):
         def filter(data: Data):
             table_name = self.find_table(data.schema, field_name)
             stats = data.stats[table_name]
@@ -162,7 +162,7 @@ class Time_Mem_Approx_Instructions(Operations[Data, TRes]):
             return (0, 0)  # does not return cost
         return filter
 
-    def filter_field_ne(self, field_name: str, value: Any):
+    def filter_field_ne(self, field_name: str, value: TVal):
         def filter(data: Data):
             table_name = self.find_table(data.schema, field_name)
             stats = data.stats[table_name]
@@ -171,35 +171,35 @@ class Time_Mem_Approx_Instructions(Operations[Data, TRes]):
             return (0, 0)  # does not return cost
         return filter
 
-    def filter_field_ge(self, field_name: str, value: Any):
+    def filter_field_ge(self, field_name: str, value: TVal):
         def filter(data: Data):
             table_name = self.find_table(data.schema, field_name)
             data.stats[table_name] = self.scale_stats(data.stats[table_name], 0.5)
             return (0, 0)  # does not return cost
         return filter
 
-    def filter_field_gt(self, field_name: str, value: Any):
+    def filter_field_gt(self, field_name: str, value: TVal):
         def filter(data: Data):
             table_name = self.find_table(data.schema, field_name)
             data.stats[table_name] = self.scale_stats(data.stats[table_name], 0.5)
             return (0, 0)  # does not return cost
         return filter
 
-    def filter_field_le(self, field_name: str, value: Any):
+    def filter_field_le(self, field_name: str, value: TVal):
         def filter(data: Data):
             table_name = self.find_table(data.schema, field_name)
             data.stats[table_name] = self.scale_stats(data.stats[table_name], 0.5)
             return (0, 0)  # does not return cost
         return filter
 
-    def filter_field_lt(self, field_name: str, value: Any):
+    def filter_field_lt(self, field_name: str, value: TVal):
         def filter(data: Data):
             table_name = self.find_table(data.schema, field_name)
             data.stats[table_name] = self.scale_stats(data.stats[table_name], 0.5)
             return (0, 0)  # does not return cost
         return filter
 
-    def filter_field_like(self, field_name: str, values: list[Any]):
+    def filter_field_like(self, field_name: str, values: list[TVal]):
         def filter(data: Data):
             table_name = self.find_table(data.schema, field_name)
             stats = data.stats[table_name]
@@ -210,7 +210,7 @@ class Time_Mem_Approx_Instructions(Operations[Data, TRes]):
             return (0, 0)  # does not return cost
         return filter
 
-    def filter_field_not_like(self, field_name: str, value: Any):
+    def filter_field_not_like(self, field_name: str, value: TVal):
         def filter(data: Data):
             table_name = self.find_table(data.schema, field_name)
             stats = data.stats[table_name]
