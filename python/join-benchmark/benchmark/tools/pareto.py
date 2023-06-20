@@ -3,7 +3,7 @@
 import numpy as np
 
 
-def find_pareto_front(costs, return_mask = True):
+def find_pareto_front(costs, return_mask:bool = True):
     """
     Find the pareto-efficient points
     :param costs: An (n_points, n_costs) array

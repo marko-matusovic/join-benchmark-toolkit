@@ -1,6 +1,6 @@
 # THIS FILE CONTAINS CODE OBTAINED FROM 
 # https://github.com/wuziniu/FactorJoin/blob/73735a1b26d938088305a7217ada4b8679522fac/Join_scheme/join_graph.py
-# Code is modified to use a different condition processing, extended with LIKE, NOT, BETWEEN, IN keywords
+# type: ignore
 
 import numpy as np
 import ast

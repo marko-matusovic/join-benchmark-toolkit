@@ -14,11 +14,11 @@ def main():
     
     times = {}
     for run in df.T:
-        order = df['join_order'][run]
+        order = df['join_order'][run] # type: ignore
         if order not in times:
             times[order] = {i : [] for i in range(join_count)}
-        time_start = float(df['time_filters'][run])
-        absolute_times = df['time_joins'][run][1:-1].split(', ')
+        time_start = float(df['time_filters'][run]) # type: ignore
+        absolute_times = df['time_joins'][run][1:-1].split(', ') # type: ignore
         times_join = [float(absolute_times[0]) - time_start]
         for i in range(len(absolute_times)-1):
             times_join.append(float(absolute_times[i+1]) - float(absolute_times[i]))

@@ -23,7 +23,7 @@ if __name__ == '__main__':
     plt.ylabel('number of samples [%]')
     
     # plt.stairs(counts, bins)
-    _, _, bars = plt.hist(bins[:-1], bins, weights=counts)
+    _, _, bars = plt.hist(bins[:-1], bins, weights=counts) # type: ignore
     plt.bar_label(bars, fmt="%3.1f")
     
     plt.show()

@@ -1,13 +1,16 @@
+from io import TextIOWrapper
 from typing import NamedTuple
-from benchmark.tools.load import load_named_tables, load_table
+from benchmark.engine.engine import DataFrame
+from benchmark.operations.instructions import TDFs
+from benchmark.tools.load import load_table
 from os.path import exists
 import pickle
 
-def clone(dfs):
+def clone(dfs:TDFs) -> TDFs:
     return {key: dfs[key].copy() for key in dfs}
 
 
-def print_write(msg, out_file):
+def print_write(msg:str, out_file:TextIOWrapper):
     print(msg)
     out_file.write(f'{msg}\n')
     out_file.flush()
@@ -23,7 +26,7 @@ class TableStats(NamedTuple):
 # All stats 
 TStats = dict[str, TableStats]
 
-def calc_stats(df):
+def calc_stats(df:DataFrame):
     return {
         "length": len(df.index),
         "unique": dict(df.nunique())
