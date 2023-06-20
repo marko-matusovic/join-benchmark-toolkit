@@ -1,7 +1,7 @@
 from benchmark.operations.get import get_approx_instructs
 from benchmark.operations.get import get_real_instructions
-from benchmark.util import get_stats, print_write
 from benchmark.engine.engine import get_engine
+from benchmark.tools.tools import calc_stats, print_write
 
 def main(query):
     in_file = open(f"results/{query}.csv", "r")
@@ -11,8 +11,8 @@ def main(query):
     
     stats = get_engine().read_csv(in_file, sep=";")
     
-    instructions = get_real_instructions(query)
-    approx_ins = get_approx_instructs(query)
+    instructions = get_real_instructions('ssb', query)
+    approx_ins = get_approx_instructs('ssb', query)
 
     run_all_jobs(instructions, approx_ins, out_file, stats)
     
@@ -22,7 +22,7 @@ def run_all_jobs(instructions, approx_ins, out_file, stats):
     
     dfs = instructions.s1_init()
     approx_data = {
-        "stats": {key: get_stats(dfs[key]) for key in dfs},
+        "stats": {key: calc_stats(dfs[key]) for key in dfs},
         "times": {}
     }
     

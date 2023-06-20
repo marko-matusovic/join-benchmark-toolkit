@@ -3,16 +3,15 @@ import itertools
 import numpy as np
 import time
 from benchmark.operations.get import get_approx_instructs, get_real_instructions
-
-from benchmark.util import clone, get_stats, print_write
+from benchmark.tools.tools import calc_stats, clone
 
 def main(query):
     out_file = open(f"results/{query}.csv", "a")
     # print_write(f'Started running benchmark for query {query}.', out_file)
     print(f'Started running benchmark for query {query}.')
     
-    instructions = get_real_instructions(query)
-    approx_ins = get_approx_instructs(query)
+    instructions = get_real_instructions('ssb', query)
+    approx_ins = get_approx_instructs('ssb', query)
 
     jobs = np.array([j for j in itertools.permutations(range(len(instructions.s2_filters)))])
     np.random.shuffle(jobs)
@@ -51,7 +50,7 @@ def run_all_jobs(instructions, approx_ins, jobs, out_file):
     
     dfs = instructions.s1_init()
     approx_data = {
-        "stats": {key: get_stats(dfs[key]) for key in dfs},
+        "stats": {key: calc_stats(dfs[key]) for key in dfs},
         "times": {}
     }
     
