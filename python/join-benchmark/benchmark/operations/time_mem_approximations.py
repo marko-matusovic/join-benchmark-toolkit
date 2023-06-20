@@ -1,16 +1,40 @@
 
+from benchmark.operations.operations import Operations
 from benchmark.tools.schema import get_schema, rename_schema
-from benchmark.tools.tools import bound, get_size_of_type, load_stats
+from benchmark.tools.tools import bound, load_stats
 
+## ADDITIONAL REDUCTION FOR JOINS
 GENERAL_REDUCTION_FACTOR = 0.9
+
+
+## CACHE FRESHNESS
 CACHE_HIT_GUARANTEE = 3 # if result is THIS OR LESS entries in history, then it IS in cache
 CACHE_MISS_GUARANTEE = 8 # if result is THIS OR MORE entries in history, then it IS NOT in cache
 CACHE_HIT_MULTIPLIER = 0.8
 CACHE_MISS_MULTIPLIER = 10.0
+
+
+## LINEAR SCALING
 TIME_MULTIPLIER = 1.0 / 1E8
 MEMORY_MULTIPLIER = 1.0
 
-class Time_Mem_Approx_Instructions:
+
+## DEFAULT SELECTIVITY VALUES
+# A = B
+DEFAULT_SEL_EQ = 0.005
+# A < B
+DEFAULT_SEL_INEQ = 0.33
+# A < B AND A > C
+DEFAULT_SEL_RANGE_INEQ = 0.005
+# A LIKE "apple"
+DEFAULT_SEL_MATCH = 0.005
+# Default for anything unknown
+DEFAULT_SEL_UNKNOWN = 0.005
+#  Default for anything unknown with NOT modifier
+DEFAULT_SEL_NOT_UNKNOWN = 1 - DEFAULT_SEL_UNKNOWN
+
+class Time_Mem_Approx_Instructions(Operations):
+    
     def from_tables(self, db_name, tables, aliases=[]):
         if len(aliases) != len(tables):
             aliases = tables

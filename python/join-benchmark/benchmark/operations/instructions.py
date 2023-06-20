@@ -1,7 +1,8 @@
+from benchmark.operations.operations import Operations
 from benchmark.tools.load import load_named_tables
 
 
-class Real_Instructions:
+class Real_Instructions(Operations):
     def from_tables(self, db_name, tables, aliases=[]):
         def load():
             return load_named_tables(db_name, tables, aliases)

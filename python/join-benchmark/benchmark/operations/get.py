@@ -16,6 +16,7 @@ def get_time_mem_approx_instructions(db_set, query):
     return get_set(db_set, query, Time_Mem_Approx_Instructions())
     
 def get_set(db_set, query, operation_class):
+    
     if db_set == "ssb":
         if query == 'q11':
             return q11.instruction_set(operation_class)

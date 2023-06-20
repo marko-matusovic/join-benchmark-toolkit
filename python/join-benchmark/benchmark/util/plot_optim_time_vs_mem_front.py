@@ -21,4 +21,5 @@ if __name__ == '__main__':
 
     plt.legend()
 
-    plt.savefig(f'results/figs/optimization-front/{query}.png', dpi=250)
+    plt.show()
+    # plt.savefig(f'results/figs/optimization-front/{query}.png', dpi=250)
