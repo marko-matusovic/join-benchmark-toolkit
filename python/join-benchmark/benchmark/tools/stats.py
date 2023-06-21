@@ -6,10 +6,11 @@ import numpy as np
 
 from benchmark.engine.engine import DataFrame
 from benchmark.tools.load import load_table
+from benchmark.tools.tools import bound
 
 # Constants
 HIST_MIN_ITEMS_COVERAGE = 0.75
-HIST_MEAN_ITEMS_PER_BIN = 10
+HIST_MEAN_ITEMS_PER_BIN = 100
 HIST_MIN_NUM_BINS = 10
 
 
@@ -64,22 +65,30 @@ def load_stats(db_name: str, tables: list[str], aliases: list[str]) -> TStats:
             # Bounds and Hist are conditional on number type
             for column in df:
                 try:
+                    low = df[column].min()
+                    high = df[column].max()
                     table_stats.column[column] = table_stats.column[column]._replace(
-                        bounds=(df[column].min(), df[column].max())
+                        bounds=(low, high),
                     )
                     # Select ints and floats for histogram
-                    values = [v for v in df[column] if type(v) == int or type(v) == float]
+                    values = [
+                        v for v in df[column] if type(v) == int or type(v) == float
+                    ]
+                    num_bins = bound(
+                        HIST_MIN_NUM_BINS,  # min val
+                        int(table_stats.length / HIST_MEAN_ITEMS_PER_BIN),  # calc val
+                        1 + int(high - low),  # max val
+                    )
                     # If at least some % of values pass, make the histogram
                     # Otherwise, ignore it, as it wouldn't be appropriate representation
-                    if HIST_MIN_ITEMS_COVERAGE  * table_stats.length < len(values):
-                        table_stats.column[column] = table_stats.column[column]._replace(
+                    if HIST_MIN_ITEMS_COVERAGE * table_stats.length < len(values):
+                        table_stats.column[column] = table_stats.column[
+                            column
+                        ]._replace(
                             hist=np.histogram(
                                 values,
-                                bins=max(
-                                    HIST_MIN_NUM_BINS,
-                                    int(table_stats.length / HIST_MEAN_ITEMS_PER_BIN),
-                                ),
-                                range=table_stats.column[column].bounds
+                                bins=num_bins,
+                                range=(low, high),
                             )
                         )
                 except:
