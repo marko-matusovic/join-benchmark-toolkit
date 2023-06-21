@@ -258,9 +258,10 @@ class Time_Mem_Approx_Instructions(Operations[Data, TRes]):
         def filter(data: Data):
             table_name = self.find_table(data.schema, field_name)
             stats = data.stats[table_name]
-            n_matches = sum([1.0 + 4 * value.count("%") for value in values])
-            selectivity = bound(0.0, n_matches / stats.column[field_name].unique, 1.0)
+            n_matches = sum([1 + value.count("%") for value in values])
+            selectivity = bound(0.0, DEFAULT_SEL_MATCH * n_matches, 1.0)
             # stats = self.scale_stats(stats, selectivity)
+            data.selects[table_name].append(selectivity)
             return (0, 0)  # does not return cost
 
         return filter
@@ -269,11 +270,10 @@ class Time_Mem_Approx_Instructions(Operations[Data, TRes]):
         def filter(data: Data):
             table_name = self.find_table(data.schema, field_name)
             stats = data.stats[table_name]
-            n_matches = 1.0 + 4 * value.count("%")
-            selectivity = 1.0 - bound(
-                0.0, n_matches / stats.column[field_name].unique, 1.0
-            )
+            n_matches = 1 + value.count("%")
+            selectivity = bound(0.0, 1.0 - n_matches * DEFAULT_SEL_MATCH, 1.0)
             # stats = self.scale_stats(stats, selectivity)
+            data.selects[table_name].append(selectivity)
             return (0, 0)  # does not return cost
 
         return filter
@@ -286,67 +286,41 @@ class Time_Mem_Approx_Instructions(Operations[Data, TRes]):
         def join(data: Data) -> TRes:
             table_name_1 = self.find_table(data.schema, field_name_1)
             table_name_2 = self.find_table(data.schema, field_name_2)
-            if table_name_1 == table_name_2:
+            
+            # If merged already, skip
+            if table_name_1 == table_name_2 or data.clusters[table_name_1] == data.clusters[table_name_2]:
                 return (0, 0)
 
-            orig_table_name_1 = field_name_1.split(".")[0]
-            orig_table_name_2 = field_name_2.split(".")[0]
-            if orig_table_name_1 != None and orig_table_name_2 != None:
-                orig_stats_1 = data.stats[orig_table_name_1].column[field_name_1]
-                orig_stats_2 = data.stats[orig_table_name_2].column[field_name_2]
-                if orig_stats_1.hist != None and orig_stats_2.hist != None:
+            # Merge tables
+            data.clusters[table_name_1].extend(data.clusters[table_name_2])
+            data.clusters[table_name_2] = data.clusters[table_name_1]
+
+
+            # ========== Cardinality Estimate ==========
+
+            if table_name_1 != None and table_name_2 != None:
+                stats_1 = data.stats[table_name_1]
+                stats_2 = data.stats[table_name_2]
+                hist_1 = stats_1.column[field_name_1].hist
+                hist_2 = stats_2.column[field_name_2].hist
+                if hist_1 != None and hist_2 != None:
                     print("Using Histograms")
-                    (counts_1, bins_1) = orig_stats_1.hist
-                    (counts_2, bins_2) = orig_stats_2.hist
+                    (counts_1, bins_1) = hist_1
+                    (counts_2, bins_2) = hist_2
                     # TODO: actually do something
+                    # figure out selectivity_1 and selectivity_2
+                    # append to data.selects
 
-            res = f"({table_name_1}X{table_name_2})"
-            data.history.insert(
-                0,
-                HistoryTuple(
-                    table=res,
-                    length=0,
-                    row_size=0,
-                ),
-            )
-            data.schema[res] = data.schema[table_name_1] + data.schema[table_name_2]
-            del data.schema[table_name_1]
-            del data.schema[table_name_2]
 
+
+            # ========== Cost Model ==========
+
+            # TODO: update to use selectivities in cluster
+            
             stats_1 = data.stats[table_name_1]
             stats_2 = data.stats[table_name_2]
 
-            if res not in data.stats:
-                min_unique = min(
-                    stats_1.column[field_name_1].unique,
-                    stats_2.column[field_name_2].unique,
-                )
-                rows_per_unique_1 = (
-                    1.0 * stats_1.length / stats_1.column[field_name_1].unique
-                )
-                rows_per_unique_2 = (
-                    1.0 * stats_2.length / stats_2.column[field_name_2].unique
-                )
-
-                multiplication_factor_1 = (
-                    1.0 * min_unique / stats_1.column[field_name_1].unique
-                )
-                multiplication_factor_2 = (
-                    1.0 * min_unique / stats_2.column[field_name_2].unique
-                )
-
-                # data.stats[res] = TableStats(
-                #     length=min_unique * rows_per_unique_1 * rows_per_unique_2,
-                #     column=self.scale_stats(stats_1, multiplication_factor_1).column
-                #     | self.scale_stats(stats_2, multiplication_factor_2).column,
-                # )
-
-                # # General reduction factor
-                # data.stats[res] = self.scale_stats(
-                #     data.stats[res], GENERAL_REDUCTION_FACTOR
-                # )
-
-            # Time Cost
+            # Time Cost Model
             # Skipping the step to see how large were the tables merged after them, instead using general cache timeout
             age_1 = (
                 data.history.index(HistoryTuple(table=table_name_1))
@@ -364,7 +338,7 @@ class Time_Mem_Approx_Instructions(Operations[Data, TRes]):
             length = stats_1.length + stats_2.length
             data.times[res] = length * age_multiplier * TIME_MULTIPLIER
 
-            # Memory Cost
+            # Memory Cost Model
             size_1 = stats_1.length * sum([v.dtype for v in stats_1.column.values()])
             size_2 = stats_2.length * sum([v.dtype for v in stats_2.column.values()])
             data.memory[res] = (size_1 + size_2) * MEMORY_MULTIPLIER

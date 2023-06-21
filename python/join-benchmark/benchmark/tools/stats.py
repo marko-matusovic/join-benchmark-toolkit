@@ -79,6 +79,7 @@ def load_stats(db_name: str, tables: list[str], aliases: list[str]) -> TStats:
                         int(table_stats.length / HIST_MEAN_ITEMS_PER_BIN),  # calc val
                         1 + int(high - low),  # max val
                     )
+                    # TODO: update histogram to be equi-deep 
                     # If at least some % of values pass, make the histogram
                     # Otherwise, ignore it, as it wouldn't be appropriate representation
                     if HIST_MIN_ITEMS_COVERAGE * table_stats.length < len(values):
