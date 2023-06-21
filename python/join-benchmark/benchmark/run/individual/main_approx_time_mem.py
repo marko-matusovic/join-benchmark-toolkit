@@ -1,4 +1,4 @@
-from benchmark.operations.get import get_time_mem_approx_instructions
+from benchmark.operations.get_query_instructions import get_time_mem_approx_instructions
 
 def main(db_set:str, query:str, perm:list[int]):
     print(f'Running {db_set}/{query} with perm {perm}')

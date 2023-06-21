@@ -1,4 +1,3 @@
-
 import sys
 
 from benchmark.run.individual import main_approx_time_mem, main_time_mem

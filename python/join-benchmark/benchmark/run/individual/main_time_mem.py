@@ -1,6 +1,6 @@
 import time
 import tracemalloc
-from benchmark.operations.get import get_real_instructions
+from benchmark.operations.get_query_instructions import get_real_instructions
 
 
 def main(db_set:str, query:str, perm:list[int]):

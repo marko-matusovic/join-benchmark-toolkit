@@ -1,7 +1,7 @@
-from benchmark.operations.get import get_approx_instructs
-from benchmark.operations.get import get_real_instructions
+from benchmark.operations.get_query_instructions import get_approx_instructs
+from benchmark.operations.get_query_instructions import get_real_instructions
 from benchmark.engine.engine import get_engine
-from benchmark.tools.tools import calc_stats, print_write
+from benchmark.tools.tools import calc_simple_stats, print_write
 
 def main(query):
     in_file = open(f"results/{query}.csv", "r")
@@ -22,7 +22,7 @@ def run_all_jobs(instructions, approx_ins, out_file, stats):
     
     dfs = instructions.s1_init()
     approx_data = {
-        "stats": {key: calc_stats(dfs[key]) for key in dfs},
+        "stats": {key: calc_simple_stats(dfs[key]) for key in dfs},
         "times": {}
     }
     

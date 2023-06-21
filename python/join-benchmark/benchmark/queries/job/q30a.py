@@ -1,5 +1,5 @@
 from typing import TypeVar
-from benchmark.operations.get import QueryInstructions
+from benchmark.operations.query_instructions import QueryInstructions
 from benchmark.operations.operations import Operations
 
 # SELECT MIN(mi.info) AS movie_budget,

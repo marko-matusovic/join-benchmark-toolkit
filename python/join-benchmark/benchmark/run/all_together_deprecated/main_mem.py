@@ -3,7 +3,7 @@ import itertools
 import numpy as np
 import time
 import tracemalloc
-from benchmark.operations.get import get_approx_instructs, get_real_instructions
+from benchmark.operations.get_query_instructions import get_approx_instructs, get_real_instructions
 from benchmark.tools.tools import print_write
 
 def main(query):

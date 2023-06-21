@@ -1,6 +1,6 @@
 from typing import TypeVar
-from benchmark.operations.get import QueryInstructions
 from benchmark.operations.operations import Operations
+from benchmark.operations.query_instructions import QueryInstructions
 '''
 # QUERY
 | select sum(lo_extendedprice*lo_discount) as revenue
