@@ -60,6 +60,7 @@ class Data(NamedTuple):
     clusters: dict[
         str, list[str]
     ]  # to keep track of what is merged together (like union-find, but with lists)
+    cluster_names: dict[str, str] # to keep track of cluster names
     times: dict[str, float] = {}  # approx times per table
     memory: dict[str, float] = {}  # approx memory per table
     history: list[HistoryTuple] = []
@@ -79,6 +80,7 @@ class Time_Mem_Approx_Instructions(Operations[Data, TRes]):
                 stats=load_stats(db_name, tables, aliases),
                 selects={ali: [] for ali in aliases},
                 clusters={ali: [ali] for ali in aliases},
+                cluster_names={ali: f'({ali})' for ali in aliases}, # Each cluster starts named as one table
             )
 
         return load
@@ -193,8 +195,8 @@ class Time_Mem_Approx_Instructions(Operations[Data, TRes]):
                 end_bin = start_bin + direction * len(bins)
 
                 # while
-                #   + haven't reached the end bin yet
-                #   + value still satisfies the bin boundary
+                #   * haven't reached the end bin yet
+                #   * value still satisfies the bin boundary
                 while start_bin != end_bin and comp(value, bins[start_bin]):
                     start_bin += direction
 
@@ -204,7 +206,7 @@ class Time_Mem_Approx_Instructions(Operations[Data, TRes]):
                     if start_bin < end_bin
                     else counts[end_bin:start_bin]
                 )
-                
+
                 # assume uniformity, add linear part of the previous bin to total_count
                 # case filter greater
                 if 0 < start_bin:
@@ -217,7 +219,7 @@ class Time_Mem_Approx_Instructions(Operations[Data, TRes]):
                 elif start_bin < -1:
                     total_count += (
                         counts[start_bin + 1]
-                        * (value -bins[start_bin])
+                        * (value - bins[start_bin])
                         / (bins[start_bin] - bins[start_bin + 1])
                     )
                 selectivity = total_count / table_stats.length
@@ -280,43 +282,142 @@ class Time_Mem_Approx_Instructions(Operations[Data, TRes]):
 
     # section :: JOIN =================================
 
+    def sum_hist_overlap(
+        self,
+        hist_1: tuple[np.ndarray, np.ndarray],
+        hist_2: tuple[np.ndarray, np.ndarray],
+        i_1: int,
+        i_2: int,
+        total_1: float,
+        total_2: float,
+    ) -> float:
+        """
+        Assumes
+            * bins_1[i_1] <= bins_2[i_2]
+            * bins_1[i_1+1] <= bins_2[i_2+1]
+            * bins_1[i_1+1] > bins_2[i_2]
+
+        Illustrated overlap is calculated
+        ::
+
+                    i_1     i_1+1
+            his_1 --|-------|--------
+                    |    xxx|
+                        |xxx    |
+            his_2 ------|-------|----
+                        i_2     i_2+1
+        """
+        (counts_1, bins_1) = hist_1
+        (counts_2, bins_2) = hist_2
+
+        assert bins_1[i_1] <= bins_2[i_2]
+        assert bins_1[i_1 + 1] <= bins_2[i_2 + 1]
+        assert bins_1[i_1 + 1] > bins_2[i_2]
+
+        overlap = bins_1[i_1 + 1] - bins_2[i_2]
+        width_1 = bins_1[i_1 + 1] - bins_1[i_1]
+        width_2 = bins_2[i_2 + 1] - bins_2[i_2]
+        density_1 = counts_1[i_1] / total_1
+        density_2 = counts_2[i_2] / total_2
+        return (density_1 * overlap / width_1) * (density_2 * overlap / width_2)
+
     def join_fields(
         self, field_name_1: str, field_name_2: str
     ) -> Callable[[Data], TRes]:
         def join(data: Data) -> TRes:
+            # ========== Logical Merging ==========
             table_name_1 = self.find_table(data.schema, field_name_1)
             table_name_2 = self.find_table(data.schema, field_name_2)
-            
+
             # If merged already, skip
-            if table_name_1 == table_name_2 or data.clusters[table_name_1] == data.clusters[table_name_2]:
+            if (
+                table_name_1 == table_name_2
+                or data.clusters[table_name_1] == data.clusters[table_name_2]
+            ):
                 return (0, 0)
 
             # Merge tables
             data.clusters[table_name_1].extend(data.clusters[table_name_2])
             data.clusters[table_name_2] = data.clusters[table_name_1]
-
-
+            
+            # Figure out the new cluster name
+            res = f'({data.cluster_names[table_name_1]}X{data.cluster_names[table_name_2]})'
+            # Rename all tables to this cluster
+            for t in data.clusters[table_name_1]:
+                data.cluster_names[t] = res
+                
             # ========== Cardinality Estimate ==========
 
-            if table_name_1 != None and table_name_2 != None:
-                stats_1 = data.stats[table_name_1]
-                stats_2 = data.stats[table_name_2]
-                hist_1 = stats_1.column[field_name_1].hist
-                hist_2 = stats_2.column[field_name_2].hist
-                if hist_1 != None and hist_2 != None:
-                    print("Using Histograms")
-                    (counts_1, bins_1) = hist_1
-                    (counts_2, bins_2) = hist_2
-                    # TODO: actually do something
-                    # figure out selectivity_1 and selectivity_2
-                    # append to data.selects
+            stats_1 = data.stats[table_name_1]
+            stats_2 = data.stats[table_name_2]
+            col_stats_1 = stats_1.column[field_name_1]
+            col_stats_2 = stats_2.column[field_name_2]
+            len_1 = stats_1.length
+            len_2 = stats_2.length
+            hist_1 = col_stats_1.hist
+            hist_2 = col_stats_2.hist
 
+            if hist_1 != None and hist_2 != None:
+                (counts_1, bins_1) = hist_1
+                (counts_2, bins_2) = hist_2
 
+                i_1 = 0
+                i_2 = 0
+
+                # Find the overlap and then use @self.sum_hist_overlap to calculate it
+                selectivity = 0
+                while i_1 + 1 < len(bins_1) and i_2 + 1 < len(bins_2):
+                    if bins_1[i_1] < bins_2[i_2]:
+                        if bins_2[i_2] < bins_1[i_1 + 1]:
+                            selectivity += self.sum_hist_overlap(
+                                hist_1, hist_2, i_1, i_2, len_1, len_2
+                            )
+                        # when == or > then no overlap and move forward
+                        i_1 += 1
+                    elif bins_2[i_2] < bins_1[i_1]:
+                        if bins_1[i_1] < bins_2[i_2 + 1]:
+                            selectivity += self.sum_hist_overlap(
+                                hist_2, hist_1, i_2, i_1, len_2, len_1
+                            )
+                        # when == or > then no overlap and move forward
+                        i_2 += 1
+                    else:
+                        # equal, find lower next bound
+                        if bins_1[i_1 + 1] < bins_2[i_2 + 1]:
+                            selectivity += self.sum_hist_overlap(
+                                hist_1, hist_2, i_1, i_2, len_1, len_2
+                            )
+                            i_1 += 1
+                        elif bins_2[i_2 + 1] < bins_1[i_1 + 1]:
+                            selectivity += self.sum_hist_overlap(
+                                hist_2, hist_1, i_2, i_1, len_2, len_1
+                            )
+                            i_2 += 1
+                        else:
+                            # If they are perfectly equal, increment both
+                            selectivity += self.sum_hist_overlap(
+                                hist_1, hist_2, i_1, i_2, len_1, len_2
+                            )
+                            i_1 += 1
+                            i_2 += 1
+
+                assert 0 <= selectivity <= 1
+            else:
+                # Cannot use histograms, calculating selectivity naively with # unique values
+                low = min(col_stats_1.unique, col_stats_2.unique)
+                high = max(col_stats_1.unique, col_stats_2.unique)
+
+                selectivity = low/high
+            
+            # Store selectivity (sqrt, because it will be squared when calculating)
+            selectivity_sqrt = np.sqrt(selectivity)
+            data.selects[table_name_1].append(selectivity_sqrt)
+            data.selects[table_name_2].append(selectivity_sqrt)
 
             # ========== Cost Model ==========
 
             # TODO: update to use selectivities in cluster
-            
+
             stats_1 = data.stats[table_name_1]
             stats_2 = data.stats[table_name_2]
 
@@ -335,13 +436,22 @@ class Time_Mem_Approx_Instructions(Operations[Data, TRes]):
             age_multiplier = self.calc_history_multiplier(
                 age_1
             ) * self.calc_history_multiplier(age_2)
-            length = stats_1.length + stats_2.length
+            length = len_1 + len_2
             data.times[res] = length * age_multiplier * TIME_MULTIPLIER
 
             # Memory Cost Model
-            size_1 = stats_1.length * sum([v.dtype for v in stats_1.column.values()])
-            size_2 = stats_2.length * sum([v.dtype for v in stats_2.column.values()])
+            size_1 = len_1 * sum([v.dtype for v in stats_1.column.values()])
+            size_2 = len_2 * sum([v.dtype for v in stats_2.column.values()])
             data.memory[res] = (size_1 + size_2) * MEMORY_MULTIPLIER
+            
+            # ========== Update History ==========
+            
+            # new entry, at the front
+            data.history.insert(0, HistoryTuple(
+                table=res,
+                length=0, # should be resulting size (product of length scaled by selects from cluster)
+                row_size=0, # should be size of all rows in cluster
+            ))
 
             return (data.times[res], data.memory[res])
 
