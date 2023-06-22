@@ -417,9 +417,11 @@ class Time_Mem_Approx_Instructions(Operations[Data, TRes]):
             # ========== Cost Model ==========
 
             # TODO: update to use selectivities in cluster
-
-            stats_1 = data.stats[table_name_1]
-            stats_2 = data.stats[table_name_2]
+            
+            cluster = data.clusters[table_name_1]
+            max_length = np.product([data.stats[tbl].length for tbl in cluster])
+            total_selectivity = np.product([np.product(data.selects[tbl]) for tbl in cluster])
+            total_length = float(max_length * total_selectivity)
 
             # Time Cost Model
             # Skipping the step to see how large were the tables merged after them, instead using general cache timeout
@@ -436,21 +438,20 @@ class Time_Mem_Approx_Instructions(Operations[Data, TRes]):
             age_multiplier = self.calc_history_multiplier(
                 age_1
             ) * self.calc_history_multiplier(age_2)
-            length = len_1 + len_2
-            data.times[res] = length * age_multiplier * TIME_MULTIPLIER
+            
+            data.times[res] = total_length * age_multiplier * TIME_MULTIPLIER
 
             # Memory Cost Model
-            size_1 = len_1 * sum([v.dtype for v in stats_1.column.values()])
-            size_2 = len_2 * sum([v.dtype for v in stats_2.column.values()])
-            data.memory[res] = (size_1 + size_2) * MEMORY_MULTIPLIER
+            row_size = sum([v.dtype for tbl in cluster for v in data.stats[tbl].column.values()])
+            data.memory[res] = float(total_length * row_size) * MEMORY_MULTIPLIER
             
             # ========== Update History ==========
             
             # new entry, at the front
             data.history.insert(0, HistoryTuple(
                 table=res,
-                length=0, # should be resulting size (product of length scaled by selects from cluster)
-                row_size=0, # should be size of all rows in cluster
+                length=total_length, # should be resulting size (product of length scaled by selects from cluster)
+                row_size=row_size, # should be size of all rows in cluster
             ))
 
             return (data.times[res], data.memory[res])
