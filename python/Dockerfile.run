@@ -89,7 +89,8 @@ RUN conda install -c rapidsai -c conda-forge -c nvidia -c intel \
     setuptools \
     tqdm \
     sqlparse \
-    mkl
+    mkl \
+    pymoo
 
 WORKDIR /app/join-benchmark
 COPY join-benchmark .
