@@ -1,0 +1,127 @@
+{
+    "configurations": [
+        {
+            "name": "Docker: Python",
+            "type": "docker",
+            "request": "launch",
+            "preLaunchTask": "docker-run: debug",
+            "python": {
+                "pathMappings": [
+                    {
+                        "localRoot": "${workspaceFolder}",
+                        "remoteRoot": "/app"
+                    }
+                ],
+                "projectType": "general"
+            },
+        },
+        {
+            "name": "PLT TStart job/22a",
+            "type": "python",
+            "request": "launch",
+            "program": "benchmark/util/plot_time_start_dist.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": ["job/22a"]
+        },
+        {
+            "name": "PLT TvM job/22a",
+            "type": "python",
+            "request": "launch",
+            "program": "benchmark/util/plot_time_vs_mem.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": ["job/22a"]
+        },
+        {
+            "name": "PLT TOrd job/22a",
+            "type": "python",
+            "request": "launch",
+            "program": "benchmark/util/plot_time_for_order.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": ["job/22a", "-e", "-m"]
+        },
+        {
+            "name": "PLT TPos job/22a",
+            "type": "python",
+            "request": "launch",
+            "program": "benchmark/util/plot_time_for_join_pos.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": ["job/22a", "-e"]
+        },
+        {
+            "name": "TM SSB Q41",
+            "type": "python",
+            "request": "launch",
+            "program": "main.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": ["time_mem", "ssb/q41", "0,1,2,3"]
+        },
+        {
+            "name": "TM SSB Q42",
+            "type": "python",
+            "request": "launch",
+            "program": "main.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": ["time_mem", "ssb/q42", "0,1,2,3"]
+        },
+        {
+            "name": "TM JOB Q1B",
+            "type": "python",
+            "request": "launch",
+            "program": "main.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": ["time_mem", "job/1b", "0,1,2,3,4"]
+        },
+        {
+            "name": "TM JOB Q2A",
+            "type": "python",
+            "request": "launch",
+            "program": "main.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": ["time_mem", "job/2a", "0,1,2,3,4"]
+        },
+        {
+            "name": "TM JOB Q20A",
+            "type": "python",
+            "request": "launch",
+            "program": "main.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": ["time_mem", "job/20a", "0,1,2,3,4,5,6,7,8,9,10,11"]
+        },
+        {
+            "name": "TM JOB Q22A",
+            "type": "python",
+            "request": "launch",
+            "program": "main.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": ["time_mem", "job/22a", "0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15"]
+        },
+        {
+            "name": "TM JOB Q28A",
+            "type": "python",
+            "request": "launch",
+            "program": "main.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": ["time_mem", "job/28a", "0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22"]
+        },
+        {
+            "name": "TM JOB Q30A",
+            "type": "python",
+            "request": "launch",
+            "program": "main.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": ["time_mem", "job/30a", "0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20"]
+        },
+    ]
+}
