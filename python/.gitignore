@@ -10,7 +10,6 @@
 **/.dockerignore
 **/.env
 **/.vs
-**/.vscode
 **/*.*proj.user
 **/*.dbmdl
 **/*.jfm
