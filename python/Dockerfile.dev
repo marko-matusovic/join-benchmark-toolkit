@@ -77,7 +77,7 @@ RUN conda update conda
 
 # With version to make build faster
 RUN conda install -c rapidsai -c conda-forge -c nvidia -c intel \
-    python=3.10.11 \
+    python=3.11.4 \
     cudf \
     cudatoolkit \
     Cython \
