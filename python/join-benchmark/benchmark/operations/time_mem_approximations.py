@@ -5,10 +5,6 @@ from benchmark.tools.stats import ColumnStats, TStats, TableStats, load_stats
 from benchmark.tools.tools import bound, cover, overlap_right
 import numpy as np
 
-# ADDITIONAL REDUCTION FOR JOINS
-GENERAL_REDUCTION_FACTOR = 0.9
-
-
 # CACHE FRESHNESS
 # if result is THIS OR LESS entries in history, then it IS in cache
 CACHE_HIT_GUARANTEE = 3
@@ -19,8 +15,8 @@ CACHE_MISS_MULTIPLIER = 10.0
 
 
 # LINEAR SCALING
-TIME_MULTIPLIER = 1.0 / 1e8
-MEMORY_MULTIPLIER = 1.0
+TIME_MULTIPLIER = 1.0 / 2 / 1e9
+MEMORY_MULTIPLIER = 1.0 / 1e2
 
 
 # DEFAULT SELECTIVITY VALUES
@@ -289,11 +285,10 @@ class Time_Mem_Approx_Instructions(Operations[Data, TRes]):
         section_1: tuple[tuple[np.ndarray, np.ndarray], int, float],
         section_2: tuple[tuple[np.ndarray, np.ndarray], int, float],
     ) -> float:
-        
         ((counts_1, bins_1), i_1, total_1) = section_1
         ((counts_2, bins_2), i_2, total_2) = section_2
 
-        assert overlap_right(bins_1[i_1], bins_1[i_1+1], bins_2[i_2], bins_2[i_2+1])
+        assert overlap_right(bins_1[i_1], bins_1[i_1 + 1], bins_2[i_2], bins_2[i_2 + 1])
 
         overlap = bins_1[i_1 + 1] - bins_2[i_2]
         width_1 = bins_1[i_1 + 1] - bins_1[i_1]
@@ -307,11 +302,10 @@ class Time_Mem_Approx_Instructions(Operations[Data, TRes]):
         section_1: tuple[tuple[np.ndarray, np.ndarray], int, float],
         section_2: tuple[tuple[np.ndarray, np.ndarray], int, float],
     ) -> float:
-        
         ((counts_1, bins_1), i_1, total_1) = section_1
         ((counts_2, bins_2), i_2, total_2) = section_2
 
-        assert cover(bins_1[i_1], bins_1[i_1+1], bins_2[i_2], bins_2[i_2+1])
+        assert cover(bins_1[i_1], bins_1[i_1 + 1], bins_2[i_2], bins_2[i_2 + 1])
 
         width_1 = bins_1[i_1 + 1] - bins_1[i_1]
         width_2 = bins_2[i_2 + 1] - bins_2[i_2]
@@ -335,14 +329,13 @@ class Time_Mem_Approx_Instructions(Operations[Data, TRes]):
                 return (0, 0)
 
             # Merge tables
-            data.clusters[table_name_1].extend(data.clusters[table_name_2])
-            data.clusters[table_name_2] = data.clusters[table_name_1]
-
+            cluster = data.clusters[table_name_1] + data.clusters[table_name_2]
             # Figure out the new cluster name
-            res = f"({data.cluster_names[table_name_1]}X{data.cluster_names[table_name_2]})"
-            # Rename all tables to this cluster
-            for t in data.clusters[table_name_1]:
-                data.cluster_names[t] = res
+            cluster_name = f"({data.cluster_names[table_name_1]}X{data.cluster_names[table_name_2]})"
+            # Update all tables in the cluster
+            for tbl in cluster:
+                data.clusters[tbl] = cluster
+                data.cluster_names[tbl] = cluster_name
 
             # ========== Cardinality Estimate ==========
 
@@ -368,16 +361,24 @@ class Time_Mem_Approx_Instructions(Operations[Data, TRes]):
                     section_1 = (hist_1, i_1, len_1)
                     section_2 = (hist_2, i_2, len_2)
 
-                    if overlap_right(bins_1[i_1], bins_1[i_1+1], bins_2[i_2], bins_2[i_2+1]):
+                    if overlap_right(
+                        bins_1[i_1], bins_1[i_1 + 1], bins_2[i_2], bins_2[i_2 + 1]
+                    ):
                         selectivity += self.sum_hist_overlap(section_1, section_2)
                         i_1 += 1
-                    elif overlap_right(bins_2[i_2], bins_2[i_2+1], bins_1[i_1], bins_1[i_1+1]):
+                    elif overlap_right(
+                        bins_2[i_2], bins_2[i_2 + 1], bins_1[i_1], bins_1[i_1 + 1]
+                    ):
                         selectivity += self.sum_hist_overlap(section_2, section_1)
                         i_2 += 1
-                    elif cover(bins_1[i_1], bins_1[i_1+1], bins_2[i_2], bins_2[i_2+1]):
+                    elif cover(
+                        bins_1[i_1], bins_1[i_1 + 1], bins_2[i_2], bins_2[i_2 + 1]
+                    ):
                         selectivity += self.sum_hist_cover(section_1, section_2)
                         i_2 += 1
-                    elif cover(bins_2[i_2], bins_2[i_2+1], bins_1[i_1], bins_1[i_1+1]):
+                    elif cover(
+                        bins_2[i_2], bins_2[i_2 + 1], bins_1[i_1], bins_1[i_1 + 1]
+                    ):
                         selectivity += self.sum_hist_cover(section_2, section_1)
                         i_1 += 1
                     else:
@@ -425,38 +426,41 @@ class Time_Mem_Approx_Instructions(Operations[Data, TRes]):
 
             # ========== Cost Model ==========
 
-            # TODO: update to use selectivities in cluster
-
-            cluster = data.clusters[table_name_1]
-            max_length = np.product([data.stats[tbl].length for tbl in cluster])
-            total_selectivity = np.product(
-                [np.product(data.selects[tbl]) for tbl in cluster]
+            total_length = float(
+                np.product(
+                    [
+                        np.product(data.selects[tbl] + [data.stats[tbl].length])
+                        for tbl in cluster
+                    ]
+                )
             )
-            total_length = float(max_length * total_selectivity)
 
             # Time Cost Model
             # Skipping the step to see how large were the tables merged after them, instead using general cache timeout
-            age_1 = (
-                data.history.index(HistoryTuple(table=table_name_1))
-                if HistoryTuple(table=table_name_1) in data.history
-                else CACHE_MISS_GUARANTEE
-            )
-            age_2 = (
-                data.history.index(table_name_2)
-                if table_name_2 in data.history
-                else CACHE_MISS_GUARANTEE
-            )
-            age_multiplier = self.calc_history_multiplier(
-                age_1
-            ) * self.calc_history_multiplier(age_2)
+            # age_1 = (
+            #     data.history.index(HistoryTuple(table=table_name_1))
+            #     if HistoryTuple(table=table_name_1) in data.history
+            #     else CACHE_MISS_GUARANTEE
+            # )
+            # age_2 = (
+            #     data.history.index(table_name_2)
+            #     if table_name_2 in data.history
+            #     else CACHE_MISS_GUARANTEE
+            # )
+            # age_multiplier = self.calc_history_multiplier(
+            #     age_1
+            # ) * self.calc_history_multiplier(age_2)
+            age_multiplier = 1.0
 
-            data.times[res] = total_length * age_multiplier * TIME_MULTIPLIER
+            data.times[cluster_name] = total_length * age_multiplier * TIME_MULTIPLIER
 
             # Memory Cost Model
             row_size = sum(
                 [v.dtype for tbl in cluster for v in data.stats[tbl].column.values()]
             )
-            data.memory[res] = float(total_length * row_size) * MEMORY_MULTIPLIER
+            data.memory[cluster_name] = (
+                float(total_length * row_size) * MEMORY_MULTIPLIER
+            )
 
             # ========== Update History ==========
 
@@ -464,12 +468,12 @@ class Time_Mem_Approx_Instructions(Operations[Data, TRes]):
             data.history.insert(
                 0,
                 HistoryTuple(
-                    table=res,
+                    table=cluster_name,
                     length=total_length,  # should be resulting size (product of length scaled by selects from cluster)
                     row_size=row_size,  # should be size of all rows in cluster
                 ),
             )
 
-            return (data.times[res], data.memory[res])
+            return (data.times[cluster_name], data.memory[cluster_name])
 
         return join
