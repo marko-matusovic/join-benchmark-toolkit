@@ -5,18 +5,19 @@ from benchmark.tools.stats import ColumnStats, TStats, TableStats, load_stats
 from benchmark.tools.tools import bound, cover, overlap_right
 import numpy as np
 
+
+# LINEAR SCALING
+TIME_MULTIPLIER = 1.0 / 1e8
+MEMORY_MULTIPLIER = 1.0 / 1e2
+
+
 # CACHE FRESHNESS
 # if result is THIS OR LESS entries in history, then it IS in cache
 CACHE_HIT_GUARANTEE = 3
 # if result is THIS OR MORE entries in history, then it IS NOT in cache
 CACHE_MISS_GUARANTEE = 8
-CACHE_HIT_MULTIPLIER = 0.8
-CACHE_MISS_MULTIPLIER = 10.0
-
-
-# LINEAR SCALING
-TIME_MULTIPLIER = 1.0 / 2 / 1e9
-MEMORY_MULTIPLIER = 1.0 / 1e2
+CACHE_HIT_MULTIPLIER = 0.5
+CACHE_MISS_MULTIPLIER = 2
 
 
 # DEFAULT SELECTIVITY VALUES
