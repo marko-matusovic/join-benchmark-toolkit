@@ -77,20 +77,20 @@ RUN conda update conda
 
 # With version to make build faster
 RUN conda install -c rapidsai -c conda-forge -c nvidia -c intel \
-    python=3.11.4 \
-    cudf \
-    cudatoolkit \
+    python=3.10 \
+    cudf=23.06 \
+    cudatoolkit=11.8 \
+    pandas \
+    pymoo \
     Cython \
     matplotlib \
     numpy \
-    pandas \
     plotly \
     scipy \
     setuptools \
     tqdm \
     sqlparse \
-    mkl \
-    pymoo
+    mkl
 
 WORKDIR /app/join-benchmark
 

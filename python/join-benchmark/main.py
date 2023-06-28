@@ -8,10 +8,12 @@ from benchmark.engine.engine import set_engine
 # This program accepts a number of positional arguments. 
 # The first argument is the name of the program to run, it can be one of the following:
 if __name__ == "__main__":
+    print(f'Running with args: {sys.argv}')    
+    
     if '--gpu' in [a.lower() for a in sys.argv]:
-        set_engine('cudf')
-    else:
-        set_engine('pandas')
+        set_engine('gpu')
+    else: # default to cpu
+        set_engine('cpu')
         
     run_config = sys.argv[1]
     

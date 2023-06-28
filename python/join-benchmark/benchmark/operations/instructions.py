@@ -1,10 +1,9 @@
 from typing import Any
-from benchmark.engine.engine import DataFrame
+from benchmark.engine.engine import DataFrame, get_engine, get_engine_name
 from benchmark.operations.operations import Operations, TVal
 from benchmark.tools.load import load_named_tables
 
 TDFs = dict[str, DataFrame]
-
 
 class Real_Instructions(Operations[TDFs, None]):
     def from_tables(self, db_name: str, tables: list[str], aliases: list[str] = []):
@@ -125,7 +124,13 @@ class Real_Instructions(Operations[TDFs, None]):
         value = value.replace('-', '\\-')
         # allow wildcards
         value = value.replace("%", ".*")
-        return col.str.contains(f'^{value}$')
+        if get_engine_name() == 'cpu':
+            return col.str.contains(f'^{value}$', na=True)
+        elif get_engine_name() == 'gpu':
+            return col.str.contains(f'^{value}$')
+        else:
+            print("ERROR: Unsupported engine name found!")
+            exit(1)
 
     # PRIVATE
     def find_names(self, dfs: TDFs, field_name: str) -> str:

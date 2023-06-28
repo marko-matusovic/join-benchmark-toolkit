@@ -1,15 +1,7 @@
-ENV=${1:-"all"}
+ENV=${1:-"run"}
 
-if [ $ENV = 'dev' ]; then
-    docker build -t mmatusovic/python:dev -f Dockerfile.dev .
-fi;
+docker build -t mmatusovic/python:dev -f Dockerfile.dev .
 
 if [ $ENV = 'run' ]; then
     docker build -t mmatusovic/python:run -f Dockerfile.run .
 fi;
-
-if [ $ENV = 'all' ]; then
-    docker build -t mmatusovic/python:dev -f Dockerfile.dev .
-    docker build -t mmatusovic/python:run -f Dockerfile.run .
-fi;
-
