@@ -1,6 +1,6 @@
 import sys
 
-from benchmark.run.individual import main_approx_time_mem, main_time_mem
+from benchmark.run.individual import main_approx_time_mem, main_compare_card_est, main_time_mem
 from benchmark.run.individual import main_run
 from benchmark.run.optimization import main_optim_nsga_ii
 from benchmark.engine.engine import set_engine
@@ -59,3 +59,15 @@ if __name__ == "__main__":
             print("No query specified")
             exit(1)
         main_optim_nsga_ii.main(db_set, query)
+        
+        
+    # comp_card_est - combination of 'run' and 'approximation' but focus on the accuracy of cardinality estimate
+    #     2nd arg: db_set/query 
+    #     3rd arg: order of joins
+    if run_config == 'comp_card_est':
+        [db_set, query] = sys.argv[2].split("/")
+        if query == None:
+            print("No query specified")
+            exit(1)
+        perm = [int(i) for i in sys.argv[3].split(',')]
+        main_compare_card_est.main(db_set, query, perm)

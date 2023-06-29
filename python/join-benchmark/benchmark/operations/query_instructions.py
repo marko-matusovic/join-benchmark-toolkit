@@ -1,9 +1,4 @@
-from typing import Callable, Generic
-
-from pyparsing import TypeVar
-
-from benchmark.operations.instructions import TDFs
-from benchmark.operations.time_mem_approximations import Data, TRes
+from typing import Callable, Generic, TypeVar
 
 I = TypeVar("I")
 O = TypeVar("O")

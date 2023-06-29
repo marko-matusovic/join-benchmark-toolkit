@@ -55,7 +55,7 @@ class Data(NamedTuple):
     # selectivity multipliers applied per table
     selects: dict[str, list[float]]
     clusters: dict[
-        str, list[str]
+        str, set[str]
     ]  # to keep track of what is merged together (like union-find, but with lists)
     cluster_names: dict[str, str]  # to keep track of cluster names
     times: dict[str, float] = {}  # approx times per table
@@ -63,10 +63,10 @@ class Data(NamedTuple):
     history: list[HistoryTuple] = []
 
 
-TRes = tuple[float, float]
+Res = tuple[float, float]
 
 
-class Time_Mem_Approx_Instructions(Operations[Data, TRes]):
+class Time_Mem_Approx_Instructions(Operations[Data, Res]):
     def from_tables(self, db_name: str, tables: list[str], aliases: list[str] = []):
         if len(aliases) != len(tables):
             aliases = tables
@@ -76,7 +76,7 @@ class Time_Mem_Approx_Instructions(Operations[Data, TRes]):
                 schema=rename_schema(get_schema(db_name), tables, aliases),
                 stats=load_stats(db_name, tables, aliases),
                 selects={ali: [] for ali in aliases},
-                clusters={ali: [ali] for ali in aliases},
+                clusters={ali: {ali} for ali in aliases},
                 cluster_names={
                     ali: f"({ali})" for ali in aliases
                 },  # Each cluster starts named as one table
@@ -118,22 +118,6 @@ class Time_Mem_Approx_Instructions(Operations[Data, TRes]):
             CACHE_MISS_GUARANTEE - CACHE_HIT_GUARANTEE
         )
 
-    # Old approach used to rescale the tables when applying filters, new approach collects the selectivities in list
-    # # PRIVATE
-    # def scale_stats(self, stats: TableStats, selectivity: float) -> TableStats:
-    #     return TableStats(
-    #         length=stats.length * selectivity,
-    #         column={
-    #             c: ColumnStats(
-    #                 dtype=stats.column[c].dtype,
-    #                 unique=stats.column[c].unique * selectivity,
-    #                 bounds=stats.column[c].bounds,
-    #                 hist=stats.column[c].hist,  # TODO: scale the histogram?
-    #             )
-    #             for c in stats.column
-    #         },
-    #     )
-
     # section :: FILTERS =================================
 
     def filter_field_eq(self, field_name: str, values: list[TVal]):
@@ -141,8 +125,8 @@ class Time_Mem_Approx_Instructions(Operations[Data, TRes]):
             table_name = self.find_table(data.schema, field_name)
             stats = data.stats[table_name]
             selectivity = 1.0 * len(values) / stats.column[field_name].unique
-            # stats = self.scale_stats(stats, selectivity)
             data.selects[table_name].append(selectivity)
+            data.cluster_names[table_name] = f"({table_name}S{field_name}={values})"
             return (0, 0)  # does not return cost
 
         return filter
@@ -152,8 +136,8 @@ class Time_Mem_Approx_Instructions(Operations[Data, TRes]):
             table_name = self.find_table(data.schema, field_name)
             stats = data.stats[table_name]
             selectivity = 1 - (1.0 / stats.column[field_name].unique)
-            # self.scale_stats(stats, selectivity)
             data.selects[table_name].append(selectivity)
+            data.cluster_names[table_name] = f"({table_name}S{field_name}!={value})"
             return (0, 0)  # does not return cost
 
         return filter
@@ -166,7 +150,6 @@ class Time_Mem_Approx_Instructions(Operations[Data, TRes]):
     ):
         def filter(data: Data):
             table_name = self.find_table(data.schema, field_name)
-            # data.stats[table_name] = self.scale_stats(data.stats[table_name], 0.5)
             table_stats = data.stats[table_name]
             column_stats = table_stats.column[field_name]
 
@@ -239,6 +222,19 @@ class Time_Mem_Approx_Instructions(Operations[Data, TRes]):
                 selectivity = DEFAULT_SEL_INEQ
 
             data.selects[table_name].append(selectivity)
+            
+            if comp == np.greater_equal:
+                data.cluster_names[table_name] = f"({table_name}S{field_name}>={value})"
+            elif comp == np.greater:
+                data.cluster_names[table_name] = f"({table_name}S{field_name}>{value})"
+            elif comp == np.less_equal:
+                data.cluster_names[table_name] = f"({table_name}S{field_name}<={value})"
+            elif comp == np.less:
+                data.cluster_names[table_name] = f"({table_name}S{field_name}<{value})"
+            else:
+                print("ERROR: Unsupported comp operation")
+                exit(1)
+            
             return (0, 0)  # does not return cost
 
         return filter
@@ -261,8 +257,8 @@ class Time_Mem_Approx_Instructions(Operations[Data, TRes]):
             stats = data.stats[table_name]
             n_matches = sum([1 + value.count("%") for value in values])
             selectivity = bound(0.0, DEFAULT_SEL_MATCH * n_matches, 1.0)
-            # stats = self.scale_stats(stats, selectivity)
             data.selects[table_name].append(selectivity)
+            data.cluster_names[table_name] = f"({table_name}S{field_name}LIKE{values})"
             return (0, 0)  # does not return cost
 
         return filter
@@ -273,8 +269,8 @@ class Time_Mem_Approx_Instructions(Operations[Data, TRes]):
             stats = data.stats[table_name]
             n_matches = 1 + value.count("%")
             selectivity = bound(0.0, 1.0 - n_matches * DEFAULT_SEL_MATCH, 1.0)
-            # stats = self.scale_stats(stats, selectivity)
             data.selects[table_name].append(selectivity)
+            data.cluster_names[table_name] = f"({table_name}S{field_name}NOT-LIKE[{value}])"
             return (0, 0)  # does not return cost
 
         return filter
@@ -316,23 +312,24 @@ class Time_Mem_Approx_Instructions(Operations[Data, TRes]):
 
     def join_fields(
         self, field_name_1: str, field_name_2: str
-    ) -> Callable[[Data], TRes]:
-        def join(data: Data) -> TRes:
+    ) -> Callable[[Data], Res]:
+        def join(data: Data) -> Res:
             # ========== Logical Merging ==========
             table_name_1 = self.find_table(data.schema, field_name_1)
             table_name_2 = self.find_table(data.schema, field_name_2)
 
-            # If merged already, skip
-            if (
-                table_name_1 == table_name_2
-                or data.clusters[table_name_1] == data.clusters[table_name_2]
-            ):
-                return (0, 0)
+            cluster_name_1 = data.cluster_names[table_name_1]
+            cluster_name_2 = data.cluster_names[table_name_2]
 
-            # Merge tables
-            cluster = data.clusters[table_name_1] + data.clusters[table_name_2]
             # Figure out the new cluster name
-            cluster_name = f"({data.cluster_names[table_name_1]}X{data.cluster_names[table_name_2]})"
+            if cluster_name_1 != cluster_name_2:
+                cluster_name = f"({data.cluster_names[table_name_1]}X{data.cluster_names[table_name_2]})"
+            else:
+                cluster_name = f"({cluster_name_1}XS{field_name_1}={field_name_2})"
+
+            # Merge clusters
+            cluster = data.clusters[table_name_1].union(data.clusters[table_name_2])
+            
             # Update all tables in the cluster
             for tbl in cluster:
                 data.clusters[tbl] = cluster
@@ -388,30 +385,6 @@ class Time_Mem_Approx_Instructions(Operations[Data, TRes]):
                         else:
                             i_2 += 1
 
-                    # if bins_1[i_1] < bins_2[i_2]:
-                    #     if bins_2[i_2] < bins_1[i_1 + 1]:
-                    #         selectivity += self.sum_hist_overlap(section_1, section_2)
-                    #     # when == or > then no overlap and move forward
-                    #     i_1 += 1
-                    # elif bins_2[i_2] < bins_1[i_1]:
-                    #     if bins_1[i_1] < bins_2[i_2 + 1]:
-                    #         selectivity += self.sum_hist_overlap(section_2, section_1)
-                    #     # when == or > then no overlap and move forward
-                    #     i_2 += 1
-                    # else:
-                    #     # equal, find lower next bound
-                    #     if bins_1[i_1 + 1] < bins_2[i_2 + 1]:
-                    #         selectivity += self.sum_hist_overlap(section_1, section_2)
-                    #         i_1 += 1
-                    #     elif bins_2[i_2 + 1] < bins_1[i_1 + 1]:
-                    #         selectivity += self.sum_hist_overlap(section_2, section_1)
-                    #         i_2 += 1
-                    #     else:
-                    #         # If they are perfectly equal, increment both
-                    #         selectivity += self.sum_hist_overlap(section_1, section_2)
-                    #         i_1 += 1
-                    #         i_2 += 1
-
                 assert 0 <= selectivity <= 1
             else:
                 # Cannot use histograms, calculating selectivity naively with # unique values
@@ -420,10 +393,14 @@ class Time_Mem_Approx_Instructions(Operations[Data, TRes]):
 
                 selectivity = low / high
 
-            # Store selectivity (sqrt, because it will be squared when calculating)
-            selectivity_sqrt = np.sqrt(selectivity)
-            data.selects[table_name_1].append(selectivity_sqrt)
-            data.selects[table_name_2].append(selectivity_sqrt)
+            if table_name_1 != table_name_2:
+                # Store selectivity (sqrt, because it will be multiplied together when calculating)
+                selectivity_sqrt = np.sqrt(selectivity)
+                data.selects[table_name_1].append(selectivity_sqrt)
+                data.selects[table_name_2].append(selectivity_sqrt)
+            else:
+                data.selects[table_name_1].append(selectivity)
+                
 
             # ========== Cost Model ==========
 
@@ -478,3 +455,13 @@ class Time_Mem_Approx_Instructions(Operations[Data, TRes]):
             return (data.times[cluster_name], data.memory[cluster_name])
 
         return join
+
+    # PRIVATE
+    def join_filter_eq(
+        self, data: Data, table_name: str, field_name_1: str, field_name_2: str
+    ):
+        table = dfs[table_name]
+        del dfs[table_name]
+        dfs[f"({table_name}XS{field_name_1}={field_name_2}"] = table.loc[
+            table[field_name_1] == table[field_name_2]
+        ]

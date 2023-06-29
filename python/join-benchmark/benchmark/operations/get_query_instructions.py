@@ -1,5 +1,4 @@
 from typing import TypeVar
-from benchmark.operations.time_approximations_deprecated import Approx_Instructions
 
 from benchmark.operations.operations import Operations
 from benchmark.operations.instructions import Real_Instructions
@@ -12,10 +11,6 @@ from benchmark.operations.query_instructions import QueryInstructions
 
 def get_real_instructions(db_set: str, query: str):
     return get_set(db_set, query, Real_Instructions())
-
-
-def get_approx_instructs(db_set: str, query: str):
-    return get_set(db_set, query, Approx_Instructions())
 
 
 def get_time_mem_approx_instructions(db_set: str, query: str):
