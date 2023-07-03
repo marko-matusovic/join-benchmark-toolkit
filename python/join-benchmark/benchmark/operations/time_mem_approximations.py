@@ -89,7 +89,7 @@ class Time_Mem_Approx_Instructions(Operations[Data, Res]):
         for table_name in schema:
             if field_name in schema[table_name]:
                 return table_name
-        print(f"ERROR: No table with field {field_name} found!")
+        print(f"ERROR: No table with field ({field_name}) found!")
         exit(1)
 
     # PRIVATE
@@ -126,7 +126,9 @@ class Time_Mem_Approx_Instructions(Operations[Data, Res]):
             stats = data.stats[table_name]
             selectivity = 1.0 * len(values) / stats.column[field_name].unique
             data.selects[table_name].append(selectivity)
-            data.cluster_names[table_name] = f"({table_name}S{field_name}={values})"
+            cluster_name = f"({data.cluster_names[table_name]}S({field_name})={values})"
+            for tbl in data.clusters[table_name]:
+                data.cluster_names[tbl] = cluster_name
             return (0, 0)  # does not return cost
 
         return filter
@@ -137,7 +139,9 @@ class Time_Mem_Approx_Instructions(Operations[Data, Res]):
             stats = data.stats[table_name]
             selectivity = 1 - (1.0 / stats.column[field_name].unique)
             data.selects[table_name].append(selectivity)
-            data.cluster_names[table_name] = f"({table_name}S{field_name}!={value})"
+            cluster_name = f"({data.cluster_names[table_name]}S({field_name})!={value})"
+            for tbl in data.clusters[table_name]:
+                data.cluster_names[tbl] = cluster_name
             return (0, 0)  # does not return cost
 
         return filter
@@ -224,16 +228,19 @@ class Time_Mem_Approx_Instructions(Operations[Data, Res]):
             data.selects[table_name].append(selectivity)
             
             if comp == np.greater_equal:
-                data.cluster_names[table_name] = f"({table_name}S{field_name}>={value})"
+                cluster_name = f"({data.cluster_names[table_name]}S({field_name})>={value})"
             elif comp == np.greater:
-                data.cluster_names[table_name] = f"({table_name}S{field_name}>{value})"
+                cluster_name = f"({data.cluster_names[table_name]}S({field_name})>{value})"
             elif comp == np.less_equal:
-                data.cluster_names[table_name] = f"({table_name}S{field_name}<={value})"
+                cluster_name = f"({data.cluster_names[table_name]}S({field_name})<={value})"
             elif comp == np.less:
-                data.cluster_names[table_name] = f"({table_name}S{field_name}<{value})"
+                cluster_name = f"({data.cluster_names[table_name]}S({field_name})<{value})"
             else:
                 print("ERROR: Unsupported comp operation")
                 exit(1)
+                
+            for tbl in data.clusters[table_name]:
+                data.cluster_names[tbl] = cluster_name
             
             return (0, 0)  # does not return cost
 
@@ -258,7 +265,9 @@ class Time_Mem_Approx_Instructions(Operations[Data, Res]):
             n_matches = sum([1 + value.count("%") for value in values])
             selectivity = bound(0.0, DEFAULT_SEL_MATCH * n_matches, 1.0)
             data.selects[table_name].append(selectivity)
-            data.cluster_names[table_name] = f"({table_name}S{field_name}LIKE{values})"
+            cluster_name = f"({data.cluster_names[table_name]}S({field_name})LIKE{values})"
+            for tbl in data.clusters[table_name]:
+                data.cluster_names[tbl] = cluster_name
             return (0, 0)  # does not return cost
 
         return filter
@@ -270,7 +279,9 @@ class Time_Mem_Approx_Instructions(Operations[Data, Res]):
             n_matches = 1 + value.count("%")
             selectivity = bound(0.0, 1.0 - n_matches * DEFAULT_SEL_MATCH, 1.0)
             data.selects[table_name].append(selectivity)
-            data.cluster_names[table_name] = f"({table_name}S{field_name}NOT-LIKE[{value}])"
+            cluster_name = f"({data.cluster_names[table_name]}S({field_name})NOT-LIKE['{value}'])"
+            for tbl in data.clusters[table_name]:
+                data.cluster_names[tbl] = cluster_name
             return (0, 0)  # does not return cost
 
         return filter
@@ -325,7 +336,7 @@ class Time_Mem_Approx_Instructions(Operations[Data, Res]):
             if cluster_name_1 != cluster_name_2:
                 cluster_name = f"({data.cluster_names[table_name_1]}X{data.cluster_names[table_name_2]})"
             else:
-                cluster_name = f"({cluster_name_1}XS{field_name_1}={field_name_2})"
+                cluster_name = f"({cluster_name_1}XS({field_name_1})=({field_name_2}))"
 
             # Merge clusters
             cluster = data.clusters[table_name_1].union(data.clusters[table_name_2])
@@ -455,13 +466,3 @@ class Time_Mem_Approx_Instructions(Operations[Data, Res]):
             return (data.times[cluster_name], data.memory[cluster_name])
 
         return join
-
-    # PRIVATE
-    def join_filter_eq(
-        self, data: Data, table_name: str, field_name_1: str, field_name_2: str
-    ):
-        table = dfs[table_name]
-        del dfs[table_name]
-        dfs[f"({table_name}XS{field_name_1}={field_name_2}"] = table.loc[
-            table[field_name_1] == table[field_name_2]
-        ]

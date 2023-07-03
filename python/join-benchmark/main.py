@@ -1,6 +1,6 @@
 import sys
 
-from benchmark.run.individual import main_approx_time_mem, main_compare_card_est, main_time_mem
+from benchmark.run.individual import main_approx_time_mem, main_comp_card_est, main_time_mem
 from benchmark.run.individual import main_run
 from benchmark.run.optimization import main_optim_nsga_ii
 from benchmark.engine.engine import set_engine
@@ -70,4 +70,4 @@ if __name__ == "__main__":
             print("No query specified")
             exit(1)
         perm = [int(i) for i in sys.argv[3].split(',')]
-        main_compare_card_est.main(db_set, query, perm)
+        main_comp_card_est.main(db_set, query, perm)

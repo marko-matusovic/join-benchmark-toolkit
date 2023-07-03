@@ -1,5 +1,5 @@
 from typing import Any
-from benchmark.engine.engine import DataFrame, get_engine, get_engine_name
+from benchmark.engine.engine import DataFrame, get_engine_name
 from benchmark.operations.operations import Operations, TVal
 from benchmark.tools.load import load_named_tables
 
@@ -37,7 +37,7 @@ class Real_Instructions(Operations[TDFs, None]):
     ):
         table = dfs[table_name]
         del dfs[table_name]
-        dfs[f"({table_name}XS{field_name_1}={field_name_2}"] = table.loc[
+        dfs[f"({table_name}XS({field_name_1})=({field_name_2}))"] = table.loc[
             table[field_name_1] == table[field_name_2]
         ]
 
@@ -46,7 +46,7 @@ class Real_Instructions(Operations[TDFs, None]):
             table_name = self.find_names(dfs, field_name)
             table = dfs[table_name]
             del dfs[table_name]
-            dfs[f"({table_name}S{field_name}={values})"] = table.loc[
+            dfs[f"({table_name}S({field_name})={values})"] = table.loc[
                 table[field_name].isin(values)
             ]
 
@@ -57,7 +57,7 @@ class Real_Instructions(Operations[TDFs, None]):
             table_name = self.find_names(dfs, field_name)
             table = dfs[table_name]
             del dfs[table_name]
-            dfs[f"({table_name}S{field_name}!={value})"] = table.loc[
+            dfs[f"({table_name}S({field_name})!={value})"] = table.loc[
                 table[field_name] != value
             ]
 
@@ -68,7 +68,7 @@ class Real_Instructions(Operations[TDFs, None]):
             table_name = self.find_names(dfs, field_name)
             table = dfs[table_name]
             del dfs[table_name]
-            dfs[f"({table_name}S{field_name}>={value})"] = table.loc[
+            dfs[f"({table_name}S({field_name})>={value})"] = table.loc[
                 table[field_name] >= value
             ]
 
@@ -79,7 +79,7 @@ class Real_Instructions(Operations[TDFs, None]):
             table_name = self.find_names(dfs, field_name)
             table = dfs[table_name]
             del dfs[table_name]
-            dfs[f"({table_name}S{field_name}>{value})"] = table.loc[
+            dfs[f"({table_name}S({field_name})>{value})"] = table.loc[
                 table[field_name] > value
             ]
 
@@ -90,7 +90,7 @@ class Real_Instructions(Operations[TDFs, None]):
             table_name = self.find_names(dfs, field_name)
             table = dfs[table_name]
             del dfs[table_name]
-            dfs[f"({table_name}S{field_name}<={value})"] = table.loc[
+            dfs[f"({table_name}S({field_name})<={value})"] = table.loc[
                 table[field_name] <= value
             ]
 
@@ -101,7 +101,7 @@ class Real_Instructions(Operations[TDFs, None]):
             table_name = self.find_names(dfs, field_name)
             table = dfs[table_name]
             del dfs[table_name]
-            dfs[f"({table_name}S{field_name}<{value})"] = table.loc[
+            dfs[f"({table_name}S({field_name})<{value})"] = table.loc[
                 table[field_name] < value
             ]
 
@@ -115,7 +115,7 @@ class Real_Instructions(Operations[TDFs, None]):
             index = self.like_index(table[field_name], values[0])
             for value in values[1:]:
                 index = index | self.like_index(table[field_name], value)
-            dfs[f"({table_name}S{field_name}LIKE{values})"] = table.loc[index]
+            dfs[f"({table_name}S({field_name})LIKE{values})"] = table.loc[index]
 
         return filter
 
@@ -125,7 +125,7 @@ class Real_Instructions(Operations[TDFs, None]):
             table = dfs[table_name]
             del dfs[table_name]
             index = self.like_index(table[field_name], value) != True
-            dfs[f"({table_name}S{field_name}NOT-LIKE[{value}])"] = table.loc[index]
+            dfs[f"({table_name}S({field_name})NOT-LIKE['{value}'])"] = table.loc[index]
 
         return filter
 

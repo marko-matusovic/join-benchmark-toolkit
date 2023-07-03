@@ -3,6 +3,7 @@ from os.path import exists
 from typing import NamedTuple, TypeVar
 
 import numpy as np
+import pandas as pd
 
 from benchmark.engine.engine import DataFrame
 from benchmark.tools.load import load_table
@@ -10,7 +11,7 @@ from benchmark.tools.tools import bound
 
 # Constants
 HIST_MIN_ITEMS_COVERAGE = 0.75
-HIST_MEAN_ITEMS_PER_BIN = 100
+HIST_MEAN_ITEMS_PER_BIN = 10
 HIST_MIN_NUM_BINS = 10
 
 
@@ -71,27 +72,14 @@ def load_stats(db_name: str, tables: list[str], aliases: list[str]) -> TStats:
                         bounds=(low, high),
                     )
                     # Select ints and floats for histogram
-                    values = [
-                        v for v in df[column] if type(v) == int or type(v) == float
-                    ]
-                    num_bins = bound(
-                        HIST_MIN_NUM_BINS,  # min val
-                        int(table_stats.length / HIST_MEAN_ITEMS_PER_BIN),  # calc val
-                        1 + int(high - low),  # max val
+                    values = list(df[column].loc[df[column] != pd.NA])
+                    num_bins = int(
+                        table_stats.column[column].unique / HIST_MEAN_ITEMS_PER_BIN
                     )
-                    # TODO: update histogram to be equi-deep 
-                    # If at least some % of values pass, make the histogram
-                    # Otherwise, ignore it, as it wouldn't be appropriate representation
-                    if HIST_MIN_ITEMS_COVERAGE * table_stats.length < len(values):
-                        table_stats.column[column] = table_stats.column[
-                            column
-                        ]._replace(
-                            hist=np.histogram(
-                                values,
-                                bins=num_bins,
-                                range=(low, high),
-                            )
-                        )
+                    # TODO: update histogram to be equi-deep
+                    table_stats.column[column] = table_stats.column[column]._replace(
+                        hist=np.histogram(values, bins=num_bins)
+                    )
                 except:
                     pass
 
