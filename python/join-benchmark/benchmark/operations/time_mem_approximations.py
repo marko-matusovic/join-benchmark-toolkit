@@ -61,6 +61,20 @@ class Data(NamedTuple):
     times: dict[str, float] = {}  # approx times per table
     memory: dict[str, float] = {}  # approx memory per table
     history: list[HistoryTuple] = []
+    
+    def copy(self):
+        return Data(
+            schema = self.schema.copy(),
+            stats = self.stats.copy(),
+            selects = self.selects.copy(),
+            clusters = self.clusters.copy(),
+            cluster_names = self.cluster_names.copy(),
+            times = self.times.copy(),
+            memory = self.memory.copy(),
+            history = self.history.copy(),
+        )
+    
+    
 
 
 Res = tuple[float, float]
