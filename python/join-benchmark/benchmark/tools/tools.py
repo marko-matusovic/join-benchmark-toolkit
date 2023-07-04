@@ -19,15 +19,15 @@ def bound(low: float, value: float, high: float) -> float:
 
 def overlap_right(x_1:int, x_2:int, y_1:int, y_2:int) -> bool:
     """
-    Illustrated overlap is calculated
+    Illustrated overlap is verified.
     ::
 
-                i_1     i_1+1
-        his_1 --|-------|--------
-                |    xxx|
-                    |xxx    |
-        his_2 ------|-------|----
-                    i_2     i_2+1
+        |     x_1     x_2+1
+        | ----|-------|--------
+        |     |    xxx|
+        |         |xxx    |
+        | --------|-------|----
+        |         y_1     y_2+1
     """
     assert(x_1 <= x_2)
     assert(y_1 <= y_2)
@@ -35,15 +35,15 @@ def overlap_right(x_1:int, x_2:int, y_1:int, y_2:int) -> bool:
 
 def cover(x_1:int, x_2:int, y_1:int, y_2:int) -> bool:
     """
-    Illustrated overlap is verified .
+    Illustrated overlap is verified.
     ::
 
-                i_1          i_1+1
-        his_1 --|------------|----
-                |    xxxxx   |
-                    |xxxxx|
-        his_2 ------|-----|-------
-                    i_2   i_2+1
+        |    x_1          x_2+1
+        | ---|------------|----
+        |    |    xxxxx   |
+        |        |xxxxx|
+        | -------|-----|-------
+        |        y_1   y_2+1
     """
     assert(x_1 <= x_2)
     assert(y_1 <= y_2)

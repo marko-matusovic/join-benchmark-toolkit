@@ -3,12 +3,12 @@
     "python.analysis.inlayHints.variableTypes": false,
     "python.analysis.inlayHints.functionReturnTypes": false,
     "files.exclude": {
-        "**/.git": false,
-        "**/.svn": false,
-        "**/.hg": false,
-        "**/CVS": false,
-        "**/__pycache__": false,
-        "**/__init__.py": false
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/CVS": true,
+        "**/__pycache__": true,
+        "**/__init__.py": true
     },
     "cSpell.words": [
         "ndarray"

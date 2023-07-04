@@ -61,20 +61,18 @@ class Data(NamedTuple):
     times: dict[str, float] = {}  # approx times per table
     memory: dict[str, float] = {}  # approx memory per table
     history: list[HistoryTuple] = []
-    
+
     def copy(self):
         return Data(
-            schema = self.schema.copy(),
-            stats = self.stats.copy(),
-            selects = self.selects.copy(),
-            clusters = self.clusters.copy(),
-            cluster_names = self.cluster_names.copy(),
-            times = self.times.copy(),
-            memory = self.memory.copy(),
-            history = self.history.copy(),
+            schema=self.schema.copy(),
+            stats=self.stats.copy(),
+            selects=self.selects.copy(),
+            clusters=self.clusters.copy(),
+            cluster_names=self.cluster_names.copy(),
+            times=self.times.copy(),
+            memory=self.memory.copy(),
+            history=self.history.copy(),
         )
-    
-    
 
 
 Res = tuple[float, float]
@@ -240,22 +238,30 @@ class Time_Mem_Approx_Instructions(Operations[Data, Res]):
                 selectivity = DEFAULT_SEL_INEQ
 
             data.selects[table_name].append(selectivity)
-            
+
             if comp == np.greater_equal:
-                cluster_name = f"({data.cluster_names[table_name]}S({field_name})>={value})"
+                cluster_name = (
+                    f"({data.cluster_names[table_name]}S({field_name})>={value})"
+                )
             elif comp == np.greater:
-                cluster_name = f"({data.cluster_names[table_name]}S({field_name})>{value})"
+                cluster_name = (
+                    f"({data.cluster_names[table_name]}S({field_name})>{value})"
+                )
             elif comp == np.less_equal:
-                cluster_name = f"({data.cluster_names[table_name]}S({field_name})<={value})"
+                cluster_name = (
+                    f"({data.cluster_names[table_name]}S({field_name})<={value})"
+                )
             elif comp == np.less:
-                cluster_name = f"({data.cluster_names[table_name]}S({field_name})<{value})"
+                cluster_name = (
+                    f"({data.cluster_names[table_name]}S({field_name})<{value})"
+                )
             else:
                 print("ERROR: Unsupported comp operation")
                 exit(1)
-                
+
             for tbl in data.clusters[table_name]:
                 data.cluster_names[tbl] = cluster_name
-            
+
             return (0, 0)  # does not return cost
 
         return filter
@@ -279,7 +285,9 @@ class Time_Mem_Approx_Instructions(Operations[Data, Res]):
             n_matches = sum([1 + value.count("%") for value in values])
             selectivity = bound(0.0, DEFAULT_SEL_MATCH * n_matches, 1.0)
             data.selects[table_name].append(selectivity)
-            cluster_name = f"({data.cluster_names[table_name]}S({field_name})LIKE{values})"
+            cluster_name = (
+                f"({data.cluster_names[table_name]}S({field_name})LIKE{values})"
+            )
             for tbl in data.clusters[table_name]:
                 data.cluster_names[tbl] = cluster_name
             return (0, 0)  # does not return cost
@@ -293,7 +301,9 @@ class Time_Mem_Approx_Instructions(Operations[Data, Res]):
             n_matches = 1 + value.count("%")
             selectivity = bound(0.0, 1.0 - n_matches * DEFAULT_SEL_MATCH, 1.0)
             data.selects[table_name].append(selectivity)
-            cluster_name = f"({data.cluster_names[table_name]}S({field_name})NOT-LIKE['{value}'])"
+            cluster_name = (
+                f"({data.cluster_names[table_name]}S({field_name})NOT-LIKE['{value}'])"
+            )
             for tbl in data.clusters[table_name]:
                 data.cluster_names[tbl] = cluster_name
             return (0, 0)  # does not return cost
@@ -302,38 +312,83 @@ class Time_Mem_Approx_Instructions(Operations[Data, Res]):
 
     # section :: JOIN =================================
 
+    # PRIVATE
     def sum_hist_overlap(
         self,
-        section_1: tuple[tuple[np.ndarray, np.ndarray], int, float],
-        section_2: tuple[tuple[np.ndarray, np.ndarray], int, float],
+        section_1: tuple[tuple[np.ndarray, np.ndarray], int],
+        section_2: tuple[tuple[np.ndarray, np.ndarray], int],
     ) -> float:
-        ((counts_1, bins_1), i_1, total_1) = section_1
-        ((counts_2, bins_2), i_2, total_2) = section_2
+        ((counts_1, bins_1), i_1) = section_1
+        ((counts_2, bins_2), i_2) = section_2
 
         assert overlap_right(bins_1[i_1], bins_1[i_1 + 1], bins_2[i_2], bins_2[i_2 + 1])
 
         overlap = bins_1[i_1 + 1] - bins_2[i_2]
         width_1 = bins_1[i_1 + 1] - bins_1[i_1]
         width_2 = bins_2[i_2 + 1] - bins_2[i_2]
-        density_1 = counts_1[i_1] / total_1
-        density_2 = counts_2[i_2] / total_2
+        density_1 = counts_1[i_1] / np.sum(counts_1)
+        density_2 = counts_2[i_2] / np.sum(counts_2)
         return (density_1 * overlap / width_1) * (density_2 * overlap / width_2)
 
+    # PRIVATE
     def sum_hist_cover(
         self,
-        section_1: tuple[tuple[np.ndarray, np.ndarray], int, float],
-        section_2: tuple[tuple[np.ndarray, np.ndarray], int, float],
+        section_1: tuple[tuple[np.ndarray, np.ndarray], int],
+        section_2: tuple[tuple[np.ndarray, np.ndarray], int],
     ) -> float:
-        ((counts_1, bins_1), i_1, total_1) = section_1
-        ((counts_2, bins_2), i_2, total_2) = section_2
+        ((counts_1, bins_1), i_1) = section_1
+        ((counts_2, bins_2), i_2) = section_2
 
         assert cover(bins_1[i_1], bins_1[i_1 + 1], bins_2[i_2], bins_2[i_2 + 1])
 
         width_1 = bins_1[i_1 + 1] - bins_1[i_1]
         width_2 = bins_2[i_2 + 1] - bins_2[i_2]
-        density_1 = counts_1[i_1] / total_1
-        density_2 = counts_2[i_2] / total_2
+        density_1 = counts_1[i_1] / np.sum(counts_1)
+        density_2 = counts_2[i_2] / np.sum(counts_2)
         return (density_1 * width_2 / width_1) * (density_2)
+    
+    # PRIVATE
+    def sel_join_hist(self, hist_1, hist_2):
+        (counts_1, bins_1) = hist_1
+        (counts_2, bins_2) = hist_2
+        
+        i_1 = 0
+        i_2 = 0
+
+        # Find the overlap
+        selectivity = 0
+        while i_1 + 1 < len(bins_1) and i_2 + 1 < len(bins_2):
+            section_1 = (hist_1, i_1)
+            section_2 = (hist_2, i_2)
+
+            if overlap_right(
+                bins_1[i_1], bins_1[i_1 + 1], bins_2[i_2], bins_2[i_2 + 1]
+            ):
+                selectivity += self.sum_hist_overlap(section_1, section_2)
+                i_1 += 1
+            elif overlap_right(
+                bins_2[i_2], bins_2[i_2 + 1], bins_1[i_1], bins_1[i_1 + 1]
+            ):
+                selectivity += self.sum_hist_overlap(section_2, section_1)
+                i_2 += 1
+            elif cover(
+                bins_1[i_1], bins_1[i_1 + 1], bins_2[i_2], bins_2[i_2 + 1]
+            ):
+                selectivity += self.sum_hist_cover(section_1, section_2)
+                i_2 += 1
+            elif cover(
+                bins_2[i_2], bins_2[i_2 + 1], bins_1[i_1], bins_1[i_1 + 1]
+            ):
+                selectivity += self.sum_hist_cover(section_2, section_1)
+                i_1 += 1
+            else:
+                if bins_1[i_1] < bins_2[i_1]:
+                    i_1 += 1
+                else:
+                    i_2 += 1
+        
+        assert 0 <= selectivity <= 1
+        return selectivity
 
     def join_fields(
         self, field_name_1: str, field_name_2: str
@@ -354,7 +409,7 @@ class Time_Mem_Approx_Instructions(Operations[Data, Res]):
 
             # Merge clusters
             cluster = data.clusters[table_name_1].union(data.clusters[table_name_2])
-            
+
             # Update all tables in the cluster
             for tbl in cluster:
                 data.clusters[tbl] = cluster
@@ -372,45 +427,7 @@ class Time_Mem_Approx_Instructions(Operations[Data, Res]):
             hist_2 = col_stats_2.hist
 
             if hist_1 != None and hist_2 != None:
-                (counts_1, bins_1) = hist_1
-                (counts_2, bins_2) = hist_2
-
-                i_1 = 0
-                i_2 = 0
-
-                # Find the overlap and then use @self.sum_hist_overlap to calculate it
-                selectivity = 0
-                while i_1 + 1 < len(bins_1) and i_2 + 1 < len(bins_2):
-                    section_1 = (hist_1, i_1, len_1)
-                    section_2 = (hist_2, i_2, len_2)
-
-                    if overlap_right(
-                        bins_1[i_1], bins_1[i_1 + 1], bins_2[i_2], bins_2[i_2 + 1]
-                    ):
-                        selectivity += self.sum_hist_overlap(section_1, section_2)
-                        i_1 += 1
-                    elif overlap_right(
-                        bins_2[i_2], bins_2[i_2 + 1], bins_1[i_1], bins_1[i_1 + 1]
-                    ):
-                        selectivity += self.sum_hist_overlap(section_2, section_1)
-                        i_2 += 1
-                    elif cover(
-                        bins_1[i_1], bins_1[i_1 + 1], bins_2[i_2], bins_2[i_2 + 1]
-                    ):
-                        selectivity += self.sum_hist_cover(section_1, section_2)
-                        i_2 += 1
-                    elif cover(
-                        bins_2[i_2], bins_2[i_2 + 1], bins_1[i_1], bins_1[i_1 + 1]
-                    ):
-                        selectivity += self.sum_hist_cover(section_2, section_1)
-                        i_1 += 1
-                    else:
-                        if bins_1[i_1] < bins_2[i_1]:
-                            i_1 += 1
-                        else:
-                            i_2 += 1
-
-                assert 0 <= selectivity <= 1
+                selectivity = self.sel_join_hist(hist_1, hist_2, len_1, len_2)
             else:
                 # Cannot use histograms, calculating selectivity naively with # unique values
                 low = min(col_stats_1.unique, col_stats_2.unique)
@@ -425,7 +442,6 @@ class Time_Mem_Approx_Instructions(Operations[Data, Res]):
                 data.selects[table_name_2].append(selectivity_sqrt)
             else:
                 data.selects[table_name_1].append(selectivity)
-                
 
             # ========== Cost Model ==========
 
