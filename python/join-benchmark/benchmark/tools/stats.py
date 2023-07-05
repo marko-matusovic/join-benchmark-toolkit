@@ -3,7 +3,6 @@ from os.path import exists
 from typing import NamedTuple, TypeVar
 
 import numpy as np
-import pandas as pd
 
 from benchmark.engine.engine import DataFrame
 from benchmark.tools.load import load_table
@@ -19,8 +18,9 @@ HIST_MIN_NUM_BINS = 10
 class ColumnStats(NamedTuple):
     dtype: float
     unique: float
-    bounds: None | tuple[float, float]  # min and max values per column
-    hist: None | tuple[np.ndarray, np.ndarray]  # [counts] and [bin_ranges]
+    bounds: None | tuple[float, float] = None  # min and max values per column
+    hist: None | tuple[np.ndarray, np.ndarray] = None  # [counts] and [bin_ranges]
+    heat_map: None | dict[str, int] = None  # for str values, make a value:count hashmap
 
 
 # Stats for one table
@@ -56,8 +56,6 @@ def load_stats(db_name: str, tables: list[str], aliases: list[str]) -> TStats:
                     column: ColumnStats(
                         dtype=get_size_of_type(df[column].dtypes.__str__()),
                         unique=df[column].nunique(),
-                        bounds=None,
-                        hist=None,
                     )
                     for column in df
                 },
@@ -80,7 +78,7 @@ def load_stats(db_name: str, tables: list[str], aliases: list[str]) -> TStats:
                         int(table_stats.length / HIST_MEAN_ITEMS_PER_BIN),  # calc val
                         1 + int(high - low),  # max val
                     )
-                    # TODO: update histogram to be equi-deep 
+                    # TODO: update histogram to be equi-deep
                     # If at least some % of values pass, make the histogram
                     # Otherwise, ignore it, as it wouldn't be appropriate representation
                     if HIST_MIN_ITEMS_COVERAGE * table_stats.length < len(values):
@@ -90,11 +88,18 @@ def load_stats(db_name: str, tables: list[str], aliases: list[str]) -> TStats:
                             hist=np.histogram(
                                 values,
                                 bins=num_bins,
-                                range=(low, high),
+                                range=(low - 1, high + 1),
                             )
                         )
                 except:
                     pass
+                if table_stats.column[column].hist == None:
+                    try:
+                        table_stats.column[column] = table_stats.column[
+                            column
+                        ]._replace(heat_map=dict(df.groupby(by=column).count().T.max()))
+                    except:
+                        pass
 
             pickle.dump(table_stats, open(file_name, "wb"))
 

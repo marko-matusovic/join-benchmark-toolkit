@@ -136,11 +136,27 @@ class Time_Mem_Approx_Instructions(Operations[Data, Res]):
         def filter(data: Data):
             table_name = self.find_table(data.schema, field_name)
             stats = data.stats[table_name]
-            selectivity = 1.0 * len(values) / stats.column[field_name].unique
+
+            # histogram
+            # if stats.column[field_name].hist is not None :
+            # (counts, bounds) = stats.column[field_name].hist
+            # TODO: figure out if this is possible
+            # heat map
+            heat_map = stats.column[field_name].heat_map
+            if heat_map != None:
+                selectivity = (
+                    np.sum([(heat_map[str(value)] if str(value) in heat_map else 0) for value in values]) / stats.length
+                )
+            # unique
+            else:
+                selectivity = 1.0 * len(values) / stats.column[field_name].unique
+
             data.selects[table_name].append(selectivity)
+
             cluster_name = f"({data.cluster_names[table_name]}S({field_name})={values})"
             for tbl in data.clusters[table_name]:
                 data.cluster_names[tbl] = cluster_name
+
             return (0, 0)  # does not return cost
 
         return filter
@@ -149,11 +165,24 @@ class Time_Mem_Approx_Instructions(Operations[Data, Res]):
         def filter(data: Data):
             table_name = self.find_table(data.schema, field_name)
             stats = data.stats[table_name]
-            selectivity = 1 - (1.0 / stats.column[field_name].unique)
+
+            # histogram
+            # if stats.column[field_name].hist is not None :
+            # (counts, bounds) = stats.column[field_name].hist
+            # TODO: figure out if this is possible
+            # heat map
+            heat_map = stats.column[field_name].heat_map
+            if heat_map != None:
+                selectivity = 1 - (1.0 * heat_map[str(value)] / stats.length)
+            # unique
+            else:
+                selectivity = 1 - (1.0 / stats.column[field_name].unique)
+
             data.selects[table_name].append(selectivity)
             cluster_name = f"({data.cluster_names[table_name]}S({field_name})!={value})"
             for tbl in data.clusters[table_name]:
                 data.cluster_names[tbl] = cluster_name
+
             return (0, 0)  # does not return cost
 
         return filter
@@ -346,12 +375,12 @@ class Time_Mem_Approx_Instructions(Operations[Data, Res]):
         density_1 = counts_1[i_1] / np.sum(counts_1)
         density_2 = counts_2[i_2] / np.sum(counts_2)
         return (density_1 * width_2 / width_1) * (density_2)
-    
+
     # PRIVATE
     def sel_join_hist(self, hist_1, hist_2):
         (counts_1, bins_1) = hist_1
         (counts_2, bins_2) = hist_2
-        
+
         i_1 = 0
         i_2 = 0
 
@@ -371,22 +400,18 @@ class Time_Mem_Approx_Instructions(Operations[Data, Res]):
             ):
                 selectivity += self.sum_hist_overlap(section_2, section_1)
                 i_2 += 1
-            elif cover(
-                bins_1[i_1], bins_1[i_1 + 1], bins_2[i_2], bins_2[i_2 + 1]
-            ):
+            elif cover(bins_1[i_1], bins_1[i_1 + 1], bins_2[i_2], bins_2[i_2 + 1]):
                 selectivity += self.sum_hist_cover(section_1, section_2)
                 i_2 += 1
-            elif cover(
-                bins_2[i_2], bins_2[i_2 + 1], bins_1[i_1], bins_1[i_1 + 1]
-            ):
+            elif cover(bins_2[i_2], bins_2[i_2 + 1], bins_1[i_1], bins_1[i_1 + 1]):
                 selectivity += self.sum_hist_cover(section_2, section_1)
                 i_1 += 1
             else:
-                if bins_1[i_1] < bins_2[i_1]:
+                if bins_1[i_1] < bins_2[i_2]:
                     i_1 += 1
                 else:
                     i_2 += 1
-        
+
         assert 0 <= selectivity <= 1
         return selectivity
 
@@ -403,7 +428,7 @@ class Time_Mem_Approx_Instructions(Operations[Data, Res]):
 
             # Figure out the new cluster name
             if cluster_name_1 != cluster_name_2:
-                cluster_name = f"({data.cluster_names[table_name_1]}X{data.cluster_names[table_name_2]})"
+                cluster_name = f"({data.cluster_names[table_name_1]}X{data.cluster_names[table_name_2]}ON({field_name_1})=({field_name_2}))"
             else:
                 cluster_name = f"({cluster_name_1}XS({field_name_1})=({field_name_2}))"
 
@@ -421,13 +446,11 @@ class Time_Mem_Approx_Instructions(Operations[Data, Res]):
             stats_2 = data.stats[table_name_2]
             col_stats_1 = stats_1.column[field_name_1]
             col_stats_2 = stats_2.column[field_name_2]
-            len_1 = stats_1.length
-            len_2 = stats_2.length
             hist_1 = col_stats_1.hist
             hist_2 = col_stats_2.hist
 
             if hist_1 != None and hist_2 != None:
-                selectivity = self.sel_join_hist(hist_1, hist_2, len_1, len_2)
+                selectivity = self.sel_join_hist(hist_1, hist_2)
             else:
                 # Cannot use histograms, calculating selectivity naively with # unique values
                 low = min(col_stats_1.unique, col_stats_2.unique)

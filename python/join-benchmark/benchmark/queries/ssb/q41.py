@@ -20,17 +20,17 @@ O = TypeVar('O')
 
 def instruction_set(operation_set: Operations[I,O]) -> QueryInstructions[I, O]:
     return QueryInstructions(
-        s1_init = operation_set.from_tables("ssb", ["lineorder", "date", "part", "supplier", "customer"], []),
+        s1_init = operation_set.from_tables("ssb", ["lineorder", "date", "part", "supplier", "customer"],  ["lo", "d", "p", "s", "c"]),
         s2_filters = [
-            operation_set.filter_field_eq("c_region", ["AMERICA"]),
-            operation_set.filter_field_eq("s_region", ["AMERICA"]),
-            operation_set.filter_field_eq("p_mfgr", ['MFGR#1', 'MFGR#2'])
+            operation_set.filter_field_eq("c.region", ["AMERICA"]),
+            operation_set.filter_field_eq("s.region", ["AMERICA"]),
+            operation_set.filter_field_eq("p.mfgr", ['MFGR#1', 'MFGR#2'])
         ],
         s3_joins = [
-            operation_set.join_fields("lo_custkey", "c_custkey"),           # 0
-            operation_set.join_fields("lo_suppkey", "s_suppkey"),           # 1
-            operation_set.join_fields("lo_partkey", "p_partkey"),           # 2
-            operation_set.join_fields("lo_orderdate", "d_datekey"),         # 3
+            operation_set.join_fields("lo.custkey", "c.custkey"),           # 0
+            operation_set.join_fields("lo.suppkey", "s.suppkey"),           # 1
+            operation_set.join_fields("lo.partkey", "p.partkey"),           # 2
+            operation_set.join_fields("lo.orderdate", "d.datekey"),         # 3
         ],
         s4_aggregation = [
             # group by

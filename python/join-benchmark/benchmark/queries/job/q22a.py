@@ -65,7 +65,7 @@ def instruction_set(operation_set: Operations[I,O]) -> QueryInstructions[I, O]:
             operation_set.filter_field_eq('kt.kind', ['movie','episode']),
             operation_set.filter_field_not_like('mc.note', '%(USA)%'),
             operation_set.filter_field_like('mc.note', ['%(200%)%']),
-            operation_set.filter_field_eq('mi.info', ['Germany','German','USA','American']),
+            # operation_set.filter_field_eq('mi.info', ['Germany','German','USA','American']),
             operation_set.filter_field_lt('mi_idx.info', "7.0"),
             operation_set.filter_field_gt('t.production_year', 2008)
         ],

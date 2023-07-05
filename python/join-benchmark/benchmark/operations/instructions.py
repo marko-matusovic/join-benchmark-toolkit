@@ -25,7 +25,7 @@ class Real_Instructions(Operations[TDFs, None]):
             table_2 = dfs[table_name_2]
             del dfs[table_name_1]
             del dfs[table_name_2]
-            dfs[f"({table_name_1}X{table_name_2})"] = table_1.merge(
+            dfs[f"({table_name_1}X{table_name_2}ON({field_name_1})=({field_name_2}))"] = table_1.merge(
                 table_2, how="inner", left_on=field_name_1, right_on=field_name_2
             )
 

@@ -244,6 +244,24 @@
             "args": ["comp_card_est", "job/22a", "0,12,4,7,6,15,10,1,8,11,5,13,14,9,3,2"]
         },
         {
+            "name": "COMP CARD. EST. SSB Q11",
+            "type": "python",
+            "request": "launch",
+            "program": "main.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": ["comp_card_est", "ssb/q11", "0"]
+        },
+        {
+            "name": "COMP CARD. EST.  SSB Q41",
+            "type": "python",
+            "request": "launch",
+            "program": "main.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": ["comp_card_est", "ssb/q41", "0,1,2,3"]
+        },
+        {
             "name": "OPTIM NSGA-II JOB Q22A",
             "type": "python",
             "request": "launch",

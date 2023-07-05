@@ -16,16 +16,16 @@ O = TypeVar('O')
 
 def instruction_set(operation_set: Operations[I,O]) -> QueryInstructions[I, O]:
     return QueryInstructions(
-        s1_init = operation_set.from_tables('ssb', ["lineorder", "date"], []),
+        s1_init = operation_set.from_tables('ssb', ["lineorder", "date"], ["lo", "d"]),
         s2_filters = [
-            operation_set.filter_field_eq("d_yearmonthnum", [199401]),
-            operation_set.filter_field_ge("lo_discount", 4),
-            operation_set.filter_field_le("lo_discount", 6),
-            operation_set.filter_field_ge("lo_quantity", 26),
-            operation_set.filter_field_le("lo_quantity", 35),
+            operation_set.filter_field_eq("d.yearmonthnum", [199401]),
+            operation_set.filter_field_ge("lo.discount", 4),
+            operation_set.filter_field_le("lo.discount", 6),
+            operation_set.filter_field_ge("lo.quantity", 26),
+            operation_set.filter_field_le("lo.quantity", 35),
         ],
         s3_joins = [
-            operation_set.join_fields("lo_orderdate", "d_datekey"),
+            operation_set.join_fields("lo.orderdate", "d.datekey"),
         ],
         s4_aggregation = [
             # select

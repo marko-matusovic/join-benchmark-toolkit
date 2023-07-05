@@ -1,5 +1,6 @@
 from copy import deepcopy
 from io import TextIOWrapper
+from os.path import exists
 from typing import TypeAlias
 
 import numpy as np
@@ -12,7 +13,12 @@ from benchmark.operations.time_mem_approximations import Data
 
 
 def main(db_set: str, query: str, perm: list[int]):
-    file = open(f"results/comp_card_est/{db_set}/{query}.csv", "a")
+    path = f"results/comp_card_est/{db_set}/{query}.csv"
+    if not exists(path):
+        file = open(path, "a")
+        file.write('operation name;T1_name;T2_name;T1_real_len;T1_approx_len;T2_real_len;T2_approx_len;R_real_len;R_approx_len;real_selectivity;approx_selectivity\n')
+    else:
+        file = open(path, "a")
 
     real_instructions = get_real_instructions(db_set, query)
     approx_instructions = get_time_mem_approx_instructions(db_set, query)
@@ -41,6 +47,7 @@ def main(db_set: str, query: str, perm: list[int]):
     print("Completed successfully")
 
 
+# TODO: replace deepcopy(dfs) with just table name and length
 def measure(
     file: TextIOWrapper, dfs_1: TDFs, data_1: Data, dfs_2: TDFs, data_2: Data
 ) -> None:
@@ -103,17 +110,19 @@ def measure(
     approx_selectivity = 1.0 * approx_len_2 / np.product(approx_len_1)
     approx_len_1.append(0)  # for printing in case len() == 1
     # print
-    # keys: operation name; T1 real len, T1 approx len, T2 real len, T2 approx len, R real len, R approx len; real selectivity, approx selectivity
+    # keys: operation name;T1_real_len;T1_approx_len;T2_real_len;T2_approx_len;R_real_len;R_approx_len;real_selectivity;approx_selectivity
     file.write(
         ";".join(
             [
                 str(i)
                 for i in [
                     name_operation,
+                    name_1[0],
+                    name_1[1] if len(name_1)>1 else '',
                     real_len_1[0],
                     approx_len_1[0],
-                    real_len_1[0],
-                    approx_len_1[0],
+                    real_len_1[1],
+                    approx_len_1[1],
                     real_len_2,
                     approx_len_2,
                     real_selectivity,
@@ -123,3 +132,4 @@ def measure(
         )
         + "\n"
     )
+    file.flush()
