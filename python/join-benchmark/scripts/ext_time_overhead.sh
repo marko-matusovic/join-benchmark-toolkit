@@ -11,7 +11,8 @@ N_REPEAT=15
 FILE="results/external_log/$DEVICE/overhead.csv"
 
 echo "Benchmarking $1 ..."
-if [ ! -f /tmp/foo.txt ]; then
+
+if [ ! -f $FILE ] | (( $(grep -c "query;time_" $FILE) < 1 )); then
     HEAD="query"
     for i in $(seq $N_REPEAT)
     do
@@ -19,8 +20,9 @@ if [ ! -f /tmp/foo.txt ]; then
     done
     echo $HEAD >> $FILE
 fi
-
 echo "// Timestamp "`date +"%Y-%m-%dT%H:%M:%S"` >> $FILE
+
+log=$QUERY
 
 for i in $(seq $N_REPEAT)
 do
