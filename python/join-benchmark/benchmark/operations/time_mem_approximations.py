@@ -429,9 +429,11 @@ class Time_Mem_Approx_Instructions(Operations[Data, Res]):
             # Figure out the new cluster name
             if cluster_name_1 != cluster_name_2:
                 cluster_name = f"({data.cluster_names[table_name_1]}X{data.cluster_names[table_name_2]}ON({field_name_1})=({field_name_2}))"
+                already_joined = False
             else:
                 cluster_name = f"({cluster_name_1}XS({field_name_1})=({field_name_2}))"
-
+                already_joined = True
+                
             # Merge clusters
             cluster = data.clusters[table_name_1].union(data.clusters[table_name_2])
 
@@ -439,6 +441,9 @@ class Time_Mem_Approx_Instructions(Operations[Data, Res]):
             for tbl in cluster:
                 data.clusters[tbl] = cluster
                 data.cluster_names[tbl] = cluster_name
+                
+            if already_joined:
+                return (0, 0)
 
             # ========== Cardinality Estimate ==========
 
@@ -453,25 +458,23 @@ class Time_Mem_Approx_Instructions(Operations[Data, Res]):
                 selectivity = self.sel_join_hist(hist_1, hist_2)
             else:
                 # Cannot use histograms, calculating selectivity naively with # unique values
-                low = min(col_stats_1.unique, col_stats_2.unique)
-                high = max(col_stats_1.unique, col_stats_2.unique)
+                next_cardinality = max(stats_1.length, stats_2.length) * min(col_stats_1.unique, col_stats_2.unique)
+                selectivity = 1.0 * next_cardinality / next_cardinality
 
-                selectivity = low / high
-
-            if table_name_1 != table_name_2:
+            if already_joined:
+                data.selects[table_name_1].append(selectivity)
+            else:
                 # Store selectivity (sqrt, because it will be multiplied together when calculating)
                 selectivity_sqrt = np.sqrt(selectivity)
                 data.selects[table_name_1].append(selectivity_sqrt)
                 data.selects[table_name_2].append(selectivity_sqrt)
-            else:
-                data.selects[table_name_1].append(selectivity)
 
             # ========== Cost Model ==========
 
             total_length = float(
                 np.product(
                     [
-                        np.product(data.selects[tbl] + [data.stats[tbl].length])
+                        np.product([data.stats[tbl].length] + data.selects[tbl])
                         for tbl in cluster
                     ]
                 )

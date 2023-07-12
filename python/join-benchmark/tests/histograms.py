@@ -59,7 +59,7 @@ class TestSum(unittest.TestCase):
         selectivity = Time_Mem_Approx_Instructions().sel_join_hist(hist_1, hist_2)
 
         self.assertEqual(selectivity, 0)
-    
+
     def test_shifted_overlap(self):
         hist_1 = ([3, 3, 3, 3], [0, 1, 2, 3, 4])
         hist_2 = ([5, 5], [3, 4, 5])
@@ -84,7 +84,43 @@ class TestSum(unittest.TestCase):
 
         selectivity = Time_Mem_Approx_Instructions().sel_join_hist(hist_1, hist_2)
 
-        self.assertAlmostEqual(selectivity, (4*6)/(12*6))
+        self.assertEqual(selectivity, (4 * 6) / (12 * 6))
+
+    def test_cover_inv(self):
+        hist_2 = ([12], [1, 4])
+        hist_1 = ([6], [2, 3])
+
+        selectivity = Time_Mem_Approx_Instructions().sel_join_hist(hist_1, hist_2)
+
+        self.assertEqual(selectivity, (4 * 6) / (12 * 6))
+
+    def test_run_off(self):
+        hist_2 = ([1, 1, 1, 1, 1], [1, 2, 3, 4, 5, 6])
+        hist_1 = ([1, 1], [0, 1, 2])
+
+        selectivity = Time_Mem_Approx_Instructions().sel_join_hist(hist_1, hist_2)
+        self.assertEqual(selectivity, 1 / (2 * 5))
+
+        selectivity = Time_Mem_Approx_Instructions().sel_join_hist(hist_2, hist_1)
+        self.assertEqual(selectivity, 1 / (2 * 5))
+
+    def test_partial(self):
+        hist_2 = ([2, 2, 2, 2, 2], [1, 2, 3, 4, 5, 6])
+        hist_1 = ([5], [1.5, 2])
+
+        overlap = 5 * 1
+
+        selectivity = Time_Mem_Approx_Instructions().sel_join_hist(hist_1, hist_2)
+        self.assertEqual(selectivity, overlap / (sum(hist_1[0]) * sum(hist_2[0])))
+
+    def test_partial_2(self):
+        hist_2 = ([2, 2, 2, 2, 2], [1, 2, 3, 4, 5, 6])
+        hist_1 = ([5], [1.5, 2.5])
+
+        selectivity = ((5.0 / 2 / 5) * (2.0 / 2 / 10)) + ((5.0 / 2 / 5) * (2.0 / 2 / 10))
+
+        selectivity = Time_Mem_Approx_Instructions().sel_join_hist(hist_1, hist_2)
+        self.assertEqual(selectivity, selectivity)
 
 
 if __name__ == "__main__":

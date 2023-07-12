@@ -22,12 +22,15 @@ def save(n:int):
 def gen_all(n:int):
     perms = np.array([i for i in itertools.permutations(range(n))])
     np.random.shuffle(perms)
+    perms = list(perms)
+    perms.remove(list(range(n)))
+    perms.insert(0, list(range(n)))
     return perms
 
 def gen_seq(n:int) -> list[list[int]]:
-    perms:list[list[int]] = []
+    perms:list[list[int]] = [list(np.arange(n))]
     while len(perms) < COUNT:
-        p = np.arange(n) # type: ignore
+        p = np.arange(n)
         np.random.shuffle(p)
         while list(p) in perms:
             np.random.shuffle(p)
