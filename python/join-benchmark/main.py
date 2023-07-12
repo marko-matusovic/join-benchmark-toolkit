@@ -27,7 +27,8 @@ if __name__ == "__main__":
             query = db_set
             db_set = "ssb" # Default to ssb
         perm = [int(i) for i in sys.argv[3].split(',')]
-        main_run.main(db_set, query, perm)
+        skip_joins = True if '--skip-joins' in [a.lower() for a in sys.argv] else False
+        main_run.main(db_set, query, perm, skip_joins)
     
     # time_mem_log - measure the time and peak memory use
     #     2nd arg: db_set/query 
