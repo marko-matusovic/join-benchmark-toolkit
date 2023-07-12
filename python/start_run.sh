@@ -6,6 +6,9 @@ if [[ -n "$( docker ps -a -q -f name=mmatusovic_python_$ext )" ]]; then
     ./stop.sh $ext
 fi
 
+echo "Purging stats"
+rm -rf /workspace/mmatusovic/projects/python/join-benchmark/data/**/stats/*
+
 echo "Creating new container"
 
 docker run \
