@@ -136,3 +136,7 @@ def get_size_of_type(type: str) -> int:
         "datetime64[ns, tz]": 64,
         "object": 2056,
     }[f"{type}"]
+
+
+def get_row_size(stats: TableStats) -> float:
+    return sum([stats.column[col].dtype for col in stats.column])
