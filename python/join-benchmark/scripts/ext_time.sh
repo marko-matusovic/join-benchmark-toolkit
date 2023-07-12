@@ -3,7 +3,10 @@
 # 1st arg: data-set/query
 # 2nd arg: number of joins (permutations read from file with # perms)
 
+QUERY=$1
+NUM_JOINS=$2
 DEVICE=${3:-"gpu"}
+N_REPEAT=15
 
 echo "Benchmarking $1 ..."
 echo "// Timestamp "`date +"%Y-%m-%dT%H:%M:%S"` >> "results/external_log/$DEVICE/$1.csv"
@@ -13,11 +16,6 @@ do
     HEAD=$HEAD";time_"$1
 done
 echo $HEAD >> "results/external_log/$DEVICE/$1.csv"
-
-
-QUERY=$1
-NUM_JOINS=$2
-N_REPEAT=15
 
 while read PERM; do
     log=$PERM
