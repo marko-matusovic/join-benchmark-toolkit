@@ -9,13 +9,15 @@ DEVICE=${3:-"gpu"}
 N_REPEAT=15
 
 echo "Benchmarking $1 ..."
-echo "// Timestamp "`date +"%Y-%m-%dT%H:%M:%S"` >> "results/external_log/$DEVICE/$1.csv"
+
 HEAD="join_order"
 for i in $(seq $N_REPEAT)
 do
     HEAD=$HEAD";time_"$1
 done
 echo $HEAD >> "results/external_log/$DEVICE/$1.csv"
+
+echo "// Timestamp "`date +"%Y-%m-%dT%H:%M:%S"` >> "results/external_log/$DEVICE/$1.csv"
 
 while read PERM; do
     log=$PERM

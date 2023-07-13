@@ -19,7 +19,7 @@ O = TypeVar('O')
 
 def instruction_set(operation_set: Operations[I,O]) -> QueryInstructions[I, O]:
     return QueryInstructions(
-        s1_init = operation_set.from_tables('ssb', ["lineorder", "date", "supplier", "customer"], ["lo", "d", "p", "c"]),
+        s1_init = operation_set.from_tables('ssb', ["lineorder", "date", "supplier", "customer"], ["lo", "d", "s", "c"]),
         s2_filters = [
             operation_set.filter_field_eq("c.region", ["ASIA"]),
             operation_set.filter_field_eq("s.region", ["ASIA"]),

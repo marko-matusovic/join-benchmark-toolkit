@@ -4,8 +4,8 @@
 # 2nd arg: number of joins (permutations read from file with # perms)
 
 echo "Benchmarking $1 ..."
-echo "// Timestamp "`date +"%Y-%m-%dT%H:%M:%S"` >> "results/approx_time_mem/"$1".csv"
 echo "permutation;time_cost;memory_sum_cost;memory_max_cost" >> "results/approx_time_mem/"$1".csv"
+echo "// Timestamp "`date +"%Y-%m-%dT%H:%M:%S"` >> "results/approx_time_mem/"$1".csv"
 
 QUERY=$1
 NUM_JOINS=$2

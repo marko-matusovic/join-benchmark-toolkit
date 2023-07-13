@@ -244,6 +244,15 @@
             "args": ["approx_time_mem", "ssb/q11", "0"]
         },
         {
+            "name": "COST TM SSB Q31",
+            "type": "python",
+            "request": "launch",
+            "program": "main.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": ["approx_time_mem", "ssb/q31", "0,1,2"]
+        },
+        {
             "name": "COMP CARD. EST. JOB Q22A",
             "type": "python",
             "request": "launch",

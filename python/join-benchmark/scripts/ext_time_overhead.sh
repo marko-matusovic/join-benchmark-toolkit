@@ -20,6 +20,7 @@ if [ ! -f $FILE ] | (( $(grep -c "query;time_" $FILE) < 1 )); then
     done
     echo $HEAD >> $FILE
 fi
+
 echo "// Timestamp "`date +"%Y-%m-%dT%H:%M:%S"` >> $FILE
 
 log=$QUERY
