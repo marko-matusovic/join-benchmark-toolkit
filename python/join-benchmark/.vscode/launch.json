@@ -10,6 +10,15 @@
             "args": ["job/22a"]
         },
         {
+            "name": "PLT DIFF join times - overhead SSB/Q41",
+            "type": "python",
+            "request": "launch",
+            "program": "benchmark/util/plot_diff_join_times.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": ["ssb/q41"]
+        },
+        {
             "name": "PLT TvM job/22a",
             "type": "python",
             "request": "launch",
@@ -62,6 +71,15 @@
             "console": "integratedTerminal",
             "justMyCode": true,
             "args": ["job/22a"]
+        },
+        {
+            "name": "PLT Comp SSB/Q41 bin size",
+            "type": "python",
+            "request": "launch",
+            "program": "benchmark/util/plot_compare_cpu.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": ["ssb/q41", "-m", "bin_size", "-b", "4"]
         },
         {
             "name": "PLT OPT Search Space job/22a",

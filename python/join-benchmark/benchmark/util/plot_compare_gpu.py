@@ -68,7 +68,7 @@ def calc_print_plot_bins(real_data, cost_model_data, label, unit):
     ax.set_xticks(x + width, bin_lables)
     ax.legend(loc='upper left', ncols=len(data))
 
-    plt.savefig(f'results/figs/cost-comparison/{query}/{label.lower()}.png', dpi=250)
+    plt.savefig(f'results/figs/cost-comparison/gpu/{query}/{label.lower()}.png', dpi=250)
 
 if __name__ == '__main__':
     query = sys.argv[1]
