@@ -77,7 +77,7 @@ if __name__ == "__main__":
         )
     print("-" * 95)
 
-    bin_lables = [f"Bin {i+1}" for i in range(BINS)]
+    bin_lables = [f"Bin {i+1} [{len(perm_bins[i])}]" for i in range(BINS)] if BINS < len(real_times) else [bin[0] for bin in perm_bins]
     data = {
         "measurement": real_times_bins,
         "cost model": cost_model_times_bins,
@@ -88,6 +88,7 @@ if __name__ == "__main__":
     multiplier = 0
 
     fig, ax = plt.subplots(layout="constrained")
+    fig.set_size_inches(9,7)
 
     for attribute, bin_data in data.items():
         mean = [np.mean(bin) for bin in bin_data]
@@ -109,7 +110,7 @@ if __name__ == "__main__":
     # Add some text for labels, title and custom x-axis tick labels, etc.
     ax.set_ylabel("Time (s)")
     ax.set_title(f"Measurement and Cost Model Time Comparison")
-    ax.set_xticks(x + width, bin_lables)
+    ax.set_xticks(x + width, bin_lables, rotation=90)
     ax.legend(loc="upper left", ncols=len(data))
 
     plt.savefig(f"results/figs/cost-comparison/cpu/{query}.png", dpi=250)
