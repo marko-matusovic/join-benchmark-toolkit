@@ -84,8 +84,8 @@ if __name__ == "__main__":
     }
     
     x = np.arange(len(bin_lables))  # the label locations
-    width = 0.25  # the width of the bars
-    multiplier = 0
+    width = 0.4  # the width of the bars
+    multiplier = 0.5
 
     fig, ax = plt.subplots(layout="constrained")
     fig.set_size_inches(9,7)
