@@ -19,15 +19,16 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN echo "Europe/Amsterdam" > /etc/timezone
 RUN apt-get install -y tzdata
 
-# Manual install Nsight compute (Use this instead the boys below, because this works. Don't ask me why the others don't.)
-# In theory most of this should come pre-installed in the img this file is based on, but it doesn't contain nsight compute, this adds it.
-RUN wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/cuda-ubuntu2004.pin \
-    && mv cuda-ubuntu2004.pin /etc/apt/preferences.d/cuda-repository-pin-600 \
-    && wget https://developer.download.nvidia.com/compute/cuda/12.1.1/local_installers/cuda-repo-ubuntu2004-12-1-local_12.1.1-530.30.02-1_amd64.deb \
-    && dpkg -i cuda-repo-ubuntu2004-12-1-local_12.1.1-530.30.02-1_amd64.deb \
-    && cp /var/cuda-repo-ubuntu2004-12-1-local/cuda-*-keyring.gpg /usr/share/keyrings/ \
-    && apt-get update \
-    && apt-get -y install cuda
+# # Manual install Nsight compute (Use this instead the boys below, because this works. Don't ask me why the others don't.)
+# # In theory most of this should come pre-installed in the img this file is based on, but it doesn't contain nsight compute, this adds it.
+# # Update 1: caused nvidia drivers / library mismatch 
+# RUN wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/cuda-ubuntu2004.pin \
+#     && mv cuda-ubuntu2004.pin /etc/apt/preferences.d/cuda-repository-pin-600 \
+#     && wget https://developer.download.nvidia.com/compute/cuda/12.1.1/local_installers/cuda-repo-ubuntu2004-12-1-local_12.1.1-530.30.02-1_amd64.deb \
+#     && dpkg -i cuda-repo-ubuntu2004-12-1-local_12.1.1-530.30.02-1_amd64.deb \
+#     && cp /var/cuda-repo-ubuntu2004-12-1-local/cuda-*-keyring.gpg /usr/share/keyrings/ \
+#     && apt-get update \
+#     && apt-get -y install cuda
 
 # # NVIDIA Nsight Systems 2020.2.1
 # # from this guide
