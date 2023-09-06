@@ -172,6 +172,15 @@
             "args": ["run", "job/22a", "0,12,4,7,6,15,10,1,8,11,5,13,14,9,3,2", "--cpu"]
         },
         {
+            "name": "RUN JOB Q22A CPU MANUAL PARSING",
+            "type": "python",
+            "request": "launch",
+            "program": "main.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": ["run", "job/22a", "0,12,4,7,6,15,10,1,8,11,5,13,14,9,3,2", "--cpu", "--manual-parsing"]
+        },
+        {
             "name": "RUN JOB Q22A GPU",
             "type": "python",
             "request": "launch",
