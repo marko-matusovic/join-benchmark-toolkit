@@ -41,7 +41,9 @@ class Real_Instructions(Operations[TDFs, None]):
             table[field_name_1] == table[field_name_2]
         ]
 
-    def filter_field_eq(self, field_name: str, values: list[TVal]):
+    def filter_field_eq(self, field_name: str, values: TVal | list[TVal]):
+        if not isinstance(values, list):
+            values = [values]
         def filter(dfs: TDFs) -> None:
             table_name = self.find_names(dfs, field_name)
             table = dfs[table_name]

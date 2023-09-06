@@ -1,10 +1,10 @@
 from benchmark.operations.get_query_instructions import get_real_instructions
 
 
-def main(db_set:str, query:str, perm:list[int], skip_joins=False):
+def main(db_set:str, query:str, perm:list[int], skip_joins=False, manual_parse=False):
     print(f'Running {db_set}/{query} with perm {perm}')
     
-    instructions = get_real_instructions(db_set, query)
+    instructions = get_real_instructions(db_set, query, manual_parse)
 
     dfs = instructions.s1_init()
     

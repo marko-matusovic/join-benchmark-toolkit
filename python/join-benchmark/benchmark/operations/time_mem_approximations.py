@@ -231,11 +231,14 @@ class Time_Mem_Approx_Instructions(Operations[Data, Res]):
 
     # section :: FILTERS =================================
 
-    def filter_field_eq(self, field_name: str, values: list[TVal]):
+    def filter_field_eq(self, field_name: str, values: TVal | list[TVal]):
+        if not isinstance(values, list):
+            values = [values]
+            
         def filter(data: Data):
             table_name = find_table(data.schema, field_name)
             stats = data.stats[table_name]
-
+            
             # histogram
             # if stats.column[field_name].hist is not None :
             # (counts, bounds) = stats.column[field_name].hist
@@ -247,7 +250,7 @@ class Time_Mem_Approx_Instructions(Operations[Data, Res]):
                     np.sum(
                         [
                             (heat_map[str(value)] if str(value) in heat_map else 0)
-                            for value in values
+                            for value in values # type: ignore
                         ]
                     )
                     / stats.length
