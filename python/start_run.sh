@@ -18,9 +18,11 @@ docker run \
     --privileged \
     --runtime=nvidia \
     -e NVIDIA_VISIBLE_DEVICES=0 \
-    -d --gpus '"device=0"' \
+    -d --gpus 'all' \
     -v "/workspace/mmatusovic/projects/python/join-benchmark/results:/app/join-benchmark/results" \
     -v "/workspace/mmatusovic/projects/python/join-benchmark/data:/app/join-benchmark/data" \
     mmatusovic/python:run
 
+    # -d --gpus '"device=0"' \
+    
 docker exec -it mmatusovic_python_$ext bash

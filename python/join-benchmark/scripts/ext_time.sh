@@ -23,11 +23,11 @@ while read PERM; do
     log=$PERM
     for i in $(seq $N_REPEAT)
     do
-        echo "run "$i" of "$N_REPEAT
         start=$(date +%s.%N)
         python3 main.py run $QUERY $PERM --$DEVICE
         runtime=$(echo "$(date +%s.%N) - $start" | bc)
             
+        echo "run "$i" of "$N_REPEAT" took "$runtime"s"
         log=$log";"$runtime
     done
     echo $log
