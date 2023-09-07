@@ -6,6 +6,7 @@
 QUERY=$1
 NUM_JOINS=$2
 DEVICE=${3:-"gpu"}
+OTHER_ARGS=${@:4}
 N_REPEAT=15
 
 echo "Benchmarking $1 ..."
@@ -18,13 +19,14 @@ done
 echo $HEAD >> "results/external_log/$DEVICE/$1.csv"
 
 echo "// Timestamp "`date +"%Y-%m-%dT%H:%M:%S"` >> "results/external_log/$DEVICE/$1.csv"
+echo "// Args $OTHER_ARGS" >> "results/external_log/$DEVICE/$1.csv"
 
 while read PERM; do
     log=$PERM
     for i in $(seq $N_REPEAT)
     do
         start=$(date +%s.%N)
-        python3 main.py run $QUERY $PERM --$DEVICE
+        python3 main.py run $QUERY $PERM --$DEVICE $OTHER_ARGS
         runtime=$(echo "$(date +%s.%N) - $start" | bc)
             
         echo "run "$i" of "$N_REPEAT" took "$runtime"s"

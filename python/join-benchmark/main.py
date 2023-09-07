@@ -15,9 +15,9 @@ if __name__ == "__main__":
     else: # default to cpu
         set_engine('cpu')
         
-    manual_parsing = False
-    if '--manual-parsing' in [a.lower() for a in sys.argv]:
-        manual_parsing = True
+    manual_parse = False
+    if '--manual-parse' in [a.lower() for a in sys.argv]:
+        manual_parse = True
         
     run_config = sys.argv[1]
     
@@ -32,7 +32,7 @@ if __name__ == "__main__":
             db_set = "ssb" # Default to ssb
         perm = [int(i) for i in sys.argv[3].split(',')]
         skip_joins = True if '--skip-joins' in [a.lower() for a in sys.argv] else False
-        main_run.main(db_set, query, perm, skip_joins, manual_parsing)
+        main_run.main(db_set, query, perm, skip_joins, manual_parse)
     
     # time_mem_log - measure the time and peak memory use
     #     2nd arg: db_set/query 

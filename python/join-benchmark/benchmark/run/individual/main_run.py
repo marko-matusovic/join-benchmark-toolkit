@@ -23,7 +23,7 @@ def main(db_set:str, query:str, perm:list[int], skip_joins=False, manual_parse=F
         tree = list(dfs.keys())[0]
         print(f'Tree: {tree}')
         print(f'# of rows: {len(dfs[tree])}')
-        dfs[tree].to_csv('result.csv')
+        # dfs[tree].to_csv('result.csv')
     else:
         print('Failed execution')
         exit(1)
