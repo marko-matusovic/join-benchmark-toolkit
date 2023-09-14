@@ -14,7 +14,7 @@ echo "Benchmarking $1 ..."
 HEAD="join_order"
 for i in $(seq $N_REPEAT)
 do
-    HEAD=$HEAD";time_"$1
+    HEAD=$HEAD";time_"$i
 done
 echo $HEAD >> "results/external_log/$DEVICE/$1.csv"
 

@@ -13,10 +13,14 @@ class Stats(NamedTuple):
 
 TPermStats: TypeAlias = dict[str, Stats]
 
+# Example args
+# python3 plot_compare_cost_model_on_time.py {db_set}/{query} {hardware} -d {grouping_method} -b {num_of_bins}
+
 if __name__ == "__main__":
     query = sys.argv[1]
+    hardware = sys.argv[2] # cpu or gpu
 
-    df_time = pd.read_csv(f"results/external_log/cpu/{query}.csv", sep=";", comment="/")
+    df_time = pd.read_csv(f"results/external_log/{hardware}/{query}.csv", sep=";", comment="/")
 
     stats: TPermStats = {}
 
@@ -113,4 +117,4 @@ if __name__ == "__main__":
     ax.set_xticks(x + width, bin_lables, rotation=90)
     ax.legend(loc="upper left", ncols=len(data))
 
-    plt.savefig(f"results/figs/cost-comparison/cpu/{query}.png", dpi=250)
+    plt.savefig(f"results/figs/cost-comparison/{hardware}/{query}.png", dpi=250)

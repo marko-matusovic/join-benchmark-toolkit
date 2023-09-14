@@ -73,13 +73,22 @@
             "args": ["job/22a"]
         },
         {
-            "name": "PLT Comp SSB/Q41 bin size",
+            "name": "PLT Comp SSB/Q21 cpu bin count 6",
             "type": "python",
             "request": "launch",
-            "program": "benchmark/util/plot_compare_cpu.py",
+            "program": "benchmark/util/plot_compare_cost_model_on_time.py",
             "console": "integratedTerminal",
             "justMyCode": true,
-            "args": ["ssb/q41", "-m", "bin_size", "-b", "4"]
+            "args": ["ssb/q21", "cpu", "-m", "bin_size", "-b", "6"]
+        },
+        {
+            "name": "PLT Comp SSB/Q21 gpu bin count 6",
+            "type": "python",
+            "request": "launch",
+            "program": "benchmark/util/plot_compare_cost_model_on_time.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": ["ssb/q21", "gpu", "-m", "bin_size", "-b", "6"]
         },
         {
             "name": "PLT OPT Search Space job/22a",
