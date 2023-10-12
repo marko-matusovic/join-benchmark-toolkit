@@ -20,12 +20,9 @@ def save(n:int):
             file.write(",".join([str(i) for i in p])+'\n')
 
 def gen_all(n:int):
-    perms = np.array([i for i in itertools.permutations(range(n))])
+    perms = [list(p) for p in itertools.permutations(range(n))][1:]
     np.random.shuffle(perms)
-    perms = list(perms)
-    perms.remove(list(range(n)))
-    perms.insert(0, list(range(n)))
-    return perms
+    return [list(range(n))] + perms
 
 def gen_seq(n:int) -> list[list[int]]:
     perms:list[list[int]] = [list(np.arange(n))]
