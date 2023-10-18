@@ -3,6 +3,7 @@ from typing import TypeVar
 from benchmark.operations.operations import Operations
 from benchmark.operations.instructions import Real_Instructions
 from benchmark.operations.time_mem_approximations import Time_Mem_Approx_Instructions
+from benchmark.operations.execution_tree import Execution_Tree_Instructions
 from benchmark.queries.ssb import q11, q12, q13, q21, q31, q41
 from benchmark.queries.job import q1b, q20a, q22a, q28a, q2a, q30a
 from benchmark.tools.parser import parse
@@ -12,9 +13,11 @@ from benchmark.operations.query_instructions import QueryInstructions
 def get_real_instructions(db_set: str, query: str, manual_parse=False):
     return get_set(db_set, query, Real_Instructions(), manual_parse)
 
-
 def get_time_mem_approx_instructions(db_set: str, query: str, manual_parse=False):
     return get_set(db_set, query, Time_Mem_Approx_Instructions(), manual_parse)
+
+def get_execution_tree_instructions(db_set: str, query: str, manual_parse=False):
+    return get_set(db_set, query, Execution_Tree_Instructions(), manual_parse)
 
 
 I = TypeVar("I")

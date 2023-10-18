@@ -1,7 +1,6 @@
 import sys
 
-from benchmark.run.individual import main_approx_time_mem, main_comp_card_est, main_time_mem
-from benchmark.run.individual import main_run
+from benchmark.run.individual import main_approx_time_mem, main_comp_card_est, main_parse, main_time_mem, main_run
 from benchmark.run.optimization import main_optim_nsga_ii
 from benchmark.engine.engine import set_engine
 
@@ -22,6 +21,12 @@ if __name__ == "__main__":
     run_config = sys.argv[1]
     
     
+    # run - just execute the query with given join order (for use when timed outside)
+    #     2nd arg: db_set/query 
+    if run_config == 'parse':
+        [db_set, query] = sys.argv[2].split("/")
+        main_parse.main(db_set, query, manual_parse)
+        
     # run - just execute the query with given join order (for use when timed outside)
     #     2nd arg: db_set/query 
     #     3rd arg: order of joins    

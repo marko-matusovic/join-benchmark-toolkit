@@ -83,7 +83,8 @@ Res = tuple[float, float]
 
 def find_table(schema: TSchema, field_name: str) -> str:
     for table_name in schema:
-        if field_name in schema[table_name]:
+        full_field_name = f'{table_name}.{field_name}'
+        if field_name in schema[table_name] or full_field_name in schema[table_name]:
             return table_name
     print(f"ERROR: No table with field ({field_name}) found!")
     exit(1)

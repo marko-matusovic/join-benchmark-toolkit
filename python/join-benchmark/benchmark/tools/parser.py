@@ -21,6 +21,7 @@ keywords = [
     "LIMIT",
     "GROUP BY",
     "ORDER BY",
+    "BETWEEN",
 ]
 
 
@@ -28,6 +29,27 @@ keywords = [
 def parse(
     db_set: str, query_str: str, operation_set: Operations[I, O]
 ) -> QueryInstructions[I, O]:
+    print('Parsing automatically.')
+    (select_clause, from_clause, where_clause) = split_parsing_groups(query_str)
+
+    (tables, aliases) = parse_from_clause(from_clause)
+
+    (filters, joins) = parse_where_clause(where_clause, operation_set)
+
+    return QueryInstructions(
+        s1_init=operation_set.from_tables(db_set, tables, aliases),
+        s2_filters=filters,
+        s3_joins=joins,
+        s4_aggregation=[
+            # NOT SUPPORTED RIGHT NOW
+            # group by
+            # order by
+            # select
+        ],
+    )
+
+
+def split_parsing_groups(query_str):
     query_str = query_str.strip(" ;")
     query_str = f" {query_str} "
     for kw in keywords:
@@ -68,68 +90,94 @@ def parse(
     )
     where_clause = where_clause[:end]
 
-    select_clause = select_clause.strip()
-    from_clause = from_clause.strip()
-    where_clause = where_clause.strip()
+    return (select_clause.strip(),
+            from_clause.strip(),
+            where_clause.strip())
 
+
+def parse_from_clause(from_clause):
     tables = []
     aliases = []
+
     for table in from_clause.split(","):
         (name, key, alias) = table.strip().partition("AS")
         tables.append(name.strip())
-        if key is None:
+        if key is None or key == '':
             alias = name
         aliases.append(alias.strip())
 
+    return (tables, aliases)
+
+
+def parse_where_clause(where_clause: str, operation_set: Operations) -> tuple[list,list]:
     filters = []
     joins = []
-    for clause in where_clause.split("AND"):
-        clause = clause.strip()
+    where_clause_parts = where_clause.split("AND")
+    where_clause_i = 0
+    while where_clause_i < len(where_clause_parts):
+        clause = where_clause_parts[where_clause_i].strip()
+        where_clause_i += 1
+
         if clause.find("OR") != -1:
-            print(
-                f'ERROR: The parser does not support complex WHERE clauses: "{clause}"'
-            )
-            exit(1)
+            # Currently only (clause1 OR clause2 OR ... OR clauseX) is supported
+            # if the field and operation is the same for all
+            # and the operation is from the set ["=", "LIKE"]
+            big_clause = clause
+            try:
+                multi_clause = clause.strip("() ").split("OR")
+                field = ""
+                op = ""
+                values = []
+                for clause in multi_clause:
+                    (field_cur, _space, op_and_val) = clause.strip().partition(" ")
+                    (op_cur, _space, val_cur) = op_and_val.partition(" ")
+                    assert field == "" or field == field_cur.strip()
+                    field = field_cur.strip()
+                    assert op == "" or op == op_cur.strip()
+                    op = op_cur.strip()
+                    values.append(parse_value(val_cur))
+                assert op in ["=", "LIKE"]
+                filters.append(operation_set.get_filter(op)(field, values))
+                continue
+            except AssertionError:
+                print(f'ERROR: Unsupported WHERE clauses: "{big_clause}"')
+                exit(1)
+
         (tbl, _space, op_and_val) = clause.partition(" ")
         (op, _space, val) = op_and_val.partition(" ")
         if op == "NOT":
             (op2, _space, val) = val.partition(" ")
             op = f"{op} {op2}"
 
-        if (
-            op == "="
-            and re.match(f"^([a-z_]+\\.)[a-z_]+$", val, flags=RegexFlag.IGNORECASE)
-            != None
-        ):
+        if op == "=" and re.match(f"^([a-zA-Z_]+\\.)?[a-zA-Z_]+$", val) != None:
             # op is a join
             joins.append(operation_set.join_fields(tbl, val))
             continue
 
         # op is a filter
+        if op == "BETWEEN":
+            val1 = parse_value(val)
+            val2 = parse_value(where_clause_parts[where_clause_i].strip())
+            where_clause_i += 1
+            filters.append(operation_set.get_filter(">=")(tbl, val1))
+            filters.append(operation_set.get_filter("<=")(tbl, val2))
+            continue
+
         op_method = operation_set.get_filter(op)
-
-        # parse the val
-        if re.match(r"^\d+$", val) != None:
-            val = int(val)
-        # Shouldn't parse floats
-        # elif re.match(r'^\'?\d+.\d+\'?$', val) != None:
-        #     val = float(val.strip('\''))
-        elif re.match(r"^\(.+\)?$", val) != None:
-            val = [v.strip(" '") for v in val.strip(" ()").split(",")]
-        else:
-            val = val.strip(" '")
-
+        val = parse_value(val)
         filters.append(op_method(tbl, val))
 
-    return QueryInstructions(
-        s1_init=operation_set.from_tables(db_set, tables, aliases),
-        s2_filters=filters,
-        s3_joins=joins,
-        s4_aggregation=[
-            # NOT SUPPORTED RIGHT NOW
-            # group by
-            # order by
-            # select
-            # IGNORING SELECT CLAUSE
-        ],
-    )
+    return (filters, joins)
+
+
+def parse_value(val):
+    # parse the val
+    if re.match(r"^\d+$", val) != None:
+        return int(val)
+    # Shouldn't parse floats
+    # elif re.match(r'^\'?\d+.\d+\'?$', val) != None:
+    #     val = float(val.strip('\''))
+    elif re.match(r"^\(.+\)?$", val) != None:
+        return [v.strip(" '") for v in val.strip(" ()").split(",")]
+    else:
+        return val.strip(" '")

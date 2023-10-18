@@ -16,7 +16,7 @@ FROM complete_cast AS cc,
      title AS t
 WHERE cct1.kind IN ('cast',
                     'crew')
-  AND cct2.kind ='complete+verified'
+  AND cct2.kind = 'complete+verified'
   AND ci.note IN ('(writer)',
                   '(head writer)',
                   '(written by)',

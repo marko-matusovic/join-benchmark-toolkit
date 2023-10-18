@@ -8,8 +8,8 @@ FROM aka_name AS an,
      movie_keyword AS mk,
      name AS n,
      title AS t
-WHERE cn.country_code ='[us]'
-  AND k.keyword ='character-name-in-title'
+WHERE cn.country_code = '[us]'
+  AND k.keyword = 'character-name-in-title'
   AND an.person_id = n.id
   AND n.id = ci.person_id
   AND ci.movie_id = t.id

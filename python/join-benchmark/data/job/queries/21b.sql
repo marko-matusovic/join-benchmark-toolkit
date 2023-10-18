@@ -13,8 +13,8 @@ FROM company_name AS cn,
 WHERE cn.country_code !='[pl]'
   AND (cn.name LIKE '%Film%'
        OR cn.name LIKE '%Warner%')
-  AND ct.kind ='production companies'
-  AND k.keyword ='sequel'
+  AND ct.kind = 'production companies'
+  AND k.keyword = 'sequel'
   AND lt.link LIKE '%follow%'
   AND mc.note IS NULL
   AND mi.info IN ('Germany',

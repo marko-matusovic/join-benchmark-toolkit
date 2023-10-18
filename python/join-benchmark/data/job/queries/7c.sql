@@ -11,13 +11,13 @@ FROM aka_name AS an,
 WHERE an.name IS NOT NULL
   AND (an.name LIKE '%a%'
        OR an.name LIKE 'A%')
-  AND it.info ='mini biography'
+  AND it.info = 'mini biography'
   AND lt.link IN ('references',
                   'referenced in',
                   'features',
                   'featured in')
   AND n.name_pcode_cf BETWEEN 'A' AND 'F'
-  AND (n.gender='m'
+  AND (n.gender = 'm'
        OR (n.gender = 'f'
            AND n.name LIKE 'A%'))
   AND pi.note IS NOT NULL

@@ -10,11 +10,11 @@ FROM company_name AS cn,
      movie_info AS mi,
      movie_info_idx AS miidx,
      title AS t
-WHERE cn.country_code ='[de]'
-  AND ct.kind ='production companies'
-  AND it.info ='rating'
-  AND it2.info ='release dates'
-  AND kt.kind ='movie'
+WHERE cn.country_code = '[de]'
+  AND ct.kind = 'production companies'
+  AND it.info = 'rating'
+  AND it2.info = 'release dates'
+  AND kt.kind = 'movie'
   AND mi.movie_id = t.id
   AND it2.id = mi.info_type_id
   AND kt.id = t.kind_id

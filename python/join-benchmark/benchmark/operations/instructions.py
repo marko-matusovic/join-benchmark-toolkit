@@ -163,7 +163,8 @@ class Real_Instructions(Operations[TDFs, None]):
     # PRIVATE
     def find_names(self, dfs: TDFs, field_name: str) -> str:
         for table_name in dfs:
-            if field_name in dfs[table_name]:
+            full_field_name = f'{table_name}.{field_name}'
+            if field_name in dfs[table_name] or full_field_name in dfs[table_name]:
                 return table_name
         print("ERROR: No table found for field '{}'".format(field_name))
         exit(1)

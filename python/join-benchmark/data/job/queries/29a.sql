@@ -18,22 +18,22 @@ FROM aka_name AS an,
      person_info AS pi,
      role_type AS rt,
      title AS t
-WHERE cct1.kind ='cast'
-  AND cct2.kind ='complete+verified'
+WHERE cct1.kind = 'cast'
+  AND cct2.kind = 'complete+verified'
   AND chn.name = 'Queen'
   AND ci.note IN ('(voice)',
                   '(voice) (uncredited)',
                   '(voice: English version)')
-  AND cn.country_code ='[us]'
+  AND cn.country_code = '[us]'
   AND it.info = 'release dates'
   AND it3.info = 'trivia'
   AND k.keyword = 'computer-animation'
   AND mi.info IS NOT NULL
   AND (mi.info LIKE 'Japan:%200%'
        OR mi.info LIKE 'USA:%200%')
-  AND n.gender ='f'
+  AND n.gender = 'f'
   AND n.name LIKE '%An%'
-  AND rt.role ='actress'
+  AND rt.role = 'actress'
   AND t.title = 'Shrek 2'
   AND t.production_year BETWEEN 2000 AND 2010
   AND t.id = mi.movie_id

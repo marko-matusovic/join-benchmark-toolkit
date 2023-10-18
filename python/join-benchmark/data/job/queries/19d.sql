@@ -14,10 +14,10 @@ WHERE ci.note IN ('(voice)',
                   '(voice: Japanese version)',
                   '(voice) (uncredited)',
                   '(voice: English version)')
-  AND cn.country_code ='[us]'
+  AND cn.country_code = '[us]'
   AND it.info = 'release dates'
-  AND n.gender ='f'
-  AND rt.role ='actress'
+  AND n.gender = 'f'
+  AND rt.role = 'actress'
   AND t.production_year > 2000
   AND t.id = mi.movie_id
   AND t.id = mc.movie_id

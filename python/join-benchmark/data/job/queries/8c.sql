@@ -7,8 +7,8 @@ FROM aka_name AS a1,
      name AS n1,
      role_type AS rt,
      title AS t
-WHERE cn.country_code ='[us]'
-  AND rt.role ='writer'
+WHERE cn.country_code = '[us]'
+  AND rt.role = 'writer'
   AND a1.person_id = n1.id
   AND n1.id = ci.person_id
   AND ci.movie_id = t.id

@@ -6,7 +6,7 @@ FROM cast_info AS ci,
      movie_keyword AS mk,
      name AS n,
      title AS t
-WHERE k.keyword ='character-name-in-title'
+WHERE k.keyword = 'character-name-in-title'
   AND n.name LIKE '%B%'
   AND n.id = ci.person_id
   AND ci.movie_id = t.id

@@ -7,7 +7,7 @@ FROM keyword AS k,
      movie_link AS ml,
      title AS t1,
      title AS t2
-WHERE k.keyword ='10,000-mile-club'
+WHERE k.keyword = '10,000-mile-club'
   AND mk.keyword_id = k.id
   AND t1.id = mk.movie_id
   AND ml.movie_id = t1.id
