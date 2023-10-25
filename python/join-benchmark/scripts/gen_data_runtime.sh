@@ -24,7 +24,7 @@ if [ -f $RES_FILE ]; then
 else
     echo "Starting a new training set_$GEN_RUN"
     mkdir ./results/perms_pos/$DB_SET/$GEN_RUN
-    echo "QUERY;TYPE_OF_RUN[0:OVERHEAD,1:JOIN_PERMUTATION];TIMESTAMP;EXIT_CODE[0:OK];MEASUREMENT" >> $RES_FILE
+    echo "TIMESTAMP;DB_SET/QUERY;DEVICE[cpu,gpu];TYPE_OF_RUN[0:OVERHEAD,1:JOIN_PERMUTATION];JOIN_PERMUTATION;EXIT_CODE[0:OK];MEASUREMENT" >> $RES_FILE
     echo "// CREATED AT $TIMESTAMP" >> $RES_FILE
 fi;
 
@@ -66,8 +66,8 @@ while : ; do
         python3 main.py run $DB_SET/$QUERY 0 --$DEVICE --skip-joins
         RES=$?
         RUNTIME=$(echo "$(date +%s.%N) - $START" | bc)
-        echo "$QUERY;0;$TIMESTAMP;;$RES;$RUNTIME"
-        echo "$QUERY;0;$TIMESTAMP;;$RES;$RUNTIME" >> $RES_FILE
+        echo "$TIMESTAMP;$DB_SET/$QUERY;$DEVICE;0;none;$RES;$RUNTIME"
+        echo "$TIMESTAMP;$DB_SET/$QUERY;$DEVICE;0;none;$RES;$RUNTIME" >> $RES_FILE
 
         POS=$((POS+1))
         if (( $NUM_PERMS < $POS )); then POS=1; fi;
@@ -82,8 +82,8 @@ while : ; do
             python3 main.py run $DB_SET/$QUERY $PERM --$DEVICE $OTHER_ARGS
             RES=$?
             RUNTIME=$(echo "$(date +%s.%N) - $START" | bc)
-            echo "$QUERY;1;$TIMESTAMP;$PERM;$RES;$RUNTIME"
-            echo "$QUERY;1;$TIMESTAMP;$PERM;$RES;$RUNTIME" >> $RES_FILE
+            echo "$TIMESTAMP;$DB_SET/$QUERY;$DEVICE;1;$PERM;$RES;$RUNTIME"
+            echo "$TIMESTAMP;$DB_SET/$QUERY;$DEVICE;1;$PERM;$RES;$RUNTIME" >> $RES_FILE
         done
 
         # store the new POS only when finished, when aborted mid repeat, redo the perm
