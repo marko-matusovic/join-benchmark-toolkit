@@ -59,5 +59,5 @@ def get_set(
     # No manual parsing found, attempting automatic parsing
 
     with open(f"data/{db_set}/queries/{query}.sql") as file:
-        query = " ".join([line.strip() for line in file.readlines()]).lower()
+        query = " ".join([line.strip() for line in file.readlines()])
         return parse(db_set, query, operation_class)

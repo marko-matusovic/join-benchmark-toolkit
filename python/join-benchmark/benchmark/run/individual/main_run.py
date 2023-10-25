@@ -3,11 +3,14 @@ from benchmark.operations.get_query_instructions import get_real_instructions
 
 def main(db_set:str, query:str, perm:list[int], skip_joins=False, manual_parse=False):
     print(f'Running {db_set}/{query} with perm {perm}')
-    
+
+    print("Parsing the query...")
     instructions = get_real_instructions(db_set, query, manual_parse)
 
+    print("Loading the tables...")
     dfs = instructions.s1_init()
     
+    print("Running filters...")
     for instruction in instructions.s2_filters:
         instruction(dfs)
 
@@ -15,6 +18,7 @@ def main(db_set:str, query:str, perm:list[int], skip_joins=False, manual_parse=F
         print('Done loading and filtering, joins skipped.')
         exit(0)
         
+    print("Running joins...")
     for p in perm:
         instructions.s3_joins[p](dfs)
 

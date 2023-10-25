@@ -181,6 +181,15 @@
             "args": ["parse", "ssb/q33"]
         },
         {
+            "name": "RUN SSB Q21 GPU",
+            "type": "python",
+            "request": "launch",
+            "program": "main.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": ["run", "ssb/q21", "0,1,2", "--gpu"]
+        },
+        {
             "name": "RUN SSB Q41 CPU",
             "type": "python",
             "request": "launch",

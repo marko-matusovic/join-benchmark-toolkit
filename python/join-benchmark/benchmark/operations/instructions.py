@@ -14,10 +14,10 @@ class Real_Instructions(Operations[TDFs, None]):
 
         return load
 
-    def join_fields(self, field_name_1: str, field_name_2: str):
+    def join_fields(self, field_name_1_in: str, field_name_2_in: str):
         def join(dfs: TDFs) -> None:
-            table_name_1 = self.find_names(dfs, field_name_1)
-            table_name_2 = self.find_names(dfs, field_name_2)
+            (table_name_1, field_name_1) = self.find_names(dfs, field_name_1_in)
+            (table_name_2, field_name_2) = self.find_names(dfs, field_name_2_in)
             if table_name_1 == table_name_2:
                 self.join_filter_eq(dfs, table_name_1, field_name_1, field_name_2)
                 return
@@ -41,11 +41,11 @@ class Real_Instructions(Operations[TDFs, None]):
             table[field_name_1] == table[field_name_2]
         ]
 
-    def filter_field_eq(self, field_name: str, values: TVal | list[TVal]):
+    def filter_field_eq(self, field_name_in: str, values: TVal | list[TVal]):
         if not isinstance(values, list):
             values = [values]
         def filter(dfs: TDFs) -> None:
-            table_name = self.find_names(dfs, field_name)
+            (table_name, field_name) = self.find_names(dfs, field_name_in)
             table = dfs[table_name]
             del dfs[table_name]
             dfs[f"({table_name}S({field_name})={values})"] = table.loc[
@@ -54,9 +54,9 @@ class Real_Instructions(Operations[TDFs, None]):
 
         return filter
 
-    def filter_field_ne(self, field_name: str, value: TVal):
+    def filter_field_ne(self, field_name_in: str, value: TVal):
         def filter(dfs: TDFs) -> None:
-            table_name = self.find_names(dfs, field_name)
+            (table_name, field_name) = self.find_names(dfs, field_name_in)
             table = dfs[table_name]
             del dfs[table_name]
             dfs[f"({table_name}S({field_name})!={value})"] = table.loc[
@@ -65,9 +65,9 @@ class Real_Instructions(Operations[TDFs, None]):
 
         return filter
 
-    def filter_field_ge(self, field_name: str, value: TVal):
+    def filter_field_ge(self, field_name_in: str, value: TVal):
         def filter(dfs: TDFs) -> None:
-            table_name = self.find_names(dfs, field_name)
+            (table_name, field_name) = self.find_names(dfs, field_name_in)
             table = dfs[table_name]
             del dfs[table_name]
             dfs[f"({table_name}S({field_name})>={value})"] = table.loc[
@@ -76,9 +76,9 @@ class Real_Instructions(Operations[TDFs, None]):
 
         return filter
 
-    def filter_field_gt(self, field_name: str, value: TVal):
+    def filter_field_gt(self, field_name_in: str, value: TVal):
         def filter(dfs: TDFs) -> None:
-            table_name = self.find_names(dfs, field_name)
+            (table_name, field_name) = self.find_names(dfs, field_name_in)
             table = dfs[table_name]
             del dfs[table_name]
             dfs[f"({table_name}S({field_name})>{value})"] = table.loc[
@@ -87,9 +87,9 @@ class Real_Instructions(Operations[TDFs, None]):
 
         return filter
 
-    def filter_field_le(self, field_name: str, value: TVal):
+    def filter_field_le(self, field_name_in: str, value: TVal):
         def filter(dfs: TDFs) -> None:
-            table_name = self.find_names(dfs, field_name)
+            (table_name, field_name) = self.find_names(dfs, field_name_in)
             table = dfs[table_name]
             del dfs[table_name]
             dfs[f"({table_name}S({field_name})<={value})"] = table.loc[
@@ -98,9 +98,9 @@ class Real_Instructions(Operations[TDFs, None]):
 
         return filter
 
-    def filter_field_lt(self, field_name: str, value: TVal):
+    def filter_field_lt(self, field_name_in: str, value: TVal):
         def filter(dfs: TDFs) -> None:
-            table_name = self.find_names(dfs, field_name)
+            (table_name, field_name) = self.find_names(dfs, field_name_in)
             table = dfs[table_name]
             del dfs[table_name]
             dfs[f"({table_name}S({field_name})<{value})"] = table.loc[
@@ -109,9 +109,9 @@ class Real_Instructions(Operations[TDFs, None]):
 
         return filter
 
-    def filter_field_like(self, field_name: str, values: list[str]):
+    def filter_field_like(self, field_name_in: str, values: list[str]):
         def filter(dfs: TDFs) -> None:
-            table_name = self.find_names(dfs, field_name)
+            (table_name, field_name) = self.find_names(dfs, field_name_in)
             table = dfs[table_name]
             del dfs[table_name]
             index = self.like_index(table[field_name], values[0])
@@ -121,9 +121,9 @@ class Real_Instructions(Operations[TDFs, None]):
 
         return filter
 
-    def filter_field_not_like(self, field_name: str, value: str):
+    def filter_field_not_like(self, field_name_in: str, value: str):
         def filter(dfs: TDFs) -> None:
-            table_name = self.find_names(dfs, field_name)
+            (table_name, field_name) = self.find_names(dfs, field_name_in)
             table = dfs[table_name]
             del dfs[table_name]
             index = self.like_index(table[field_name], value) != True
@@ -161,10 +161,12 @@ class Real_Instructions(Operations[TDFs, None]):
             exit(1)
 
     # PRIVATE
-    def find_names(self, dfs: TDFs, field_name: str) -> str:
-        for table_name in dfs:
-            full_field_name = f'{table_name}.{field_name}'
-            if field_name in dfs[table_name] or full_field_name in dfs[table_name]:
-                return table_name
-        print("ERROR: No table found for field '{}'".format(field_name))
+    def find_names(self, dfs: TDFs, lookup_field: str) -> tuple[str,str]:
+        for table in dfs:
+            if lookup_field in dfs[table]:
+                return (table, lookup_field)
+            for field in dfs[table]:
+                if lookup_field == field[field.rfind(".")+1:]:
+                    return (table, field)
+        print("ERROR: No table found for field '{}'".format(lookup_field))
         exit(1)

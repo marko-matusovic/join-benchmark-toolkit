@@ -76,22 +76,33 @@ RUN conda init bash
 RUN conda update conda
 # RUN conda config --set channel_priority strict
 
-# With version to make build faster
-RUN conda install -c rapidsai -c conda-forge -c nvidia -c intel \
+RUN conda install \
+    --yes -y \
+    --solver=libmamba \
+    -c rapidsai -c conda-forge -c nvidia  \
     python=3.10 \
-    cudf=23.06 \
-    cudatoolkit=11.8 \
+    rapids=23.10 cudf=23.10 cuda-version=11.8 \ 
     pandas \
-    pymoo \
-    Cython \
-    matplotlib \
     numpy \
-    plotly \
-    scipy \
-    setuptools \
-    tqdm \
-    sqlparse \
-    mkl
+    pymoo \
+    sqlparse
+
+# # With version to make build faster
+# RUN conda install -c rapidsai -c conda-forge -c nvidia -c intel \
+#     python=3.10 \
+#     cudf=23.06 \
+#     cudatoolkit=11.8 \
+#     pandas \
+#     pymoo \
+#     Cython \
+#     matplotlib \
+#     numpy \
+#     plotly \
+#     scipy \
+#     setuptools \
+#     tqdm \
+#     sqlparse \
+#     mkl
 
 WORKDIR /app/join-benchmark
 

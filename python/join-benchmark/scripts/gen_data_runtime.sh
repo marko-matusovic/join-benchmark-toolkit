@@ -23,26 +23,37 @@ if [ -f $RES_FILE ]; then
     echo "// RESUMING RUN AT $TIMESTAMP" >> $RES_FILE
 else
     echo "Starting a new training set_$GEN_RUN"
-    mkdir ./scripts/perms_pos/$DB_SET/$GEN_RUN
-    echo "QUERY;TYPE_OF_RUN[0:OVERHEAD,1:JOIN_PERMUTATION];TIMESTAMP;MEASUREMENT" >> $RES_FILE
+    mkdir ./results/perms_pos/$DB_SET/$GEN_RUN
+    echo "QUERY;TYPE_OF_RUN[0:OVERHEAD,1:JOIN_PERMUTATION];TIMESTAMP;EXIT_CODE[0:OK];MEASUREMENT" >> $RES_FILE
     echo "// CREATED AT $TIMESTAMP" >> $RES_FILE
 fi;
 
-if [ $DB_SET = 'ssb' ]; then
-    
-    OLDIFS=$IFS
-    IFS=","
-    # TODO: for loop can be parametrized to reduce duplicate code
-    for i in q11,1 q12,1 q13,1 q21,3 q22,3 q23,3 q31,3 q32,3 q33,3 q34,3 q41,4 q42,4 q43,4; do
-        set -- $i
-        QUERY=$1
-        NUM_JOINS=$2
+case $DB_SET in 
+    'ssb')
+        QUERIES=("q11" "q12" "q13" "q21" "q22" "q23" "q31" "q32" "q33" "q34" "q41" "q42" "q43")
+        NUMS_JOIN=("1" "1" "1" "3" "3" "3" "3" "3" "3" "3" "4" "4" "4")
+        ;;
+    'job')
+        QUERIES=("q11" "q12" "q13" "q21" "q22" "q23" "q31" "q32" "q33" "q34" "q41" "q42" "q43")
+        NUMS_JOIN=("1" "1" "1" "3" "3" "3" "3" "3" "3" "3" "4" "4" "4")
+        ;;
+    *)
+        echo "Unsupported Dataset passed, choose from [\"ssb\", \"job\"]"
+        exit 1
+esac
+
+# REPEAT UNTIL STOPPED EXTERNALLY
+while : ; do
+    for i in "${!QUERIES[@]}"; do
+
+        QUERY=${QUERIES[i]}
+        NUM_JOINS=${NUMS_JOIN[i]}
 
         PERM_FILE="./scripts/perms/$NUM_JOINS.csv"
         NUM_PERMS=$(wc -l < $PERM_FILE)
         NUM_PERMS=$((NUM_PERMS))
 
-        POS_FILE="./scripts/perms_pos/$DB_SET/$GEN_RUN/$QUERY"
+        POS_FILE="./results/perms_pos/$DB_SET/$GEN_RUN/$QUERY"
         if [ ! -f $POS_FILE ]; then
             echo "Creating new file \"$POS_FILE\""
             echo 0 > $POS_FILE
@@ -53,32 +64,32 @@ if [ $DB_SET = 'ssb' ]; then
         TIMESTAMP=$(date +"[%Y-%m-%dT%H:%M:%S]")
         START=$(date +%s.%N)
         python3 main.py run $DB_SET/$QUERY 0 --$DEVICE --skip-joins
+        RES=$?
         RUNTIME=$(echo "$(date +%s.%N) - $START" | bc)
-        echo "$QUERY;0;$TIMESTAMP;$RUNTIME"
-        echo "$QUERY;0;$TIMESTAMP;$RUNTIME" >> $RES_FILE
+        echo "$QUERY;0;$TIMESTAMP;;$RES;$RUNTIME"
+        echo "$QUERY;0;$TIMESTAMP;;$RES;$RUNTIME" >> $RES_FILE
 
         POS=$((POS+1))
         if (( $NUM_PERMS < $POS )); then POS=1; fi;
         PERM=$(sed "${POS}q;d" $PERM_FILE)
 
+        echo $PERM
+
         # Run x N_REPEAT (5)
-        for i in $(seq $N_REPEAT); do
+        for j in $(seq $N_REPEAT); do
             START=$(date +%s.%N)
             TIMESTAMP=$(date +"[%Y-%m-%dT%H:%M:%S]")
             python3 main.py run $DB_SET/$QUERY $PERM --$DEVICE $OTHER_ARGS
+            RES=$?
             RUNTIME=$(echo "$(date +%s.%N) - $START" | bc)
-            echo "$QUERY;1;$TIMESTAMP;$RUNTIME"
-            echo "$QUERY;1;$TIMESTAMP;$RUNTIME" >> $RES_FILE
+            echo "$QUERY;1;$TIMESTAMP;$PERM;$RES;$RUNTIME"
+            echo "$QUERY;1;$TIMESTAMP;$PERM;$RES;$RUNTIME" >> $RES_FILE
         done
 
         # store the new POS only when finished, when aborted mid repeat, redo the perm
         echo $POS > $POS_FILE
 
     done
-    IFS=$OLDIFS
+    
+done
 
-    
-    
-
-    
-fi;
