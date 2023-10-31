@@ -1,7 +1,10 @@
+from os.path import exists
+import re
+
 TSchema = dict[str, list[str]]
 
 def get_schema(db_name:str) -> TSchema:
-    return {
+    schemas = {
         # OUTDATED SCHEMA, I ADJUSTED IT WHEN I DID MANUAL PARSING
         # "ssb": {
         #     "lineorder": ["orderkey", "linenumber", "custkey", "partkey", "suppkey", "orderdate", "orderpriority", "shippriority", "quantity", "extendedprice", "ordtotalprice", "discount", "revenue", "supplycost", "tax", "commitdate", "shopmode"],
@@ -40,10 +43,41 @@ def get_schema(db_name:str) -> TSchema:
             "role_type": ["id", "role",],
             "title": ["id", "title", "imdb_index", "kind_id", "production_year", "imdb_id", "phonetic_code", "episode_of_id", "season_nr", "episode_nr", "series_years", "md5sum",],
         }
-    }[db_name]
+    }
+    
+    if db_name in schemas:
+        return schemas[db_name]
+    if exists(f'./data/{db_name}/schema-cache.json'):
+        return load_from_cache(db_name)
+    if exists(f'./data/{db_name}/schema.sql'):
+        schema = load_from_file(db_name)
+        save_to_cache(db_name, schema)
+        return schema
+    print(f"No schema found for db {db_name}")
+    exit(1)
 
 def rename_schema(schema: TSchema, tables: list[str], labels: list[str]) -> TSchema:
     return {
         label: [ f'{label}.{col}' for col in schema[table] ]
         for (table, label) in zip(tables, labels)
     }
+
+def load_from_file(db_name:str) -> TSchema:
+    fin = open(f'./data/{db_name}/schema.sql', 'r')
+    lines = fin.readlines()
+    lines = [line.strip() for line in lines if not line.strip().startswith('--')]
+    clause = re.sub('[\\n\\t\\ ]+', ' ', ''.join(lines))
+    tables = clause.split(';')
+    # remove front and end, extract which table it is
+    
+    print("Not implemented")
+    return {}
+    
+
+def load_from_cache(db_name:str) -> TSchema:
+    print("Not implemented")
+    return {}
+
+def save_to_cache(db_name:str, schema:TSchema) -> None:
+    print("Not implemented")
+    pass
