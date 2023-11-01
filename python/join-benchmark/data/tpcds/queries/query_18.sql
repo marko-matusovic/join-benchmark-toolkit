@@ -30,5 +30,3 @@ select  i_item_id,
         ca_county,
 	i_item_id
  limit 100;
-
-

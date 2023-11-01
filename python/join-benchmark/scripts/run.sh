@@ -64,3 +64,21 @@ fi;
 if [ $2 = 'job/30a' ]; then
     $1 job/30a 21 ${@:3}
 fi;
+
+
+
+
+
+
+if [ $2 = 'tpcds' ]; then
+    $1 tpcds/query_3 2 ${@:3}
+    $1 tpcds/query_6 4 ${@:3}
+    $1 tpcds/query_7 4 ${@:3}
+    $1 tpcds/query_12 2 ${@:3}
+    $1 tpcds/query_15 3 ${@:3}
+    $1 tpcds/query_17 7 ${@:3}
+    $1 tpcds/query_18 6 ${@:3}
+    $1 tpcds/query_19 5 ${@:3}
+    $1 tpcds/query_20 2 ${@:3}
+    # $1 tpcds/query_ ${@:3}
+fi;
