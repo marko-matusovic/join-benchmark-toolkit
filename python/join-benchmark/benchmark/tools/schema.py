@@ -97,7 +97,10 @@ def load_from_file(db_name:str) -> TSchema:
             if next_col == -1:
                 break
             if next_brs != -1 and next_brs < next_col:
-                i = columns.find(",", next_bre) + 1
+                next_col = columns.find(",", next_bre)
+                if next_col == -1:
+                    break
+                i = next_col + 1
                 j = columns.find(" ", i)
             else:
                 i = next_col + 1
