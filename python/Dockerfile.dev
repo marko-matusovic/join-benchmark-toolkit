@@ -87,22 +87,8 @@ RUN conda install \
     pymoo \
     sqlparse
 
-# # With version to make build faster
-# RUN conda install -c rapidsai -c conda-forge -c nvidia -c intel \
-#     python=3.10 \
-#     cudf=23.06 \
-#     cudatoolkit=11.8 \
-#     pandas \
-#     pymoo \
-#     Cython \
-#     matplotlib \
-#     numpy \
-#     plotly \
-#     scipy \
-#     setuptools \
-#     tqdm \
-#     sqlparse \
-#     mkl
+# For AWS setup
+# conda create -n jb --solver=libmamba -c rapidsai -c conda-forge -c nvidia python rapids cudf cuda-version=11.7 pandas numpy pymoo    
 
 WORKDIR /app/join-benchmark
 
