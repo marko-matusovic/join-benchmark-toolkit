@@ -3,6 +3,7 @@ import sys
 from benchmark.run.individual import main_approx_time_mem, main_comp_card_est, main_parse, main_time_mem, main_run
 # from benchmark.run.optimization import main_optim_nsga_ii
 from benchmark.engine.engine import set_engine
+from benchmark.tools.schema import get_schema
 
 # This program accepts a number of positional arguments. 
 # The first argument is the name of the program to run, it can be one of the following:
@@ -20,8 +21,13 @@ if __name__ == "__main__":
         
     run_config = sys.argv[1]
     
-     
-    # run - just execute the query with given join order (for use when timed outside)
+    # Loads the schema, usually used for testing
+    #     2nd arg: db_name
+    if run_config == 'schema' :
+        db_set = sys.argv[2]
+        get_schema(db_set)
+        
+    # Parses the query, usually used for testing
     #     2nd arg: db_set/query 
     if run_config == 'parse':
         [db_set, query] = sys.argv[2].split("/")
