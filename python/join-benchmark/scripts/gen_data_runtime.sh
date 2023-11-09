@@ -11,7 +11,7 @@ GEN_RUN=${2:-$((1000 + $RANDOM % 9000))}
 # DEVICE=${3:-"gpu"}
 # N_REPEAT=${4:-"5"}
 # OTHER_ARGS=${@:5}
-DEVICE="cpu"
+DEVICE="gpu"
 N_REPEAT=1
 OTHER_ARGS=""
 
