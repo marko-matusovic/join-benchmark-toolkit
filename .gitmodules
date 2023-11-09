@@ -7,3 +7,6 @@
 [submodule "tpcds-kit"]
 	path = tpcds-kit
 	url = https://github.com/databricks/tpcds-kit.git
+[submodule "ssb-dbgen"]
+	path = ssb-dbgen
+	url = https://github.com/eyalroz/ssb-dbgen.git
