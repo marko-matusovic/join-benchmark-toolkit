@@ -10,15 +10,15 @@ from benchmark.tools.schema import get_schema
 if __name__ == "__main__":
     print(f'Running with args: {sys.argv}')    
     
-    if '--gpu' in [a.lower() for a in sys.argv]:
+    if '--gpu' in sys.argv:
         set_engine('gpu')
     else: # default to cpu
         set_engine('cpu')
         
     manual_parse = False
-    if '--manual-parse' in [a.lower() for a in sys.argv]:
+    if '--manual-parse' in sys.argv:
         manual_parse = True
-        
+    
     run_config = sys.argv[1]
     
     # Loads the schema, usually used for testing
@@ -35,6 +35,33 @@ if __name__ == "__main__":
         
     # run - just execute the query with given join order (for use when timed outside)
     #     2nd arg: db_set/query 
+    #     3rd arg: order of joins
+    #     opt arg --skip-joins: skips all joins
+    #     opt arg --log [filename] [start of log]: opens the log file and prints the start of the log and measures times of each operation such as filters and joins
+    if run_config == 'run':
+        [db_set, query] = sys.argv[2].split("/")
+        if query == None:
+            query = db_set
+            db_set = "ssb" # Default to ssb
+        perm = [int(i) for i in sys.argv[3].split(',')]
+        skip_joins = True if '--skip-joins' in sys.argv else False
+        
+        if '--log' in sys.argv:
+            log_id = sys.argv.index('--log')
+            if len(sys.argv) <= log_id + 2:
+                print('Error: Not enough arguments after --log statement, must follow the format: "--log [filename] [log_start]"')
+                exit(1)
+            log_file = sys.argv[log_id + 1]
+            log_head = sys.argv[log_id + 2]
+            main_run.main(db_set, query, perm, skip_joins, manual_parse, log_file, log_head)
+            
+        # No logging inside python
+        else:
+            main_run.main(db_set, query, perm, skip_joins, manual_parse)
+        
+        
+    # run - just execute the query with given join order (for use when timed outside)
+    #     2nd arg: db_set/query 
     #     3rd arg: order of joins    
     if run_config == 'run':
         [db_set, query] = sys.argv[2].split("/")
@@ -42,7 +69,7 @@ if __name__ == "__main__":
             query = db_set
             db_set = "ssb" # Default to ssb
         perm = [int(i) for i in sys.argv[3].split(',')]
-        skip_joins = True if '--skip-joins' in [a.lower() for a in sys.argv] else False
+        skip_joins = True if '--skip-joins' in sys.argv else False
         main_run.main(db_set, query, perm, skip_joins, manual_parse)
     
     # time_mem_log - measure the time and peak memory use

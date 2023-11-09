@@ -11,8 +11,8 @@ GEN_RUN=${2:-$((1000 + $RANDOM % 9000))}
 # DEVICE=${3:-"gpu"}
 # N_REPEAT=${4:-"5"}
 # OTHER_ARGS=${@:5}
-DEVICE="gpu"
-N_REPEAT=5
+DEVICE="cpu"
+N_REPEAT=1
 OTHER_ARGS=""
 
 RES_FILE="./results/training_data/$DB_SET/set_${GEN_RUN}_measurement.csv"
@@ -24,7 +24,7 @@ if [ -f $RES_FILE ]; then
 else
     echo "Starting a new training set_$GEN_RUN"
     mkdir ./results/perms_pos/$DB_SET/$GEN_RUN
-    echo "TIMESTAMP;DB_SET/QUERY;DEVICE[cpu,gpu];TYPE_OF_RUN[0:OVERHEAD,1:JOIN_PERMUTATION];JOIN_PERMUTATION;EXIT_CODE[0:OK];MEASUREMENT" >> $RES_FILE
+    echo "TIMESTAMP;DB_SET/QUERY;DEVICE[cpu,gpu];TYPE_OF_RUN[1:OVERHEAD,0:JOIN_PERMUTATION];JOIN_PERMUTATION;EXIT_CODE[201:OK_SKIP_JOINS,200:OK,500:PROCESSING_ERROR];PARSING[MS];OVERHEAD[MS];FILTERS[LIST_MS];JOINS[LIST_MS]" >> $RES_FILE
     echo "// CREATED AT $TIMESTAMP" >> $RES_FILE
 fi;
 
@@ -34,6 +34,10 @@ case $DB_SET in
         NUMS_JOIN=("1" "1" "1" "3" "3" "3" "3" "3" "3" "3" "4" "4" "4")
         ;;
     'job')
+        QUERIES=("q11" "q12" "q13" "q21" "q22" "q23" "q31" "q32" "q33" "q34" "q41" "q42" "q43")
+        NUMS_JOIN=("1" "1" "1" "3" "3" "3" "3" "3" "3" "3" "4" "4" "4")
+        ;;
+    'tpcds')
         QUERIES=("q11" "q12" "q13" "q21" "q22" "q23" "q31" "q32" "q33" "q34" "q41" "q42" "q43")
         NUMS_JOIN=("1" "1" "1" "3" "3" "3" "3" "3" "3" "3" "4" "4" "4")
         ;;
@@ -60,30 +64,33 @@ while : ; do
         fi;
         POS=$(cat $POS_FILE)
 
-        # Overhead x 1
-        TIMESTAMP=$(date +"[%Y-%m-%dT%H:%M:%S]")
-        START=$(date +%s.%N)
-        python3 main.py run $DB_SET/$QUERY 0 --$DEVICE --skip-joins
-        RES=$?
-        RUNTIME=$(echo "$(date +%s.%N) - $START" | bc)
-        echo "$TIMESTAMP;$DB_SET/$QUERY;$DEVICE;0;none;$RES;$RUNTIME"
-        echo "$TIMESTAMP;$DB_SET/$QUERY;$DEVICE;0;none;$RES;$RUNTIME" >> $RES_FILE
+        # Dropped overhead only, because we measure times individually
+        # # Overhead x 1
+        # # START=$(date +%s.%N)
+        # TIMESTAMP=$(date +"[%Y-%m-%dT%H:%M:%S]")
+        # LOG_START="$TIMESTAMP;$DB_SET/$QUERY;$DEVICE;1;none"
+        # python3 main.py run $DB_SET/$QUERY 0 --$DEVICE --skip-joins --log $RES_FILE $LOG_START $OTHER_ARGS
+        # # RES=$?
+        # # RUNTIME=$(echo "$(date +%s.%N) - $START" | bc)
+        # # echo "$TIMESTAMP;$DB_SET/$QUERY;$DEVICE;1;none;$RES;$RUNTIME"
+        # # echo "$TIMESTAMP;$DB_SET/$QUERY;$DEVICE;1;none;$RES;$RUNTIME" >> $RES_FILE
 
         POS=$((POS+1))
-        if (( $NUM_PERMS < $POS )); then POS=1; fi;
+        if (( $NUM_PERMS < $POS )); then continue; fi;
         PERM=$(sed "${POS}q;d" $PERM_FILE)
 
         echo $PERM
 
         # Run x N_REPEAT (5)
         for j in $(seq $N_REPEAT); do
-            START=$(date +%s.%N)
+            # START=$(date +%s.%N)
             TIMESTAMP=$(date +"[%Y-%m-%dT%H:%M:%S]")
-            python3 main.py run $DB_SET/$QUERY $PERM --$DEVICE $OTHER_ARGS
-            RES=$?
-            RUNTIME=$(echo "$(date +%s.%N) - $START" | bc)
-            echo "$TIMESTAMP;$DB_SET/$QUERY;$DEVICE;1;$PERM;$RES;$RUNTIME"
-            echo "$TIMESTAMP;$DB_SET/$QUERY;$DEVICE;1;$PERM;$RES;$RUNTIME" >> $RES_FILE
+            LOG_START="$TIMESTAMP;$DB_SET/$QUERY;$DEVICE;0;$PERM"
+            python3 main.py run $DB_SET/$QUERY $PERM --$DEVICE --log $RES_FILE $LOG_START $OTHER_ARGS
+            # RES=$?
+            # RUNTIME=$(echo "$(date +%s.%N) - $START" | bc)
+            # echo "$TIMESTAMP;$DB_SET/$QUERY;$DEVICE;0;$PERM;$RES;$RUNTIME"
+            # echo "$TIMESTAMP;$DB_SET/$QUERY;$DEVICE;0;$PERM;$RES;$RUNTIME" >> $RES_FILE
         done
 
         # store the new POS only when finished, when aborted mid repeat, redo the perm
@@ -92,4 +99,3 @@ while : ; do
     done
     
 done
-
