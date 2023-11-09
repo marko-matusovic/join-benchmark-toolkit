@@ -7,3 +7,6 @@
 [submodule "tpcds-kit"]
 	path = tpcds-kit
 	url = https://github.com/databricks/tpcds-kit.git
+[submodule "ssb-kylin"]
+	path = ssb-kylin
+	url = https://github.com/Kyligence/ssb-kylin.git
