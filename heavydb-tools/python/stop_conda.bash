@@ -1,1 +1,0 @@
-docker container stop mm_conda_heavydb

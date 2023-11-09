@@ -1,9 +1,3 @@
-[submodule "blazingsql"]
-	path = blazingsql
-	url = https://github.com/BlazingDB/blazingsql.git
-[submodule "heavydb"]
-	path = heavydb
-	url = https://github.com/heavyai/heavydb.git
 [submodule "tpcds-kit"]
 	path = tpcds-kit
 	url = https://github.com/databricks/tpcds-kit.git
