@@ -25,7 +25,7 @@ function tpcds() {
 
 # JOB
 function job() {
-    # cd $PROJECT_DIR/ssb-dbgen
+    cd $PROJECT_DIR/ssb-dbgen
 
     # cmake -DCSV_OUTPUT_FORMAT=ON .
     # cmake --build .

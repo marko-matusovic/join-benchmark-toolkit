@@ -29,17 +29,17 @@ keywords = [
 def parse(
     db_set: str, query_str: str, operation_set: Operations[I, O]
 ) -> QueryInstructions[I, O]:
-    print('Parsing automatically.')
+    print("Parsing automatically.")
     (select_clause, from_clause, where_clause) = split_parsing_groups(query_str)
 
     (tables, aliases) = parse_from_clause(from_clause)
 
-    (filters, joins) = parse_where_clause(where_clause, operation_set)
+    (filters, joins) = parse_where_clause(where_clause)
 
     return QueryInstructions(
         s1_init=operation_set.from_tables(db_set, tables, aliases),
-        s2_filters=filters,
-        s3_joins=joins,
+        s2_filters=[operation_set.get_filter(op)(tbl, val) for tbl, op, val in filters],
+        s3_joins=[operation_set.join_fields(f1, f2) for f1, f2 in joins],
         s4_aggregation=[
             # NOT SUPPORTED RIGHT NOW
             # group by
@@ -47,6 +47,14 @@ def parse(
             # select
         ],
     )
+
+# This function only parses out the joins
+def get_joins(db_set: str, query_str: str) -> list[tuple[str,str]] :
+    (_select_clause, _from_clause, where_clause) = split_parsing_groups(query_str)
+
+    (_filters, joins) = parse_where_clause(where_clause)
+    
+    return joins
 
 
 def split_parsing_groups(query_str):
@@ -90,9 +98,7 @@ def split_parsing_groups(query_str):
     )
     where_clause = where_clause[:end]
 
-    return (select_clause.strip(),
-            from_clause.strip(),
-            where_clause.strip())
+    return (select_clause.strip(), from_clause.strip(), where_clause.strip())
 
 
 def parse_from_clause(from_clause):
@@ -102,16 +108,18 @@ def parse_from_clause(from_clause):
     for table in from_clause.split(","):
         (name, key, alias) = table.strip().partition("AS")
         tables.append(name.strip())
-        if key is None or key == '':
+        if key is None or key == "":
             alias = name
         aliases.append(alias.strip())
 
     return (tables, aliases)
 
 
-def parse_where_clause(where_clause: str, operation_set: Operations) -> tuple[list,list]:
-    filters = []
-    joins = []
+def parse_where_clause(
+    where_clause: str,
+) -> tuple[list[tuple[str, str, any]], list[tuple[str, str]]]:
+    filters: list[tuple[str, str, any]] = []
+    joins: list[tuple[str, str]] = []
     where_clause_parts = where_clause.split("AND")
     where_clause_i = 0
     while where_clause_i < len(where_clause_parts):
@@ -137,7 +145,7 @@ def parse_where_clause(where_clause: str, operation_set: Operations) -> tuple[li
                     op = op_cur.strip()
                     values.append(parse_value(val_cur))
                 assert op in ["=", "LIKE"]
-                filters.append(operation_set.get_filter(op)(field, values))
+                filters.append(field, op, values)
                 continue
             except AssertionError:
                 print(f'ERROR: Unsupported WHERE clauses: "{big_clause}"')
@@ -151,7 +159,7 @@ def parse_where_clause(where_clause: str, operation_set: Operations) -> tuple[li
 
         if op == "=" and re.match(f"^([a-zA-Z_]+\\.)?[a-zA-Z_]+$", val) != None:
             # op is a join
-            joins.append(operation_set.join_fields(tbl, val))
+            joins.append(tbl, val)
             continue
 
         # op is a filter
@@ -159,13 +167,11 @@ def parse_where_clause(where_clause: str, operation_set: Operations) -> tuple[li
             val1 = parse_value(val)
             val2 = parse_value(where_clause_parts[where_clause_i].strip())
             where_clause_i += 1
-            filters.append(operation_set.get_filter(">=")(tbl, val1))
-            filters.append(operation_set.get_filter("<=")(tbl, val2))
+            filters.append(tbl, ">=", val1)
+            filters.append(tbl, "<=", val2)
             continue
 
-        op_method = operation_set.get_filter(op)
-        val = parse_value(val)
-        filters.append(op_method(tbl, val))
+        filters.append(tbl, op, parse_value(val))
 
     return (filters, joins)
 
