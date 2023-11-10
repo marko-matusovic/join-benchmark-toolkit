@@ -1,5 +1,6 @@
 PROJECT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-SCALE=${1:-'10'}
+DBS=${1:-'all'}
+SCALE=${2:-'10'}
 
 # TPC-DS
 function tpcds() {
@@ -55,12 +56,30 @@ function ssb() {
     mv $PROJECT_DIR/ssb-dbgen/*.tbl tables
 }
 
-# Trigger all 3 jobs at once
-echo "Generating TPC-DS, JOB, and SSB at scale $SCALE"
+if [[ $DBS == "all" ]]; then
+    # Trigger all 3 jobs at once
+    echo "Generating TPC-DS, and SSB at scale $SCALE"
+    ssb & \
+    tpcds & \
+    wait
+fi;
 
-ssb & \
-# job & \
-tpcds & \
-wait
+if [[ $DBS == "job" ]]; then
+    # Trigger all 3 jobs at once
+    echo "Generating JOB at scale $SCALE"
+    job
+fi;
 
-# 
+if [[ $DBS == "ssb" ]]; then
+    # Trigger all 3 jobs at once
+    echo "Generating SSB at scale $SCALE"
+    ssb
+fi;
+
+if [[ $DBS == "tpcds" ]]; then
+    # Trigger all 3 jobs at once
+    echo "Generating TPC-DS at scale $SCALE"
+    tpcds
+fi;
+
+echo "Done!"
