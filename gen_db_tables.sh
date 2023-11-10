@@ -17,11 +17,14 @@ function tpcds() {
         -force Y \
         -dir ../tmp/tables
 
+    sleep 3
+
     cd $PROJECT_DIR/python/join-benchmark/data/tpcds
     rm -rf tables
     mkdir tables
 
-    mv $PROJECT_DIR/tpcds-kit/tmp/tables/* $PROJECT_DIR/python/join-benchmark/data/tpcds/tables
+    mv $PROJECT_DIR/tpcds-kit/tmp/tables/* tables
+    echo "scale: $SCALE" > tables/scale.txt
 }
 
 # JOB
@@ -37,6 +40,7 @@ function job() {
     # rm -rf tables
     # mkdir tables
     # mv $PROJECT_DIR/ssb-dbgen/*.tbl tables
+    # echo "scale: $SCALE" > $PROJECT_DIR/python/join-benchmark/data/job/tables/scale.txt
 }
 
 # SSB
@@ -54,6 +58,7 @@ function ssb() {
     rm -rf tables
     mkdir tables
     mv $PROJECT_DIR/ssb-dbgen/*.tbl tables
+    echo "scale: $SCALE" > tables/scale.txt
 }
 
 if [[ $DBS == "all" ]]; then
