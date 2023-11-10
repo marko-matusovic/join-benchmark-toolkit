@@ -47,7 +47,7 @@ function ssb() {
     cmake --build .
     
     rm -rf *.tbl
-    ./dbgen -v -s $(( $SCALE * 2 ))
+    ./dbgen -v -s $SCALE
 
     cd $PROJECT_DIR/python/join-benchmark/data/ssb
 
