@@ -29,18 +29,14 @@ function tpcds() {
 
 # JOB
 function job() {
-    cd $PROJECT_DIR/ssb-dbgen
-
-    cmake -DCSV_OUTPUT_FORMAT=ON .
-    cmake --build .
-    ./dbgen -v -s 15
+    cd $PROJECT_DIR/imdb
+    ./download_tables.sh
 
     cd $PROJECT_DIR/python/join-benchmark/data/job
-
-    rm -rf tables
     mkdir tables
-    mv $PROJECT_DIR/ssb-dbgen/*.tbl tables
-    echo "scale: $SCALE" > $PROJECT_DIR/python/join-benchmark/data/job/tables/scale.txt
+    rm -rf tables/*
+
+    mv $PROJECT_DIR/imdb/tables/*.csv tables/
 }
 
 # SSB
@@ -71,7 +67,7 @@ fi;
 
 if [[ $DBS == "job" ]]; then
     # Trigger all 3 jobs at once
-    echo "Generating JOB at scale $SCALE"
+    echo "Generating JOB"
     job
 fi;
 
