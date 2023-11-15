@@ -19,7 +19,7 @@ function tpcds() {
 
     sleep 3
 
-    cd $PROJECT_DIR/python/join-benchmark/data/tpcds
+    cd $PROJECT_DIR/jb-environment/join-benchmark/data/tpcds
     rm -rf tables
     mkdir tables
 
@@ -32,7 +32,7 @@ function job() {
     cd $PROJECT_DIR/imdb-db-tool
     ./download_tables.sh
 
-    cd $PROJECT_DIR/python/join-benchmark/data/job
+    cd $PROJECT_DIR/jb-environment/join-benchmark/data/job
     mkdir tables
     rm -rf tables/*
 
@@ -49,7 +49,7 @@ function ssb() {
     rm -rf *.tbl
     ./dbgen -v -s $SCALE
 
-    cd $PROJECT_DIR/python/join-benchmark/data/ssb
+    cd $PROJECT_DIR/jb-environment/join-benchmark/data/ssb
 
     rm -rf tables
     mkdir tables

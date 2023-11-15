@@ -7,7 +7,7 @@ if [[ -n "$( docker ps -a -q -f name=mmatusovic_python_$ext )" ]]; then
 fi
 
 echo "Purging stats"
-rm -rf /workspace/mmatusovic/projects/python/join-benchmark/data/**/stats/*
+rm -rf /workspace/mmatusovic/projects/jb-environment/join-benchmark/data/**/stats/*
 
 echo "Creating new container"
 
@@ -19,8 +19,8 @@ docker run \
     --runtime=nvidia \
     -e NVIDIA_VISIBLE_DEVICES=0 \
     -d --gpus 'all' \
-    -v "/workspace/mmatusovic/projects/python/join-benchmark/results:/app/join-benchmark/results" \
-    -v "/workspace/mmatusovic/projects/python/join-benchmark/data:/app/join-benchmark/data" \
+    -v "/workspace/mmatusovic/projects/jb-environment/join-benchmark/results:/app/join-benchmark/results" \
+    -v "/workspace/mmatusovic/projects/jb-environment/join-benchmark/data:/app/join-benchmark/data" \
     mmatusovic/python:run
 
     # -d --gpus '"device=0"' \

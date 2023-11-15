@@ -1,0 +1,9 @@
+# mmatusovic/python:run IMAGE
+
+FROM mmatusovic/python:dev
+
+WORKDIR /app/join-benchmark
+COPY join-benchmark .
+
+# Build with 
+# docker build -t mmatusovic/python:run -f Dockerfile.run .
