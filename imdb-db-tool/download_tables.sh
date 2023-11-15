@@ -9,6 +9,8 @@ mkdir tables
 # Unpack the tgz file
 tar zxvf imdb.tgz -C tables
 
+./remove-quotes.sh
+
 # Clean up
 rm -rf tables/schematext.sql
 rm imdb.tgz
