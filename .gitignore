@@ -6,5 +6,3 @@ cuda/volume/.*
 **/__pycache__
 
 .DS_Store
-
-imdb/gz
