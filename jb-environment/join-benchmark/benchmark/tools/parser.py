@@ -1,7 +1,7 @@
 from typing import Any, TypeVar
 import re
 from re import RegexFlag
-from benchmark.operations.operations import Operations
+from benchmark.operations.operations import Operations, TVal
 from benchmark.operations.query_instructions import QueryInstructions
 
 I = TypeVar("I")
@@ -26,10 +26,10 @@ keywords = [
 
 # SELECT column+ FROM (table [AS alias])+ [WHERE clause+]
 def parse(
-    db_path, db_set: str, query_str: str, operation_set: Operations[I, O]
+    db_path:str, db_set: str, query_str: str, operation_set: Operations[I, O]
 ) -> QueryInstructions[I, O]:
     print("Parsing automatically.")
-    (select_clause, from_clause, where_clause) = split_parsing_groups(query_str)
+    (_select_clause, from_clause, where_clause) = split_parsing_groups(query_str)
 
     (tables, aliases) = parse_from_clause(from_clause)
 
@@ -56,7 +56,7 @@ def get_joins(db_set: str, query_str: str) -> list[tuple[str,str]] :
     return joins
 
 
-def split_parsing_groups(query_str):
+def split_parsing_groups(query_str:str):
     query_str = query_str.strip(" ;")
     query_str = f" {query_str} "
     for kw in keywords:
@@ -70,16 +70,16 @@ def split_parsing_groups(query_str):
     query_str = re.sub(r"\\s\\s+", " ", query_str)
 
     (start, select_keyword, rest) = query_str.partition("SELECT")
-    if select_keyword is None:
+    if select_keyword == "":
         rest = start
 
     (select_clause, from_keyword, rest) = rest.partition("FROM")
-    if from_keyword is None:
+    if from_keyword == "":
         print("Error: The Query is missing a FROM clause.")
         exit(1)
 
     (from_clause, where_keyword, where_clause) = rest.partition("WHERE")
-    if where_keyword is None:
+    if where_keyword == "":
         where_clause = ""
 
     # get rid of "LIMIT", "GROUP BY", "ORDER BY"
@@ -100,14 +100,14 @@ def split_parsing_groups(query_str):
     return (select_clause.strip(), from_clause.strip(), where_clause.strip())
 
 
-def parse_from_clause(from_clause):
-    tables = []
-    aliases = []
+def parse_from_clause(from_clause:str) -> tuple[list[str],list[str]] :
+    tables:list[str] = []
+    aliases:list[str] = []
 
     for table in from_clause.split(","):
         (name, key, alias) = table.strip().partition("AS")
         tables.append(name.strip())
-        if key is None or key == "":
+        if key == "":
             alias = name
         aliases.append(alias.strip())
 
@@ -134,7 +134,7 @@ def parse_where_clause(
                 multi_clause = clause.strip("() ").split("OR")
                 field = ""
                 op = ""
-                values = []
+                values:list[TVal | list[TVal]] = []
                 for clause in multi_clause:
                     (field_cur, _space, op_and_val) = clause.strip().partition(" ")
                     (op_cur, _space, val_cur) = op_and_val.partition(" ")
@@ -175,7 +175,7 @@ def parse_where_clause(
     return (filters, joins)
 
 
-def parse_value(val):
+def parse_value(val:str) -> TVal | list[TVal]:
     # parse the val
     if re.match(r"^\d+$", val) != None:
         return int(val)

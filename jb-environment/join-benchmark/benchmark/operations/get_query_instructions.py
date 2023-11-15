@@ -10,13 +10,13 @@ from benchmark.tools.parser import parse
 from benchmark.operations.query_instructions import QueryInstructions
 
 
-def get_real_instructions(db_path:str, db_set:str, query: str, manual_parse=False):
+def get_real_instructions(db_path:str, db_set:str, query: str, manual_parse:bool=False):
     return get_set(db_path, db_set, query, Real_Instructions(), manual_parse)
 
-def get_time_mem_approx_instructions(db_path:str, db_set:str, query: str, manual_parse=False):
+def get_time_mem_approx_instructions(db_path:str, db_set:str, query: str, manual_parse:bool=False):
     return get_set(db_path, db_set, query, Time_Mem_Approx_Instructions(), manual_parse)
 
-def get_execution_tree_instructions(db_path:str, db_set:str, query: str, manual_parse=False):
+def get_execution_tree_instructions(db_path:str, db_set:str, query: str, manual_parse:bool=False):
     return get_set(db_path, db_set, query, Execution_Tree_Instructions(), manual_parse)
 
 
@@ -25,7 +25,7 @@ O = TypeVar("O")
 
 
 def get_set(
-    db_path:str, db_set:str, query: str, operation_class: Operations[I, O], manual_parse=False
+    db_path:str, db_set:str, query: str, operation_class: Operations[I, O], manual_parse:bool=False
 ) -> QueryInstructions[I, O]:
     if manual_parse:
         if db_set == "ssb":
