@@ -31,16 +31,16 @@ function tpcds() {
 function job() {
     cd $PROJECT_DIR/ssb-dbgen
 
-    # cmake -DCSV_OUTPUT_FORMAT=ON .
-    # cmake --build .
-    # ./dbgen -v -s 15
+    cmake -DCSV_OUTPUT_FORMAT=ON .
+    cmake --build .
+    ./dbgen -v -s 15
 
-    # cd $PROJECT_DIR/python/join-benchmark/data/job
+    cd $PROJECT_DIR/python/join-benchmark/data/job
 
-    # rm -rf tables
-    # mkdir tables
-    # mv $PROJECT_DIR/ssb-dbgen/*.tbl tables
-    # echo "scale: $SCALE" > $PROJECT_DIR/python/join-benchmark/data/job/tables/scale.txt
+    rm -rf tables
+    mkdir tables
+    mv $PROJECT_DIR/ssb-dbgen/*.tbl tables
+    echo "scale: $SCALE" > $PROJECT_DIR/python/join-benchmark/data/job/tables/scale.txt
 }
 
 # SSB
