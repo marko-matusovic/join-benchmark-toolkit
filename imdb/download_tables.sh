@@ -1,4 +1,5 @@
 # Download the tgz file
+rm imdb.tgz
 wget https://homepages.cwi.nl/~boncz/job/imdb.tgz
 
 # Clean up the unpacking destination
