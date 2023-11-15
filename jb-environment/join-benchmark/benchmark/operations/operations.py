@@ -10,7 +10,7 @@ TVal: TypeAlias = str | int | float | bool
 class Operations(ABC, Generic[I, O]):
 
     @abstractmethod
-    def from_tables(self, db_name: str, tables: list[str], aliases: list[str] = []) -> Callable[[], I]:
+    def from_tables(self, db_path:str, db_name: str, tables: list[str], aliases: list[str] = []) -> Callable[[], I]:
         ...
 
     @abstractmethod

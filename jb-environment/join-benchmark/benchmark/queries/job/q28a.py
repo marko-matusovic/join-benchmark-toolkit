@@ -71,9 +71,9 @@ from benchmark.operations.operations import Operations
 I = TypeVar('I')
 O = TypeVar('O')
 
-def instruction_set(operation_set: Operations[I,O]) -> QueryInstructions[I, O]:
+def instruction_set(db_path:str, operation_set: Operations[I,O]) -> QueryInstructions[I, O]:
     return QueryInstructions(
-        s1_init = operation_set.from_tables('job', ['complete_cast', 'comp_cast_type', 'comp_cast_type', 'company_name', 'company_type', 'info_type', 'info_type', 'keyword', 'kind_type','movie_companies', 'movie_info', 'movie_info_idx', 'movie_keyword', 'title',], ['cc', 'cct1', 'cct2', 'cn', 'ct', 'it1', 'it2', 'k', 'kt', 'mc', 'mi', 'mi_idx', 'mk', 't',]),
+        s1_init = operation_set.from_tables(db_path, 'job', ['complete_cast', 'comp_cast_type', 'comp_cast_type', 'company_name', 'company_type', 'info_type', 'info_type', 'keyword', 'kind_type','movie_companies', 'movie_info', 'movie_info_idx', 'movie_keyword', 'title',], ['cc', 'cct1', 'cct2', 'cn', 'ct', 'it1', 'it2', 'k', 'kt', 'mc', 'mi', 'mi_idx', 'mk', 't',]),
         s2_filters = [
             operation_set.filter_field_eq('cct1.kind', ['crew']),
             operation_set.filter_field_ne('cct2.kind', 'complete+verified'),

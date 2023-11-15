@@ -22,9 +22,9 @@ from benchmark.operations.operations import Operations
 I = TypeVar('I')
 O = TypeVar('O')
 
-def instruction_set(operation_set: Operations[I,O]) -> QueryInstructions[I, O]:
+def instruction_set(db_path:str, operation_set: Operations[I,O]) -> QueryInstructions[I, O]:
     return QueryInstructions(
-        s1_init = operation_set.from_tables('job', ["company_type","info_type","movie_companies","movie_info_idx","title"], ["ct","it","mc","mi_idx","t"]),
+        s1_init = operation_set.from_tables(db_path, 'job', ["company_type","info_type","movie_companies","movie_info_idx","title"], ["ct","it","mc","mi_idx","t"]),
         s2_filters = [
             operation_set.filter_field_eq('ct.kind', ['production companies']),
             operation_set.filter_field_eq('it.info', ['bottom 10 rank']),

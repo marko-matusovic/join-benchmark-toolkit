@@ -7,9 +7,9 @@ TDFs = dict[str, DataFrame]
 
 
 class Real_Instructions(Operations[TDFs, None]):
-    def from_tables(self, db_name: str, tables: list[str], aliases: list[str] = []):
+    def from_tables(self, db_path:str, db_name: str, tables: list[str], aliases: list[str] = []):
         def load() -> dict[str, DataFrame]:
-            dfs = load_named_tables(db_name, tables, aliases)
+            dfs = load_named_tables(db_path, db_name, tables, aliases)
             return {f"({tbl})": dfs[tbl] for tbl in dfs}
 
         return load

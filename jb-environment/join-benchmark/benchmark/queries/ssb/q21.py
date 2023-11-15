@@ -16,9 +16,9 @@ from benchmark.operations.operations import Operations
 I = TypeVar('I')
 O = TypeVar('O')
 
-def instruction_set(operation_set: Operations[I,O]) -> QueryInstructions[I, O]:
+def instruction_set(db_path:str, operation_set: Operations[I,O]) -> QueryInstructions[I, O]:
     return QueryInstructions(
-        s1_init = operation_set.from_tables('ssb', ["lineorder", "date", "part", "supplier"], ["lo", "d", "p", "s"]),
+        s1_init = operation_set.from_tables(db_path, 'ssb', ["lineorder", "date", "part", "supplier"], ["lo", "d", "p", "s"]),
         s2_filters = [
             operation_set.filter_field_eq("p.category", ["MFGR#12"]),
             operation_set.filter_field_eq("s.region", ["AMERICA"]),

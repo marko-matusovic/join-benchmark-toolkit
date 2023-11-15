@@ -1,9 +1,8 @@
-from typing import TypeVar
+from typing import Any, TypeVar
 import re
 from re import RegexFlag
 from benchmark.operations.operations import Operations
 from benchmark.operations.query_instructions import QueryInstructions
-from benchmark.tools.factor_join_parser import parse_query_simple
 
 I = TypeVar("I")
 O = TypeVar("O")
@@ -27,7 +26,7 @@ keywords = [
 
 # SELECT column+ FROM (table [AS alias])+ [WHERE clause+]
 def parse(
-    db_set: str, query_str: str, operation_set: Operations[I, O]
+    db_path, db_set: str, query_str: str, operation_set: Operations[I, O]
 ) -> QueryInstructions[I, O]:
     print("Parsing automatically.")
     (select_clause, from_clause, where_clause) = split_parsing_groups(query_str)
@@ -37,7 +36,7 @@ def parse(
     (filters, joins) = parse_where_clause(where_clause)
 
     return QueryInstructions(
-        s1_init=operation_set.from_tables(db_set, tables, aliases),
+        s1_init=operation_set.from_tables(db_path, db_set, tables, aliases),
         s2_filters=[operation_set.get_filter(op)(tbl, val) for tbl, op, val in filters],
         s3_joins=[operation_set.join_fields(f1, f2) for f1, f2 in joins],
         s4_aggregation=[
@@ -117,8 +116,8 @@ def parse_from_clause(from_clause):
 
 def parse_where_clause(
     where_clause: str,
-) -> tuple[list[tuple[str, str, any]], list[tuple[str, str]]]:
-    filters: list[tuple[str, str, any]] = []
+) -> tuple[list[tuple[str, str, Any]], list[tuple[str, str]]]:
+    filters: list[tuple[str, str, Any]] = []
     joins: list[tuple[str, str]] = []
     where_clause_parts = where_clause.split("AND")
     where_clause_i = 0
@@ -145,7 +144,7 @@ def parse_where_clause(
                     op = op_cur.strip()
                     values.append(parse_value(val_cur))
                 assert op in ["=", "LIKE"]
-                filters.append(field, op, values)
+                filters.append((field, op, values))
                 continue
             except AssertionError:
                 print(f'ERROR: Unsupported WHERE clauses: "{big_clause}"')
@@ -159,7 +158,7 @@ def parse_where_clause(
 
         if op == "=" and re.match(f"^([a-zA-Z_]+\\.)?[a-zA-Z_]+$", val) != None:
             # op is a join
-            joins.append(tbl, val)
+            joins.append((tbl, val))
             continue
 
         # op is a filter
@@ -167,11 +166,11 @@ def parse_where_clause(
             val1 = parse_value(val)
             val2 = parse_value(where_clause_parts[where_clause_i].strip())
             where_clause_i += 1
-            filters.append(tbl, ">=", val1)
-            filters.append(tbl, "<=", val2)
+            filters.append((tbl, ">=", val1))
+            filters.append((tbl, "<=", val2))
             continue
 
-        filters.append(tbl, op, parse_value(val))
+        filters.append((tbl, op, parse_value(val)))
 
     return (filters, joins)
 

@@ -4,12 +4,12 @@ import re
 
 TSchema = dict[str, list[str]]
 
-def get_schema(db_name:str) -> TSchema:
-    if exists(f'./data/{db_name}/schema_cached.json'):
-        return load_from_cache(db_name)
-    if exists(f'./data/{db_name}/schema.sql'):
-        schema = load_from_file(db_name)
-        save_to_cache(db_name, schema)
+def get_schema(db_path:str, db_name:str) -> TSchema:
+    # if exists(f'{db_path}/schema_cached.json'):
+    #     return load_from_cache(db_path, db_name)
+    if exists(f'{db_path}/schema.sql'):
+        schema = load_from_file(db_path)
+        # save_to_cache(db_path, db_name, schema)
         return schema
     print(f"No schema found for db {db_name}")
     exit(1)
@@ -20,9 +20,9 @@ def rename_schema(schema: TSchema, tables: list[str], labels: list[str]) -> TSch
         for (table, label) in zip(tables, labels)
     }
 
-def load_from_file(db_name:str) -> TSchema:
+def load_from_file(db_path:str) -> TSchema:
     schema = {}
-    fin = open(f'./data/{db_name}/schema.sql', 'r')
+    fin = open(f'{db_path}/schema.sql', 'r')
     lines = fin.readlines()
     lines = [line.strip() for line in lines if not line.strip().startswith('--')]
     clause = re.sub('[\\n\\t\\ ]+', ' ', ''.join(lines))
@@ -65,10 +65,11 @@ def load_from_file(db_name:str) -> TSchema:
     
     return schema
 
-def load_from_cache(db_name:str) -> TSchema:
-    with open(f"./data/{db_name}/schema_cached.json", "r") as fin:
-        return json.load(fin)
+# # ===== CACHING MIGHT PRODUCE INCONSISTENT MEASUREMENTS ===== 
+# def load_from_cache(db_path:str, db_name:str) -> TSchema:
+#     with open(f"{db_path}/schema_cached.json", "r") as fin:
+#         return json.load(fin)
 
-def save_to_cache(db_name:str, schema:TSchema) -> None:
-    with open(f"./data/{db_name}/schema_cached.json", "w") as fout:
-        fout.write(json.dumps(schema))
+# def save_to_cache(db_path:str, db_name:str, schema:TSchema) -> None:
+#     with open(f"{db_path}/schema_cached.json", "w") as fout:
+#         fout.write(json.dumps(schema))

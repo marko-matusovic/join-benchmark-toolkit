@@ -18,9 +18,9 @@ from benchmark.operations.operations import Operations
 I = TypeVar('I')
 O = TypeVar('O')
 
-def instruction_set(operation_set: Operations[I,O]) -> QueryInstructions[I, O]:
+def instruction_set(db_path:str, operation_set: Operations[I,O]) -> QueryInstructions[I, O]:
     return QueryInstructions(
-        s1_init = operation_set.from_tables('job', ["company_name","keyword","movie_companies","movie_keyword","title"], ["cn","k","mc","mk","t"]),
+        s1_init = operation_set.from_tables(db_path, 'job', ["company_name","keyword","movie_companies","movie_keyword","title"], ["cn","k","mc","mk","t"]),
         s2_filters = [
             operation_set.filter_field_eq('cn.country_code', ['[de]']),
             operation_set.filter_field_eq('k.keyword', ['character-name-in-title']),

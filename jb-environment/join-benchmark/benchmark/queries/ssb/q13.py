@@ -14,9 +14,9 @@ from benchmark.operations.operations import Operations
 I = TypeVar('I')
 O = TypeVar('O')
 
-def instruction_set(operation_set: Operations[I,O]) -> QueryInstructions[I, O]:
+def instruction_set(db_path:str, operation_set: Operations[I,O]) -> QueryInstructions[I, O]:
     return QueryInstructions(
-        s1_init = operation_set.from_tables('ssb', ["lineorder", "date"], ["lo", "d"]),
+        s1_init = operation_set.from_tables(db_path, 'ssb', ["lineorder", "date"], ["lo", "d"]),
         s2_filters = [  
             operation_set.filter_field_eq("d.weeknuminyear", [6]),
             operation_set.filter_field_eq("d.year", [1994]),

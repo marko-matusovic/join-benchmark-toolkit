@@ -1,10 +1,10 @@
 from benchmark.operations.get_query_instructions import get_execution_tree_instructions
 
 
-def main(db_set:str, query:str, manual_parse=False):
+def main(db_path:str, db_set:str, query:str, manual_parse=False):
     print(f'Parsing {db_set}/{query} ...')
     
-    instructions = get_execution_tree_instructions(db_set, query, manual_parse)
+    instructions = get_execution_tree_instructions(db_path, db_set, query, manual_parse)
     
     print('Parsing finished!')
     print('Compiling the execution tree...')

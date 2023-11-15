@@ -3,11 +3,11 @@ import tracemalloc
 from benchmark.operations.get_query_instructions import get_real_instructions
 
 
-def main(db_set:str, query:str, perm:list[int]):
+def main(db_path:str, db_set:str, query:str, perm:list[int]):
     tracemalloc.start()
     start_time = time.time()
     
-    instructions = get_real_instructions(db_set, query)
+    instructions = get_real_instructions(db_path, db_set, query)
 
     dfs = instructions.s1_init()
     

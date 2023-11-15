@@ -15,8 +15,8 @@ from benchmark.operations.get_query_instructions import get_time_mem_approx_inst
 
 
 class Join_Order_Cost_Model:
-    def __init__(self, db_name: str, query_name: str):
-        instructions = get_time_mem_approx_instructions(db_name, query_name)
+    def __init__(self, db_path:str, db_name: str, query_name: str):
+        instructions = get_time_mem_approx_instructions(db_path, db_name, query_name)
 
         # Load and initialize
         data = instructions.s1_init()
@@ -47,8 +47,8 @@ class Join_Order_Cost_Model:
 
 
 class Join_Order_Problem(ElementwiseProblem):
-    def __init__(self, db_name: str, query_name: str):
-        self.cost_model = Join_Order_Cost_Model(db_name, query_name)
+    def __init__(self, db_path:str, db_name: str, query_name: str):
+        self.cost_model = Join_Order_Cost_Model(db_path, db_name, query_name)
         n_joins = len(self.cost_model.joins)
         xl = np.zeros(n_joins)
         xu = np.ones(n_joins) * (n_joins - 1)
@@ -59,8 +59,8 @@ class Join_Order_Problem(ElementwiseProblem):
         out['F'] = self.cost_model.evaluate(x)
 
 
-def main(db_name: str, query_name: str):
-    problem = Join_Order_Problem(db_name, query_name)
+def main(db_path:str, db_name: str, query_name: str):
+    problem = Join_Order_Problem(db_path, db_name, query_name)
 
     algorithm = NSGA2(
         pop_size=20,

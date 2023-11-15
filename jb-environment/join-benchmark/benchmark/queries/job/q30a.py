@@ -64,9 +64,9 @@ from benchmark.operations.operations import Operations
 I = TypeVar('I')
 O = TypeVar('O')
 
-def instruction_set(operation_set: Operations[I,O]) -> QueryInstructions[I, O]:
+def instruction_set(db_path:str, operation_set: Operations[I,O]) -> QueryInstructions[I, O]:
     return QueryInstructions(
-        s1_init = operation_set.from_tables('job', ['complete_cast','comp_cast_type','comp_cast_type','cast_info','info_type','info_type','keyword','movie_info','movie_info_idx','movie_keyword','name','title'], ['cc','cct1','cct2','ci','it1','it2','k','mi','mi_idx','mk','n','t']),
+        s1_init = operation_set.from_tables(db_path, 'job', ['complete_cast','comp_cast_type','comp_cast_type','cast_info','info_type','info_type','keyword','movie_info','movie_info_idx','movie_keyword','name','title'], ['cc','cct1','cct2','ci','it1','it2','k','mi','mi_idx','mk','n','t']),
         s2_filters = [
             operation_set.filter_field_eq('cct1.kind', ['cast','crew']),
             operation_set.filter_field_eq('cct2.kind', ['complete+verified']),

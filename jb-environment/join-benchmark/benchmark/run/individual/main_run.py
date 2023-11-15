@@ -2,13 +2,13 @@ from benchmark.operations.get_query_instructions import get_real_instructions
 from time import time;
 
 
-def main(db_set:str, query:str, perm:list[int], skip_joins=False, manual_parse=False, log_file='', log_head=''):
+def main(db_path:str, db_set:str, query:str, perm:list[int], skip_joins=False, manual_parse=False, log_file='', log_head=''):
     print(f'Running {db_set}/{query} with perm {perm}')
     
     start = time()
     
     print("Parsing the query...")
-    instructions = get_real_instructions(db_set, query, manual_parse)
+    instructions = get_real_instructions(db_path, db_set, query, manual_parse)
     parse = time()
     
     print("Loading the tables...")

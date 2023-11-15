@@ -30,13 +30,13 @@ def find_table(schema: TSchema, field_name: str) -> str:
 
 
 class Execution_Tree_Instructions(Operations[Data, None]):
-    def from_tables(self, db_name: str, tables: list[str], aliases: list[str] = []):
+    def from_tables(self, db_path:str, db_name: str, tables: list[str], aliases: list[str] = []):
         if len(aliases) != len(tables):
             aliases = tables
 
         def load() -> Data:
             data = Data(
-                schema=rename_schema(get_schema(db_name), tables, aliases),
+                schema=rename_schema(get_schema(db_path, db_name), tables, aliases),
                 clusters={ali: {ali} for ali in aliases},
                 cluster_names={
                     ali: f"({ali})" for ali in aliases

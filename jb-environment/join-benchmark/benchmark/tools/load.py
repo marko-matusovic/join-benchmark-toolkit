@@ -2,16 +2,16 @@ from benchmark.engine.engine import DataFrame, get_engine
 from benchmark.tools.schema import get_schema
 
 
-def load_named_tables(db_name: str, table_names: list[str], table_aliases: list[str] = []) -> dict[str, DataFrame]:
+def load_named_tables(db_path:str, db_name: str, table_names: list[str], table_aliases: list[str] = []) -> dict[str, DataFrame]:
     dfs = {}
 
     if len(table_aliases) < len(table_names):
         table_aliases = table_names
 
-    schema = get_schema(db_name)
+    schema = get_schema(db_path, db_name)
     for (t_name, t_alias) in zip(table_names, table_aliases):
         dfs[t_alias] = get_engine().read_csv(
-            f'data/{db_name}/tables/{t_name}.{get_extension(db_name)}',
+            f'{db_path}/tables/{t_name}.{get_extension(db_name)}',
             sep=get_separator(db_name),
             header=None,
             names=[f'{t_alias}.{col}' for col in schema[t_name]],
@@ -20,10 +20,10 @@ def load_named_tables(db_name: str, table_names: list[str], table_aliases: list[
     return dfs # type: ignore
 
 
-def load_table(db_name:str, table_name:str) -> DataFrame:
-    schema = get_schema(db_name)
+def load_table(db_path:str, db_name:str, table_name:str) -> DataFrame:
+    schema = get_schema(db_path, db_name)
     return get_engine().read_csv(
-        f'data/{db_name}/tables/{table_name}.{get_extension(db_name)}',
+        f'{db_path}/tables/{table_name}.{get_extension(db_name)}',
         sep=get_separator(db_name),
         header=None,
         names=schema[table_name],
@@ -33,12 +33,14 @@ def load_table(db_name:str, table_name:str) -> DataFrame:
 def get_extension(db_name: str) -> str:
     return {
         "ssb": 'tbl',
-        "job": "csv"
+        "job": "csv",
+        "tpcds": "csv"
     }[db_name]
 
 
 def get_separator(db_name: str) -> str:
     return {
         "ssb": '|',
-        "job": ","
+        "job": ",",
+        "tpcds": ","
     }[db_name]

@@ -12,7 +12,7 @@ from benchmark.operations.instructions import TDFs
 from benchmark.operations.time_mem_approximations import Data
 
 
-def main(db_set: str, query: str, perm: list[int]):
+def main(db_path:str, db_set: str, query: str, perm: list[int]):
     path = f"results/comp_card_est/{db_set}/{query}.csv"
     if not exists(path):
         file = open(path, "a")
@@ -20,8 +20,8 @@ def main(db_set: str, query: str, perm: list[int]):
     else:
         file = open(path, "a")
 
-    real_instructions = get_real_instructions(db_set, query)
-    approx_instructions = get_time_mem_approx_instructions(db_set, query)
+    real_instructions = get_real_instructions(db_path, db_set, query)
+    approx_instructions = get_time_mem_approx_instructions(db_path, db_set, query)
 
     dfs = real_instructions.s1_init()
     data = approx_instructions.s1_init()
