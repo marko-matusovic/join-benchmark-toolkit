@@ -29,14 +29,14 @@ function tpcds() {
 
 # JOB
 function job() {
-    cd $PROJECT_DIR/imdb
+    cd $PROJECT_DIR/imdb-db-tool
     ./download_tables.sh
 
     cd $PROJECT_DIR/python/join-benchmark/data/job
     mkdir tables
     rm -rf tables/*
 
-    mv $PROJECT_DIR/imdb/tables/*.csv tables/
+    mv $PROJECT_DIR/imdb-db-tool/tables/*.csv tables/
 }
 
 # SSB
