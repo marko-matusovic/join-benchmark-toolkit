@@ -1,3 +1,4 @@
+import json
 import sys
 
 from benchmark.run.individual import main_approx_time_mem, main_comp_card_est, main_parse, main_time_mem, main_run
@@ -25,7 +26,8 @@ if __name__ == "__main__":
     #     2nd arg: db_name
     if run_config == 'schema' :
         db_set = sys.argv[2]
-        get_schema(db_set)
+        schema = json.dumps(get_schema(db_set), indent="\t")
+        print(f"Parsed schema:\n{schema}")
         
     # Parses the query, usually used for testing
     #     2nd arg: db_set/query 
