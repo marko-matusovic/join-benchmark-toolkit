@@ -69,7 +69,7 @@ while : ; do
         # # START=$(date +%s.%N)
         # TIMESTAMP=$(date +"[%Y-%m-%dT%H:%M:%S]")
         # LOG_START="$TIMESTAMP;$DB_SET/$QUERY;$DEVICE;1;none"
-        # python3 main.py run $DB_SET/$QUERY 0 --$DEVICE --skip-joins --log $RES_FILE $LOG_START $OTHER_ARGS
+        # python3 main.py run $DB_SET/$QUERY 0 --$DEVICE --skip-joins --log-time $RES_FILE $LOG_START $OTHER_ARGS
         # # RES=$?
         # # RUNTIME=$(echo "$(date +%s.%N) - $START" | bc)
         # # echo "$TIMESTAMP;$DB_SET/$QUERY;$DEVICE;1;none;$RES;$RUNTIME"
@@ -86,7 +86,7 @@ while : ; do
             # START=$(date +%s.%N)
             TIMESTAMP=$(date +"[%Y-%m-%dT%H:%M:%S]")
             LOG_START="$TIMESTAMP;$DB_SET/$QUERY;$DEVICE;0;$PERM"
-            python3 main.py run $DB_SET/$QUERY $PERM --$DEVICE --log $RES_FILE $LOG_START $OTHER_ARGS
+            python3 main.py run $DB_SET/$QUERY $PERM --$DEVICE --log-time $RES_FILE $LOG_START $OTHER_ARGS
             # RES=$?
             # RUNTIME=$(echo "$(date +%s.%N) - $START" | bc)
             # echo "$TIMESTAMP;$DB_SET/$QUERY;$DEVICE;0;$PERM;$RES;$RUNTIME"

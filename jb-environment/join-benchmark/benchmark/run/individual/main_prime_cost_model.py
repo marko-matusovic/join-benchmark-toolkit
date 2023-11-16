@@ -7,12 +7,15 @@ def main(db_path:str, db_set:str, query:str, perm:list[int], skip_joins=False, m
     
     start = time()
     
+    print("Parsing the query...")
     instructions = get_real_instructions(db_path, db_set, query, manual_parse)
     parse = time()
     
+    print("Loading the tables...")
     dfs = instructions.s1_init()
     overhead = time()
     
+    print("Running filters...")
     filters = []
     for instruction in instructions.s2_filters:
         instruction(dfs)
