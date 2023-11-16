@@ -1,6 +1,7 @@
 PROJECT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 DBS=${1:-'all'}
 SCALE=${2:-'10'}
+TARGET_DIR=${3:-$PROJECT_DIR'/jb-environment/join-benchmark/data'}
 
 # TPC-DS
 function tpcds() {
@@ -19,7 +20,7 @@ function tpcds() {
 
     sleep 3
 
-    cd $PROJECT_DIR/jb-environment/join-benchmark/data/tpcds
+    cd $TARGET_DIR/tpcds
     rm -rf tables
     mkdir tables
 
@@ -32,7 +33,7 @@ function job() {
     cd $PROJECT_DIR/imdb-db-tool
     ./download_tables.sh
 
-    cd $PROJECT_DIR/jb-environment/join-benchmark/data/job
+    cd $TARGET_DIR/job
     mkdir tables
     rm -rf tables/*
 
@@ -49,7 +50,7 @@ function ssb() {
     rm -rf *.tbl
     ./dbgen -v -s $SCALE
 
-    cd $PROJECT_DIR/jb-environment/join-benchmark/data/ssb
+    cd $TARGET_DIR/ssb
 
     rm -rf tables
     mkdir tables
