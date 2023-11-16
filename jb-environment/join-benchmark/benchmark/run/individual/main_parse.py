@@ -1,4 +1,4 @@
-from benchmark.operations.query_instructions import get_instruction_set
+from benchmark.operations.query_instructions_service import get_instruction_set
 from benchmark.operations.operations_executiontree import Operations_ExecutionTree
 
 

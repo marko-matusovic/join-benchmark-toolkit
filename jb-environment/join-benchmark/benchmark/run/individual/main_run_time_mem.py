@@ -2,7 +2,7 @@ import time
 import tracemalloc
 from benchmark.operations.operations_real import Operations_Real, TDFs
 from benchmark.operations.operations_costmodel import Data, Operations_CostModel
-from benchmark.operations.query_instructions import get_instruction_set
+from benchmark.operations.query_instructions_service import get_instruction_set
 
 
 def main(db_path:str, db_set:str, query:str, perm:list[int]|None=None, skip_joins=False, manual_parse=False, log_file='', log_head=''):

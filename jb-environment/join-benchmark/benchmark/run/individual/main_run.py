@@ -1,5 +1,5 @@
 from benchmark.operations.operations_real import Operations_Real
-from benchmark.operations.query_instructions import get_instruction_set
+from benchmark.operations.query_instructions_service import get_instruction_set
 from time import time;
 
 

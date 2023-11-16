@@ -1,5 +1,5 @@
 from benchmark.operations.operations_costmodel import Operations_CostModel
-from benchmark.operations.query_instructions import get_instruction_set
+from benchmark.operations.query_instructions_service import get_instruction_set
 
 def main(db_path:str, db_set:str, query:str, perm:list[int]|None=None):
     print(f'Running {db_set}/{query} with perm {perm}')

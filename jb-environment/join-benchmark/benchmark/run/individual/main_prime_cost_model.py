@@ -1,6 +1,6 @@
 from benchmark.tools.query_parser import get_joins
 from benchmark.operations.operations_costmodel import Data, Operations_CostModel, find_table
-from benchmark.operations.query_instructions import get_instruction_set
+from benchmark.operations.query_instructions_service import get_instruction_set
 from time import time;
 
 
