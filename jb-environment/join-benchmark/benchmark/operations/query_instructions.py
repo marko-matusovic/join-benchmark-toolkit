@@ -24,7 +24,7 @@ class QueryInstructions(Generic[I, O]):
         self.s3_joins = s3_joins
         self.s4_aggregation = s4_aggregation
 
-def get_set(
+def get_instruction_set(
     db_path:str, db_set:str, query: str, operation_class: Operations[I, O], manual_parse:bool=False
 ) -> QueryInstructions[I, O]:
     if manual_parse:

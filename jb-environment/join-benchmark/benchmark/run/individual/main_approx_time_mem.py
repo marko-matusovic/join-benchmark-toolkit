@@ -1,10 +1,10 @@
 from benchmark.operations.operations_costmodel import Operations_CostModel
-from benchmark.operations.query_instructions import get_set
+from benchmark.operations.query_instructions import get_instruction_set
 
 def main(db_path:str, db_set:str, query:str, perm:list[int]):
     print(f'Running {db_set}/{query} with perm {perm}')
     
-    instructions = get_set(db_path, db_set, query, Operations_CostModel())
+    instructions = get_instruction_set(db_path, db_set, query, Operations_CostModel())
 
     # Load and initialize
     data = instructions.s1_init()

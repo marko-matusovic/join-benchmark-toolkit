@@ -7,7 +7,7 @@ import numpy as np
 
 from benchmark.operations.operations_real import Operations_Real, TDFs
 from benchmark.operations.operations_costmodel import Data, Operations_CostModel
-from benchmark.operations.query_instructions import get_set
+from benchmark.operations.query_instructions import get_instruction_set
 
 
 def main(db_path:str, db_set: str, query: str, perm: list[int]):
@@ -18,8 +18,8 @@ def main(db_path:str, db_set: str, query: str, perm: list[int]):
     else:
         file = open(path, "a")
 
-    real_instructions = get_set(db_path, db_set, query, Operations_Real())
-    approx_instructions = get_set(db_path, db_set, query, Operations_CostModel())
+    real_instructions = get_instruction_set(db_path, db_set, query, Operations_Real())
+    approx_instructions = get_instruction_set(db_path, db_set, query, Operations_CostModel())
 
     dfs = real_instructions.s1_init()
     data = approx_instructions.s1_init()

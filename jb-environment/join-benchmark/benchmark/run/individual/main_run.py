@@ -1,5 +1,5 @@
 from benchmark.operations.operations_real import Operations_Real
-from benchmark.operations.query_instructions import get_set
+from benchmark.operations.query_instructions import get_instruction_set
 from time import time;
 
 
@@ -8,7 +8,7 @@ def main(db_path:str, db_set:str, query:str, perm:list[int], skip_joins=False, m
     
     start = time()
     
-    instructions = get_set(db_path, db_set, query, Operations_Real(), manual_parse)
+    instructions = get_instruction_set(db_path, db_set, query, Operations_Real(), manual_parse)
     
     parse = time()
     
