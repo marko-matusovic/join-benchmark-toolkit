@@ -37,6 +37,21 @@ case $DB_SET in
     #     QUERIES=("q11" "q12" "q13" "q21" "q22" "q23" "q31" "q32" "q33" "q34" "q41" "q42" "q43")
     #     NUMS_JOIN=("1" "1" "1" "3" "3" "3" "3" "3" "3" "3" "4" "4" "4")
     #     ;;
+
+    # 1a 5
+    # 1b 5
+    # 1c 5
+    # 1d 5
+
+    # 2a 5
+    # 2b 5
+    # 2c 5
+    # 2d 5
+
+    # 3a 4
+    # 3b 4
+    # 3c 4
+
     # 'tpcds')
     #     QUERIES=("q11" "q12" "q13" "q21" "q22" "q23" "q31" "q32" "q33" "q34" "q41" "q42" "q43")
     #     NUMS_JOIN=("1" "1" "1" "3" "3" "3" "3" "3" "3" "3" "4" "4" "4")
@@ -69,7 +84,7 @@ while : ; do
         # # START=$(date +%s.%N)
         # TIMESTAMP=$(date +"[%Y-%m-%dT%H:%M:%S]")
         # LOG_START="$TIMESTAMP;$DB_SET/$QUERY;$DEVICE;1;none"
-        # python3 main.py run $DB_SET/$QUERY --jo 0 --$DEVICE --skip-joins --log-time $RES_FILE $LOG_START $OTHER_ARGS
+        # python3 main.py run $DB_SET/$QUERY 0 --$DEVICE --skip-joins --log-time $RES_FILE $LOG_START $OTHER_ARGS
         # # RES=$?
         # # RUNTIME=$(echo "$(date +%s.%N) - $START" | bc)
         # # echo "$TIMESTAMP;$DB_SET/$QUERY;$DEVICE;1;none;$RES;$RUNTIME"
@@ -86,7 +101,7 @@ while : ; do
             # START=$(date +%s.%N)
             TIMESTAMP=$(date +"[%Y-%m-%dT%H:%M:%S]")
             LOG_START="$TIMESTAMP;$DB_SET/$QUERY;$DEVICE;0;$PERM"
-            python3 main.py run $DB_SET/$QUERY --jo $PERM --$DEVICE --log-time $RES_FILE $LOG_START $OTHER_ARGS
+            python3 main.py run $DB_SET/$QUERY $PERM --$DEVICE --log-time $RES_FILE $LOG_START $OTHER_ARGS
             RES=$?
             if [[ $RES -ne 0 ]]; then
                 echo "$LOG_START;$RES;;;;" >> $RES_FILE
