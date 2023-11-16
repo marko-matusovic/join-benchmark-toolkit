@@ -12,8 +12,8 @@ GEN_RUN=${2:-$((1000 + $RANDOM % 9000))}
 # N_REPEAT=${4:-"5"}
 # OTHER_ARGS=${@:5}
 DEVICE="gpu"
-N_REPEAT=1
-OTHER_ARGS=""
+N_REPEAT=10
+OTHER_ARGS=$3
 
 RES_FILE="./results/training_data/$DB_SET/set_${GEN_RUN}_measurement.csv"
 
@@ -33,16 +33,16 @@ case $DB_SET in
         QUERIES=("q11" "q12" "q13" "q21" "q22" "q23" "q31" "q32" "q33" "q34" "q41" "q42" "q43")
         NUMS_JOIN=("1" "1" "1" "3" "3" "3" "3" "3" "3" "3" "4" "4" "4")
         ;;
-    'job')
-        QUERIES=("q11" "q12" "q13" "q21" "q22" "q23" "q31" "q32" "q33" "q34" "q41" "q42" "q43")
-        NUMS_JOIN=("1" "1" "1" "3" "3" "3" "3" "3" "3" "3" "4" "4" "4")
-        ;;
-    'tpcds')
-        QUERIES=("q11" "q12" "q13" "q21" "q22" "q23" "q31" "q32" "q33" "q34" "q41" "q42" "q43")
-        NUMS_JOIN=("1" "1" "1" "3" "3" "3" "3" "3" "3" "3" "4" "4" "4")
-        ;;
+    # 'job')
+    #     QUERIES=("q11" "q12" "q13" "q21" "q22" "q23" "q31" "q32" "q33" "q34" "q41" "q42" "q43")
+    #     NUMS_JOIN=("1" "1" "1" "3" "3" "3" "3" "3" "3" "3" "4" "4" "4")
+    #     ;;
+    # 'tpcds')
+    #     QUERIES=("q11" "q12" "q13" "q21" "q22" "q23" "q31" "q32" "q33" "q34" "q41" "q42" "q43")
+    #     NUMS_JOIN=("1" "1" "1" "3" "3" "3" "3" "3" "3" "3" "4" "4" "4")
+    #     ;;
     *)
-        echo "Unsupported Dataset passed, choose from [\"ssb\", \"job\"]"
+        echo "Unsupported Dataset passed, choose from [\"ssb\"]"
         exit 1
 esac
 
@@ -87,7 +87,10 @@ while : ; do
             TIMESTAMP=$(date +"[%Y-%m-%dT%H:%M:%S]")
             LOG_START="$TIMESTAMP;$DB_SET/$QUERY;$DEVICE;0;$PERM"
             python3 main.py run $DB_SET/$QUERY $PERM --$DEVICE --log-time $RES_FILE $LOG_START $OTHER_ARGS
-            # RES=$?
+            RES=$?
+            if [[ $RES -ne 0 ]]; then
+                echo "$LOG_START;$RES;;;;" >> $RES_FILE
+            fi;
             # RUNTIME=$(echo "$(date +%s.%N) - $START" | bc)
             # echo "$TIMESTAMP;$DB_SET/$QUERY;$DEVICE;0;$PERM;$RES;$RUNTIME"
             # echo "$TIMESTAMP;$DB_SET/$QUERY;$DEVICE;0;$PERM;$RES;$RUNTIME" >> $RES_FILE
@@ -99,3 +102,10 @@ while : ; do
     done
     
 done
+
+# # START WITH
+# ./scripts/gen_data_runtime.sh ssb 2 "--db-path /data/db_data/ssb"
+
+# # RESET
+# rm -rf results/perms_pos/ssb/2
+# rm results/training_data/ssb/set_2_measurement.csv 
