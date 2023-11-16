@@ -4,12 +4,10 @@ from os.path import exists
 from typing import TypeAlias
 
 import numpy as np
-from benchmark.operations.get_query_instructions import (
-    get_real_instructions,
-    get_time_mem_approx_instructions,
-)
-from benchmark.operations.operations_real import TDFs
-from benchmark.operations.operations_costmodel import Data
+
+from benchmark.operations.operations_real import Operations_Real, TDFs
+from benchmark.operations.operations_costmodel import Data, Operations_CostModel
+from benchmark.operations.query_instructions import get_set
 
 
 def main(db_path:str, db_set: str, query: str, perm: list[int]):
@@ -20,8 +18,8 @@ def main(db_path:str, db_set: str, query: str, perm: list[int]):
     else:
         file = open(path, "a")
 
-    real_instructions = get_real_instructions(db_path, db_set, query)
-    approx_instructions = get_time_mem_approx_instructions(db_path, db_set, query)
+    real_instructions = get_set(db_path, db_set, query, Operations_Real())
+    approx_instructions = get_set(db_path, db_set, query, Operations_CostModel())
 
     dfs = real_instructions.s1_init()
     data = approx_instructions.s1_init()

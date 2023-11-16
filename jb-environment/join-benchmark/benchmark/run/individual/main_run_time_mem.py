@@ -1,6 +1,8 @@
 import time
 import tracemalloc
-from benchmark.operations.get_query_instructions import get_real_instructions
+from benchmark.operations.operations_real import Operations_Real, TDFs
+from benchmark.operations.operations_costmodel import Data, Operations_CostModel
+from benchmark.operations.query_instructions import get_set
 
 
 def main(db_path:str, db_set:str, query:str, perm:list[int], skip_joins=False, manual_parse=False, log_file='', log_head=''):
@@ -13,7 +15,7 @@ def main(db_path:str, db_set:str, query:str, perm:list[int], skip_joins=False, m
     tracemalloc.start()
     start_time = time.time()
     
-    instructions = get_real_instructions(db_path, db_set, query)
+    instructions = get_set(db_path, db_set, query, Operations_Real())
 
     dfs = instructions.s1_init()
     

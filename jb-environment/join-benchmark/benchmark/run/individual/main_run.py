@@ -1,4 +1,5 @@
-from benchmark.operations.get_query_instructions import get_real_instructions
+from benchmark.operations.operations_real import Operations_Real
+from benchmark.operations.query_instructions import get_set
 from time import time;
 
 
@@ -7,7 +8,8 @@ def main(db_path:str, db_set:str, query:str, perm:list[int], skip_joins=False, m
     
     start = time()
     
-    instructions = get_real_instructions(db_path, db_set, query, manual_parse)
+    instructions = get_set(db_path, db_set, query, Operations_Real(), manual_parse)
+    
     parse = time()
     
     dfs = instructions.s1_init()

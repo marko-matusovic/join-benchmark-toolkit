@@ -1,10 +1,10 @@
-from benchmark.operations.operations_costmodel import Data
-from benchmark.operations.get_query_instructions import get_time_mem_approx_instructions
+from benchmark.operations.operations_costmodel import Data, Operations_CostModel
+from benchmark.operations.query_instructions import get_set
 from time import time;
 
 
 def main(db_path:str, db_set:str, query:str, perm:list[int], skip_joins=False, manual_parse=False, log_file='', log_head=''):
-    instructions = get_time_mem_approx_instructions(db_path, db_set, query, manual_parse)
+    instructions = get_set(db_path, db_set, query, Operations_CostModel(), manual_parse)
     
     data: Data = instructions.s1_init()
     

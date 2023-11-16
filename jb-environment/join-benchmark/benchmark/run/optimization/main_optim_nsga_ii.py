@@ -11,7 +11,7 @@ from pymoo.operators.crossover.ox import OrderCrossover
 from pymoo.operators.mutation.inversion import InversionMutation
 from pymoo.termination.default import DefaultMultiObjectiveTermination
 
-from benchmark.operations.get_query_instructions import get_time_mem_approx_instructions
+from benchmark.operations.query_instructions import get_set
 
 
 class Join_Order_Cost_Model:

@@ -1,10 +1,11 @@
-from benchmark.operations.get_query_instructions import get_execution_tree_instructions
+from benchmark.operations.query_instructions import get_set
+from benchmark.operations.operations_executiontree import Operations_ExecutionTree
 
 
 def main(db_path:str, db_set:str, query:str, manual_parse=False):
     print(f'Parsing {db_set}/{query} ...')
     
-    instructions = get_execution_tree_instructions(db_path, db_set, query, manual_parse)
+    instructions = get_set(db_path, db_set, query, Operations_ExecutionTree(), manual_parse)
     
     print('Parsing finished!')
     print('Compiling the execution tree...')
