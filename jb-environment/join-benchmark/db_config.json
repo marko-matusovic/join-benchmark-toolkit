@@ -7,7 +7,7 @@
     // },
     "ssb": {
         "file_suffix": "tbl",
-        "column_sep": "|"
+        "column_sep": ","
     },
     "job": {
         "file_suffix": "csv",

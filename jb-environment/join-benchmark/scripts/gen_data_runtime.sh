@@ -13,7 +13,7 @@ GEN_RUN=${2:-$((1000 + $RANDOM % 9000))}
 # OTHER_ARGS=${@:5}
 DEVICE="gpu"
 N_REPEAT=1
-OTHER_ARGS=""
+OTHER_ARGS=$3
 
 RES_FILE="./results/training_data/$DB_SET/set_${GEN_RUN}_measurement.csv"
 
@@ -33,16 +33,16 @@ case $DB_SET in
         QUERIES=("q11" "q12" "q13" "q21" "q22" "q23" "q31" "q32" "q33" "q34" "q41" "q42" "q43")
         NUMS_JOIN=("1" "1" "1" "3" "3" "3" "3" "3" "3" "3" "4" "4" "4")
         ;;
-    'job')
-        QUERIES=("q11" "q12" "q13" "q21" "q22" "q23" "q31" "q32" "q33" "q34" "q41" "q42" "q43")
-        NUMS_JOIN=("1" "1" "1" "3" "3" "3" "3" "3" "3" "3" "4" "4" "4")
-        ;;
-    'tpcds')
-        QUERIES=("q11" "q12" "q13" "q21" "q22" "q23" "q31" "q32" "q33" "q34" "q41" "q42" "q43")
-        NUMS_JOIN=("1" "1" "1" "3" "3" "3" "3" "3" "3" "3" "4" "4" "4")
-        ;;
+    # 'job')
+    #     QUERIES=("q11" "q12" "q13" "q21" "q22" "q23" "q31" "q32" "q33" "q34" "q41" "q42" "q43")
+    #     NUMS_JOIN=("1" "1" "1" "3" "3" "3" "3" "3" "3" "3" "4" "4" "4")
+    #     ;;
+    # 'tpcds')
+    #     QUERIES=("q11" "q12" "q13" "q21" "q22" "q23" "q31" "q32" "q33" "q34" "q41" "q42" "q43")
+    #     NUMS_JOIN=("1" "1" "1" "3" "3" "3" "3" "3" "3" "3" "4" "4" "4")
+    #     ;;
     *)
-        echo "Unsupported Dataset passed, choose from [\"ssb\", \"job\"]"
+        echo "Unsupported Dataset passed, choose from [\"ssb\"]"
         exit 1
 esac
 
