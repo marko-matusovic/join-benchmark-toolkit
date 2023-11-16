@@ -29,7 +29,7 @@ for i in $(seq $N_REPEAT)
 do
     echo "run "$i" of "$N_REPEAT
     start=$(date +%s.%N)
-    python3 main.py run $QUERY 0 --$DEVICE --skip-joins
+    python3 main.py run $QUERY --jo 0 --$DEVICE --skip-joins
     runtime=$(echo "$(date +%s.%N) - $start" | bc)
     log=$log";"$runtime
 done

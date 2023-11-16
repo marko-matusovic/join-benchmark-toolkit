@@ -75,12 +75,14 @@ if __name__ == "__main__":
         main_parse.main(db_path, db_set, query, manual_parse)
 
     # run - just execute the query with given join order (for use when timed outside)
-    #     3rd arg: order of joins
+    #     opt arg --jo [integer sequence] order of joins
     #     opt arg --skip-joins: skips all joins
     #     opt arg --log-time [filename] [start of log]: opens the log file and prints the start of the log and measures times of each operation such as filters and joins
     #     opt arg --log-time-mem [filename] [start of log]: opens the log file and prints the start of the log and measures times of each operation such as filters and joins
     elif run_config == "run":
-        perm = [int(i) for i in sys.argv[3].split(",")]
+        
+        perm = [int(i) for i in named_arg('--jo', 1)[0].split(",")] if '--jo' in sys.argv else None
+        
         skip_joins = True if "--skip-joins" in sys.argv else False
 
         if "--log-time" in sys.argv and "--log-time-mem" in sys.argv:
@@ -120,12 +122,12 @@ if __name__ == "__main__":
             main_run.main(db_path, db_set, query, perm, skip_joins, manual_parse)
 
     # approx_time_mem - use the cost model to calculate the time and memory cost
-    #     3rd arg: order of joins
+    #     opt arg --jo [integer sequence]: order of joins
     elif run_config == "approx_time_mem":
         if query == None:
             print("No query specified")
             exit(1)
-        perm = [int(i) for i in sys.argv[3].split(",")]
+        perm = [int(i) for i in named_arg('--jo', 1)[0].split(",")] if '--jo' in sys.argv else None
         main_approx_time_mem.main(db_path, db_set, query, perm)
 
     # optim_nsga_ii - use the nsga_ii optimization algorithm and the time_mem cost model to find the pareto front
@@ -145,7 +147,7 @@ if __name__ == "__main__":
         if query == None:
             print("No query specified")
             exit(1)
-        perm = [int(i) for i in sys.argv[3].split(",")]
+        perm = [int(i) for i in named_arg('--jo', 1)[0].split(",")] if '--jo' in sys.argv else None
         main_comp_card_est.main(db_path, db_set, query, perm)
 
     else:
