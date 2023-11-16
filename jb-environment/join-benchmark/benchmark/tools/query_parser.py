@@ -139,7 +139,10 @@ def parse_where_clause(
     where_clause_i = 0
     while where_clause_i < len(where_clause_parts):
         clause = where_clause_parts[where_clause_i].strip()
+        if clause[0] == '(' and clause[-1] == ')' and clause.index(')') == len(clause)-1:
+            clause = clause[1:-1].strip()
         where_clause_i += 1
+        print(clause)
 
         if clause.find("OR") != -1:
             # Currently only (clause1 OR clause2 OR ... OR clauseX) is supported
