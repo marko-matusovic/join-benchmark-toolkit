@@ -37,7 +37,7 @@ function job() {
     mkdir tables
     rm -rf tables/*
 
-    mv $PROJECT_DIR/imdb-db-tool/tables/*.csv tables/
+    mv $PROJECT_DIR/imdb-db-tool/tables/*.csv tables
 }
 
 # SSB
@@ -60,9 +60,10 @@ function ssb() {
 
 if [[ $DBS == "all" ]]; then
     # Trigger all 3 jobs at once
-    echo "Generating TPC-DS, and SSB at scale $SCALE"
+    echo "Generating TPC-DS, and SSB at scale $SCALE, and downloading JOB"
     ssb & \
     tpcds & \
+    job & \
     wait
 fi;
 
