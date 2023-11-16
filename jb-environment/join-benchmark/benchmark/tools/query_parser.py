@@ -23,12 +23,12 @@ keywords = [
     "BETWEEN",
 ]
 
-def file_to_string(db_path:str, db_set: str, query: str) -> str :
+def load_query(db_path:str, query: str) -> str :
     file = open(f"{db_path}/queries/{query}.sql")
     return " ".join([line.strip() for line in file.readlines()])
 
 def parse_file(db_path:str, db_set: str, query: str, operation_set: Operations[I, O]) -> QueryInstructions[I, O]:
-    query_str = file_to_string(db_path, db_set, query)
+    query_str = load_query(db_path, query)
     return parse_string(db_path, db_set, query_str, operation_set)
 
 # SELECT column+ FROM (table [AS alias])+ [WHERE clause+]
@@ -54,9 +54,7 @@ def parse_string(
     )
 
 # This function only parses out the joins
-def get_joins(db_path:str, db_set: str, query: str) -> list[tuple[str,str]] :
-    query_str = file_to_string(db_path, db_set, query)
-    
+def get_joins(query_str:str) -> list[tuple[str,str]] :
     (_select_clause, _from_clause, where_clause) = split_parsing_groups(query_str)
 
     (_filters, joins) = parse_where_clause(where_clause)

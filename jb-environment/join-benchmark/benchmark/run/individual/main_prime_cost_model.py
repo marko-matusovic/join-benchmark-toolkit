@@ -1,4 +1,4 @@
-from benchmark.tools.query_parser import get_joins
+from benchmark.tools.query_parser import load_query, get_joins
 from benchmark.operations.operations_costmodel import Data, Operations_CostModel, find_table
 from benchmark.operations.query_instructions_service import get_instruction_set
 from time import time;
@@ -6,7 +6,7 @@ from time import time;
 
 def main(db_path:str, db_set:str, query:str, perm:list[int], log_file, log_head, manual_parse=False):
     instructions = get_instruction_set(db_path, db_set, query, Operations_CostModel(), manual_parse)
-    joins = get_joins(db_path, db_set, query)
+    joins = get_joins(load_query(db_path, query))
     
     data: Data = instructions.s1_init()
     
