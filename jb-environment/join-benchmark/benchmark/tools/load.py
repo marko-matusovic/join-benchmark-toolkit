@@ -2,7 +2,7 @@ import json
 import os
 from typing import NamedTuple, TypeAlias
 from benchmark.engine.engine import DataFrame, get_engine
-from benchmark.tools.schema import get_schema
+from benchmark.tools.schema_parser import get_schema
 
 DB_NAME: TypeAlias = str
 class DB_CONFIG(NamedTuple):

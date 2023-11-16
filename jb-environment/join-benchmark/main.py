@@ -10,7 +10,7 @@ from benchmark.run.individual import (
     main_run,
 )
 from benchmark.engine.engine import set_engine
-from benchmark.tools.schema import get_schema
+from benchmark.tools.schema_parser import get_schema
 
 
 # Returns a list of values following a named argument

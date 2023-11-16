@@ -1,24 +1,17 @@
-from benchmark.operations.get_query_instructions import get_real_instructions
+from benchmark.operations.operations_costmodel import Data
+from benchmark.operations.get_query_instructions import get_time_mem_approx_instructions
 from time import time;
 
 
 def main(db_path:str, db_set:str, query:str, perm:list[int], skip_joins=False, manual_parse=False, log_file='', log_head=''):
-    print(f'Running {db_set}/{query} with perm {perm}')
+    instructions = get_time_mem_approx_instructions(db_path, db_set, query, manual_parse)
     
-    start = time()
-    
-    print("Parsing the query...")
-    instructions = get_real_instructions(db_path, db_set, query, manual_parse)
-    parse = time()
-    
-    print("Loading the tables...")
-    dfs = instructions.s1_init()
-    overhead = time()
+    data: Data = instructions.s1_init()
     
     print("Running filters...")
     filters = []
     for instruction in instructions.s2_filters:
-        instruction(dfs)
+        instruction(data)
         filters.append(time())
 
     if skip_joins:
@@ -31,14 +24,14 @@ def main(db_path:str, db_set:str, query:str, perm:list[int], skip_joins=False, m
     print("Running joins...")
     joins = []
     for p in perm:
-        instructions.s3_joins[p](dfs)
+        instructions.s3_joins[p](data)
         joins.append(time())
 
-    if len(dfs) == 1:
+    if len(data) == 1:
         print('Completed successfully')
-        tree = list(dfs.keys())[0]
+        tree = list(data.keys())[0]
         print(f'Tree: {tree}')
-        print(f'# of rows: {len(dfs[tree])}')
+        print(f'# of rows: {len(data[tree])}')
         if log_file != '':
             with open(log_file, 'a') as file_out:
                 file_out.write(f'{log_head};200;{print_times(start, parse, overhead, filters, joins)}\n')

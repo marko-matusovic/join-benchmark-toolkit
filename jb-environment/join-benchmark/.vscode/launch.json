@@ -4,7 +4,7 @@
         //     "name": "PLT TStart job/22a",
         //     "type": "python",
         //     "request": "launch",
-        //     "program": "benchmark/util/plot_time_start_dist.py",
+        //     "program": "benchmark/util/plot.time_start_dist.py",
         //     "console": "integratedTerminal",
         //     "justMyCode": true,
         //     "args": ["job/22a"]
@@ -13,7 +13,7 @@
         //     "name": "PLT DIFF join times - overhead SSB/Q41",
         //     "type": "python",
         //     "request": "launch",
-        //     "program": "benchmark/util/plot_diff_join_times.py",
+        //     "program": "benchmark/util/plot.diff_join_times.py",
         //     "console": "integratedTerminal",
         //     "justMyCode": true,
         //     "args": ["ssb/q41"]
@@ -22,7 +22,7 @@
         //     "name": "PLT TvM job/22a",
         //     "type": "python",
         //     "request": "launch",
-        //     "program": "benchmark/util/plot_time_vs_mem.py",
+        //     "program": "benchmark/util/plot.time_vs_mem.py",
         //     "console": "integratedTerminal",
         //     "justMyCode": true,
         //     "args": ["job/22a"]
@@ -31,7 +31,7 @@
         //     "name": "PLT TOrd job/22a",
         //     "type": "python",
         //     "request": "launch",
-        //     "program": "benchmark/util/plot_time_for_order.py",
+        //     "program": "benchmark/util/plot.time_for_order.py",
         //     "console": "integratedTerminal",
         //     "justMyCode": true,
         //     "args": ["job/22a", "-e", "-m"]
@@ -40,7 +40,7 @@
         //     "name": "PLT TPos job/22a",
         //     "type": "python",
         //     "request": "launch",
-        //     "program": "benchmark/util/plot_time_for_join_pos.py",
+        //     "program": "benchmark/util/plot.time_for_join_pos.py",
         //     "console": "integratedTerminal",
         //     "justMyCode": true,
         //     "args": ["job/22a", "-e"]
@@ -49,7 +49,7 @@
         //     "name": "PLT GPU TvM job/22a",
         //     "type": "python",
         //     "request": "launch",
-        //     "program": "benchmark/util/plot_gpu_time_vs_mem.py",
+        //     "program": "benchmark/util/plot.gpu_time_vs_mem.py",
         //     "console": "integratedTerminal",
         //     "justMyCode": true,
         //     "args": ["job/22a"]
@@ -58,7 +58,7 @@
         //     "name": "PLT Comp job/22a bin size",
         //     "type": "python",
         //     "request": "launch",
-        //     "program": "benchmark/util/plot_compare_gpu.py",
+        //     "program": "benchmark/util/plot.compare_gpu.py",
         //     "console": "integratedTerminal",
         //     "justMyCode": true,
         //     "args": ["job/22a", "-m", "bin_size", "-b", "10"]
@@ -67,7 +67,7 @@
         //     "name": "PLT Comp job/22a bin width",
         //     "type": "python",
         //     "request": "launch",
-        //     "program": "benchmark/util/plot_compare_gpu.py",
+        //     "program": "benchmark/util/plot.compare_gpu.py",
         //     "console": "integratedTerminal",
         //     "justMyCode": true,
         //     "args": ["job/22a"]
@@ -76,7 +76,7 @@
         //     "name": "PLT Comp SSB/Q21 cpu bin count 6",
         //     "type": "python",
         //     "request": "launch",
-        //     "program": "benchmark/util/plot_compare_cost_model_on_time.py",
+        //     "program": "benchmark/util/plot.compare_cost_model_on_time.py",
         //     "console": "integratedTerminal",
         //     "justMyCode": true,
         //     "args": ["ssb/q21", "cpu", "-m", "bin_size", "-b", "6"]
@@ -85,7 +85,7 @@
         //     "name": "PLT Comp SSB/Q21 gpu bin count 6",
         //     "type": "python",
         //     "request": "launch",
-        //     "program": "benchmark/util/plot_compare_cost_model_on_time.py",
+        //     "program": "benchmark/util/plot.compare_cost_model_on_time.py",
         //     "console": "integratedTerminal",
         //     "justMyCode": true,
         //     "args": ["ssb/q21", "gpu", "-m", "bin_size", "-b", "6"]
@@ -94,7 +94,7 @@
         //     "name": "PLT OPT Search Space job/22a",
         //     "type": "python",
         //     "request": "launch",
-        //     "program": "benchmark/util/plot_optim_time_vs_mem_front.py",
+        //     "program": "benchmark/util/plot.optim_time_vs_mem_front.py",
         //     "console": "integratedTerminal",
         //     "justMyCode": true,
         //     "args": ["job/22a"]

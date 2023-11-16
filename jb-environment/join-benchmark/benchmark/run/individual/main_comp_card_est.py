@@ -8,8 +8,8 @@ from benchmark.operations.get_query_instructions import (
     get_real_instructions,
     get_time_mem_approx_instructions,
 )
-from benchmark.operations.instructions import TDFs
-from benchmark.operations.time_mem_approximations import Data
+from benchmark.operations.operations_real import TDFs
+from benchmark.operations.operations_costmodel import Data
 
 
 def main(db_path:str, db_set: str, query: str, perm: list[int]):

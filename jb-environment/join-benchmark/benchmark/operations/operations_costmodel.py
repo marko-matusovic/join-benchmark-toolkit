@@ -1,6 +1,6 @@
 from typing import Any, Callable, NamedTuple
 from benchmark.operations.operations import Operations, TVal
-from benchmark.tools.schema import TSchema, get_schema, rename_schema
+from benchmark.tools.schema_parser import TSchema, get_schema, rename_schema
 from benchmark.tools.stats import (
     ColumnStats,
     TStats,
@@ -201,7 +201,7 @@ def new_history_tuple(data: Data, cluster_name: str):
 # =============== CLASS =================================================================
 
 
-class Time_Mem_Approx_Instructions(Operations[Data, Res]):
+class Operations_CostModel(Operations[Data, Res]):
     def from_tables(self, db_path:str, db_name: str, tables: list[str], aliases: list[str] = []):
         if len(aliases) != len(tables):
             aliases = tables

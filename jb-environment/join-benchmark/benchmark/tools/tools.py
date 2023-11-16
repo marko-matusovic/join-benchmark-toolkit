@@ -1,6 +1,6 @@
 from io import TextIOWrapper
 
-from benchmark.operations.instructions import TDFs
+from benchmark.operations.operations_real import TDFs
 
 
 def clone(dfs: TDFs) -> TDFs:

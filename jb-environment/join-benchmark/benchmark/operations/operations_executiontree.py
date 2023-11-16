@@ -1,6 +1,6 @@
 from typing import Callable, NamedTuple
 from benchmark.operations.operations import Operations, TVal
-from benchmark.tools.schema import TSchema, get_schema, rename_schema
+from benchmark.tools.schema_parser import TSchema, get_schema, rename_schema
 import numpy as np
 
 
@@ -29,7 +29,7 @@ def find_table(schema: TSchema, field_name: str) -> str:
 # =============== CLASS =================================================================
 
 
-class Execution_Tree_Instructions(Operations[Data, None]):
+class Operations_ExecutionTree(Operations[Data, None]):
     def from_tables(self, db_path:str, db_name: str, tables: list[str], aliases: list[str] = []):
         if len(aliases) != len(tables):
             aliases = tables
