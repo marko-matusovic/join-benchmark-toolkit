@@ -205,7 +205,7 @@
             "program": "jb-environment/join-benchmark/main.py",
             "console": "integratedTerminal",
             "justMyCode": true,
-            "args": ["run", "tpcds/query_3", "0,1"]
+            "args": ["run", "tpcds/query_3", "0,1", "--db-path", "~/Developer/tmp/db_data/tpcds"]
         },
         {
             "name": "RUN SSB Q21 GPU",
