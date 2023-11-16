@@ -33,3 +33,26 @@ new_db_set
 ```
 
 > The default location for this directory is in the [data](./data) directory, alongside other data sets, however you can specify a custom `db_path` when running with `--db_path path/to/db_set`.
+
+
+
+### How to use this framework?
+
+The join benchmark framework in its simplest parses the query into instructions, and then exposes them. To immediately execute them in an arbitrary order, follow the code below:
+
+```python
+# Parse the schema and the query into a set of instructions
+instructions = get_instruction_set(db_path, db_set, query, Operations_Real())
+
+# Verify required tables for the query exist
+dfs: dict[str, DataFrame] = instructions.s1_init()
+
+# Execute the statements in WHERE which only filter
+for instruction in instructions.s2_filters:
+    instruction(dfs)
+
+# Execute the statements in WHERE which join tables
+for join in instructions.s3_joins:
+    join(dfs)
+```
+source: [benchmark/run/individual/main_run_simple.py](benchmark/run/individual/main_run_simple.py)
