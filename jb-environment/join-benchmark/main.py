@@ -1,4 +1,5 @@
 import json
+import os
 import sys
 
 from benchmark.run.individual import main_approx_time_mem, main_comp_card_est, main_parse, main_time_mem, main_run
@@ -24,7 +25,7 @@ if __name__ == "__main__":
     print(f'Running with args: {sys.argv}')
     
     run_config = sys.argv[1]
-    [db_set, query] = sys.argv[2].split("/")
+    (db_set, _sep, query) = sys.argv[2].partition("/")
     
     if '--gpu' in sys.argv:
         set_engine('gpu')
@@ -35,15 +36,16 @@ if __name__ == "__main__":
     if '--manual-parse' in sys.argv:
         manual_parse = True
     
-    db_path = f'./data/{db_set}'
-    if '--db-path' in sys.argv:
+    if '--db-path' not in sys.argv:
+        this_path = os.path.abspath(__file__).removesuffix('/main.py')
+        db_path = f'{this_path}/data/{db_set}'
+    else:
         dbp_arg = sys.argv.index('--db-path')
         if len(sys.argv) <= dbp_arg + 1:
             print('Error: Not enough arguments after --db-path statement, must follow the format: "--db-path [path/to/database]"')
             exit(1)
         db_path = sys.argv[ + 1]
         
-    
     # Loads the schema, usually used for testing
     #     2nd arg: db_set (if provided with '/query' suffix, it's ignored)
     if run_config == 'schema':
@@ -60,9 +62,6 @@ if __name__ == "__main__":
     #     opt arg --skip-joins: skips all joins
     #     opt arg --log [filename] [start of log]: opens the log file and prints the start of the log and measures times of each operation such as filters and joins
     elif run_config == 'run':
-        if query == None:
-            query = db_set
-            db_set = "ssb" # Default to ssb
         perm = [int(i) for i in sys.argv[3].split(',')]
         skip_joins = True if '--skip-joins' in sys.argv else False
         

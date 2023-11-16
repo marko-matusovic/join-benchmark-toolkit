@@ -105,10 +105,18 @@ def parse_from_clause(from_clause:str) -> tuple[list[str],list[str]] :
     aliases:list[str] = []
 
     for table in from_clause.split(","):
-        (name, key, alias) = table.strip().partition("AS")
+        table = table.strip()
+        if "AS" in table:
+            (name, _key, alias) = table.partition("AS")
+        elif " " in table:
+            parts = table.split(" ")
+            name = parts[0]
+            alias = parts[-1]
+        else:
+            name = table
+            alias = table
+        
         tables.append(name.strip())
-        if key == "":
-            alias = name
         aliases.append(alias.strip())
 
     return (tables, aliases)

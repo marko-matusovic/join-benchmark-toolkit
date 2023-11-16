@@ -190,6 +190,24 @@
             "args": ["parse", "ssb/q33"]
         },
         {
+            "name": "PARSE TPCDS/query_3",
+            "type": "python",
+            "request": "launch",
+            "program": "jb-environment/join-benchmark/main.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": ["parse", "tpcds/query_3"]
+        },
+        {
+            "name": "RUN TPCDS/query_3",
+            "type": "python",
+            "request": "launch",
+            "program": "jb-environment/join-benchmark/main.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": ["run", "tpcds/query_3", "0,1"]
+        },
+        {
             "name": "RUN SSB Q21 GPU",
             "type": "python",
             "request": "launch",

@@ -1,0 +1,21 @@
+{
+    // YOU CAN PUT CONFIGURATION FOR NEW DB SETS HERE
+    // THE CONFIG SHOULD FOLLOW THE FORMAT BELOW
+    // "default_db": {
+    //     "file_suffix": "csv",
+    //     "column_sep": ","
+    // },
+    "ssb": {
+        "file_suffix": "tbl",
+        "column_sep": "|"
+    },
+    "job": {
+        "file_suffix": "csv",
+        "column_sep": ","
+    },
+    "tpcds": {
+        "file_suffix": "dat",
+        "column_sep": "|"
+    }
+    // ADD MORE CONFIGS BELOW
+}
