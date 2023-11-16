@@ -3,7 +3,7 @@ from benchmark.operations.query_instructions import get_instruction_set
 from time import time;
 
 
-def main(db_path:str, db_set:str, query:str, perm:list[int], skip_joins=False, manual_parse=False, log_file='', log_head=''):
+def main(db_path:str, db_set:str, query:str, perm:list[int]|None=None, skip_joins=False, manual_parse=False, log_file='', log_head=''):
     print(f'Running {db_set}/{query} with perm {perm}')
     
     start = time()
@@ -29,6 +29,8 @@ def main(db_path:str, db_set:str, query:str, perm:list[int], skip_joins=False, m
         
     print("Running joins...")
     joins = []
+    if perm == None:
+        perm = list(range(len(instructions.s3_joins)))
     for p in perm:
         instructions.s3_joins[p](dfs)
         joins.append(time())

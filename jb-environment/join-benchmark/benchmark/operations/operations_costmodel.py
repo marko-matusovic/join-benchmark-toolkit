@@ -1,4 +1,6 @@
 from typing import Any, Callable, NamedTuple
+
+from benchmark.tools.query_parser import get_joins
 from benchmark.operations.operations import Operations, TVal
 from benchmark.tools.schema_parser import TSchema, get_schema, rename_schema
 from benchmark.tools.stats import (

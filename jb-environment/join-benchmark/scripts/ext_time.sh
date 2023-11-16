@@ -26,7 +26,7 @@ while read PERM; do
     for i in $(seq $N_REPEAT)
     do
         start=$(date +%s.%N)
-        python3 main.py run $QUERY $PERM --$DEVICE $OTHER_ARGS
+        python3 main.py run $QUERY --jo $PERM --$DEVICE $OTHER_ARGS
         runtime=$(echo "$(date +%s.%N) - $start" | bc)
             
         echo "run "$i" of "$N_REPEAT" took "$runtime"s"

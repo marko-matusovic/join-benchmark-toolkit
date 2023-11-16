@@ -5,7 +5,7 @@ from benchmark.operations.operations_costmodel import Data, Operations_CostModel
 from benchmark.operations.query_instructions import get_instruction_set
 
 
-def main(db_path:str, db_set:str, query:str, perm:list[int], skip_joins=False, manual_parse=False, log_file='', log_head=''):
+def main(db_path:str, db_set:str, query:str, perm:list[int]|None=None, skip_joins=False, manual_parse=False, log_file='', log_head=''):
     print(f'Running {db_set}/{query} with perm {perm}')
     
     if log_file == '':
@@ -39,6 +39,8 @@ def main(db_path:str, db_set:str, query:str, perm:list[int], skip_joins=False, m
     time_joins:list[float] = []
     mem_joins:list[float] = []
     
+    if perm == None:
+        perm = list(range(len(instructions.s3_joins)))
     for p in perm:
         tracemalloc.reset_peak()
         instructions.s3_joins[p](dfs)

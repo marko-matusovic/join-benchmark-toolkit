@@ -15,6 +15,6 @@ while read PERM; do
     ncu -f --csv \
         --metrics "regex:^dram__bytes_(read|write).sum$" \
         --log-file $LOG_FILE \
-        python3 main.py run $QUERY $PERM --GPU
+        python3 main.py run $QUERY --jo $PERM --GPU
 
 done <scripts/perms/$2.csv

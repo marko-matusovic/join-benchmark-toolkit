@@ -10,7 +10,7 @@ from benchmark.operations.operations_costmodel import Data, Operations_CostModel
 from benchmark.operations.query_instructions import get_instruction_set
 
 
-def main(db_path:str, db_set: str, query: str, perm: list[int]):
+def main(db_path:str, db_set: str, query: str, perm: list[int]|None=None):
     path = f"results/comp_card_est/{db_set}/{query}.csv"
     if not exists(path):
         file = open(path, "a")
@@ -30,6 +30,8 @@ def main(db_path:str, db_set: str, query: str, perm: list[int]):
         approx_instructions.s2_filters[f](data)
         measure(file, dfs_s, data_s, dfs, data)
 
+    if perm == None:
+        perm = list(range(len(real_instructions.s3_joins)))
     for p in perm:
         [dfs_s, data_s] = deepcopy([dfs, data])
         real_instructions.s3_joins[p](dfs)

@@ -1,7 +1,7 @@
 from benchmark.operations.operations_costmodel import Operations_CostModel
 from benchmark.operations.query_instructions import get_instruction_set
 
-def main(db_path:str, db_set:str, query:str, perm:list[int]):
+def main(db_path:str, db_set:str, query:str, perm:list[int]|None=None):
     print(f'Running {db_set}/{query} with perm {perm}')
     
     instructions = get_instruction_set(db_path, db_set, query, Operations_CostModel())
@@ -17,6 +17,8 @@ def main(db_path:str, db_set:str, query:str, perm:list[int]):
     m_sum = 0
     m_max = 0
     # Approximate joins
+    if perm == None:
+        perm = list(range(len(instructions.s3_joins)))
     for p in perm:
         (t_cost, m_cost) = instructions.s3_joins[p](data)
         t_total += t_cost

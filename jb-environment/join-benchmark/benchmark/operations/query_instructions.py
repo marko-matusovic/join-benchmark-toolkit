@@ -3,7 +3,7 @@ from typing import Callable, Generic, TypeVar
 from benchmark.operations.operations import Operations
 from benchmark.queries.ssb import q11, q12, q13, q21, q31, q41
 from benchmark.queries.job import q1b, q20a, q22a, q28a, q2a, q30a
-from benchmark.tools.query_parser import parse
+from benchmark.tools.query_parser import parse_file
 from benchmark.operations.query_instructions import QueryInstructions
 
 
@@ -57,7 +57,4 @@ def get_instruction_set(
                 return q30a.instruction_set(db_path, operation_class)
 
     # No manual parsing found, attempting automatic parsing
-
-    with open(f"{db_path}/queries/{query}.sql") as file:
-        query = " ".join([line.strip() for line in file.readlines()])
-        return parse(db_path, db_set, query, operation_class)
+    return parse_file(db_path, db_set, query, operation_class)
