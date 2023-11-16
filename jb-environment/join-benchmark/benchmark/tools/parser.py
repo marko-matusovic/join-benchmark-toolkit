@@ -28,7 +28,6 @@ keywords = [
 def parse(
     db_path:str, db_set: str, query_str: str, operation_set: Operations[I, O]
 ) -> QueryInstructions[I, O]:
-    print("Parsing automatically.")
     (_select_clause, from_clause, where_clause) = split_parsing_groups(query_str)
 
     (tables, aliases) = parse_from_clause(from_clause)

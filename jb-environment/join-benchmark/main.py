@@ -19,11 +19,11 @@ def named_arg(arg: str, count: int) -> list[str]:
         return []
 
     arg_idx = sys.argv.index(arg)
-    if len(sys.argv) <= arg_idx + count:
+    if len(sys.argv) < arg_idx + 1 + count:
         print(f"ERROR: named argument {arg} must follow with at least {count} values!")
         exit(1)
 
-    return sys.argv[arg_idx : arg_idx + count]
+    return sys.argv[arg_idx+1 : arg_idx+1 + count]
 
 
 # This program accepts a number of positional arguments, and optional arguments.
