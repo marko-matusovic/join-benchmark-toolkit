@@ -70,7 +70,7 @@ while : ; do
 
         echo $PERM
 
-        # Run x N_REPEAT (5)
+        # Run x N_REPEAT
         for j in $(seq $N_REPEAT); do
             # START=$(date +%s.%N)
             TIMESTAMP=$(date +"[%Y-%m-%dT%H:%M:%S]")

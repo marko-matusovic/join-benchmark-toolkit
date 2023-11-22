@@ -35,14 +35,15 @@ def main(db_path:str, db_set:str, query:str, perm:list[int]|None=None, log_file:
         with open(log_file, 'a') as fout:
             fout.write(f'{log_head};{p};{features_1};{features_2};{features_mix}\n')
         
-def collect_features(data:Data, field:str) -> str:
-    table = find_table(data.schema, field)
+def collect_features(data:Data, field_name:str) -> str:
+    table = find_table(data.schema, field_name)
+    short_field_name = field_name.split('.')[-1]
     
     cluster = data.clusters[table]
     
     return json.dumps({
         'length': total_length_of_cluster(data, cluster),
-        'unique': data.stats[table].column[field].unique,
+        'unique': data.stats[table].column[short_field_name].unique,
         'row_size': sum([v.dtype for tbl in cluster for v in data.stats[tbl].column.values()]),
         'cache_age': calc_age_mult(data, table)
     })

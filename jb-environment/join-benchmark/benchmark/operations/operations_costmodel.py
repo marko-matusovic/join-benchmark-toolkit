@@ -239,14 +239,15 @@ class Operations_CostModel(Operations[Data, Res]):
             
         def filter(data: Data):
             table_name = find_table(data.schema, field_name)
+            short_field_name = field_name.split('.')[-1]
             stats = data.stats[table_name]
             
             # histogram
-            # if stats.column[field_name].hist is not None :
-            # (counts, bounds) = stats.column[field_name].hist
+            # if stats.column[short_field_name].hist is not None :
+            # (counts, bounds) = stats.column[short_field_name].hist
             # TODO: figure out if this is possible
             # heat map
-            heat_map = stats.column[field_name].heat_map
+            heat_map = stats.column[short_field_name].heat_map
             if heat_map != None:
                 selectivity = (
                     np.sum(
@@ -259,7 +260,7 @@ class Operations_CostModel(Operations[Data, Res]):
                 )
             # unique
             else:
-                selectivity = 1.0 * len(values) / stats.column[field_name].unique
+                selectivity = 1.0 * len(values) / stats.column[short_field_name].unique
 
             data.selects[table_name].append(selectivity)
 
@@ -274,19 +275,20 @@ class Operations_CostModel(Operations[Data, Res]):
     def filter_field_ne(self, field_name: str, value: TVal):
         def filter(data: Data):
             table_name = find_table(data.schema, field_name)
+            short_field_name = field_name.split('.')[-1]
             stats = data.stats[table_name]
 
             # histogram
-            # if stats.column[field_name].hist is not None :
-            # (counts, bounds) = stats.column[field_name].hist
+            # if stats.column[short_field_name].hist is not None :
+            # (counts, bounds) = stats.column[short_field_name].hist
             # TODO: figure out if this is possible
             # heat map
-            heat_map = stats.column[field_name].heat_map
+            heat_map = stats.column[short_field_name].heat_map
             if heat_map != None:
                 selectivity = 1 - (1.0 * heat_map[str(value)] / stats.length)
             # unique
             else:
-                selectivity = 1 - (1.0 / stats.column[field_name].unique)
+                selectivity = 1 - (1.0 / stats.column[short_field_name].unique)
 
             data.selects[table_name].append(selectivity)
             cluster_name = f"({data.cluster_names[table_name]}S({field_name})!={value})"
@@ -305,8 +307,9 @@ class Operations_CostModel(Operations[Data, Res]):
     ):
         def filter(data: Data):
             table_name = find_table(data.schema, field_name)
+            short_field_name = field_name.split('.')[-1]
             table_stats = data.stats[table_name]
-            column_stats = table_stats.column[field_name]
+            column_stats = table_stats.column[short_field_name]
 
             # if there are no bounds, there is definitely no histogram, fall back to default selectivity
             if column_stats.bounds == None:
@@ -458,6 +461,8 @@ class Operations_CostModel(Operations[Data, Res]):
             # ========== Logical Merging ==========
             table_name_1 = find_table(data.schema, field_name_1)
             table_name_2 = find_table(data.schema, field_name_2)
+            short_field_name_1 = field_name_1.split('.')[-1]
+            short_field_name_2 = field_name_2.split('.')[-1]
 
             cluster_name_1 = data.cluster_names[table_name_1]
             cluster_name_2 = data.cluster_names[table_name_2]
@@ -486,8 +491,8 @@ class Operations_CostModel(Operations[Data, Res]):
 
             stats_1 = data.stats[table_name_1]
             stats_2 = data.stats[table_name_2]
-            col_stats_1 = stats_1.column[field_name_1]
-            col_stats_2 = stats_2.column[field_name_2]
+            col_stats_1 = stats_1.column[short_field_name_1]
+            col_stats_2 = stats_2.column[short_field_name_2]
             hist_1 = col_stats_1.hist
             hist_2 = col_stats_2.hist
 
