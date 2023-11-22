@@ -8,6 +8,7 @@ from benchmark.run.individual import (
     main_parse,
     main_run_time_mem,
     main_run,
+    main_features,
 )
 from benchmark.engine.engine import set_engine
 from benchmark.tools.schema_parser import get_schema
@@ -120,6 +121,27 @@ if __name__ == "__main__":
         # No logging inside python
         else:
             main_run.main(db_path, db_set, query, perm, skip_joins, manual_parse)
+    
+    
+    # Generates a list of features for training
+    elif run_config == "features":
+        
+        perm = [int(i) for i in named_arg('--jo', 1)[0].split(",")] if '--jo' in sys.argv else None
+        
+        log_file = None
+        log_head = ''
+        if "--log" in sys.argv:
+            [log_file, log_head] = named_arg("--log-file", 2)
+        
+        main_features.main(
+            db_path,
+            db_set,
+            query,
+            perm,
+            log_file,
+            log_head,
+            manual_parse,
+        )
 
     # approx_time_mem - use the cost model to calculate the time and memory cost
     #     opt arg --jo [integer sequence]: order of joins

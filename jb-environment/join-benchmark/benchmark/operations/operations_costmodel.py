@@ -110,9 +110,9 @@ def calc_age_mult(data: Data, table_name: str) -> float:
 
 def total_length_of_cluster(data: Data, cluster: set[str]) -> float:
     return float(
-        np.product(
+        np.prod(
             [
-                np.product([data.stats[tbl].length] + data.selects[tbl])
+                np.prod([data.stats[tbl].length] + data.selects[tbl])
                 for tbl in cluster
             ]
         )
@@ -210,7 +210,7 @@ class Operations_CostModel(Operations[Data, Res]):
         def load() -> Data:
             data = Data(
                 schema=rename_schema(get_schema(db_path, db_name), tables, aliases),
-                stats=load_stats(db_name, tables, aliases),
+                stats=load_stats(db_path, db_name, tables, aliases),
                 selects={ali: [] for ali in aliases},
                 clusters={ali: {ali} for ali in aliases},
                 cluster_names={

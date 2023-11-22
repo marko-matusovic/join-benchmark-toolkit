@@ -37,7 +37,7 @@ def calc_simple_stats(df: DataFrame):
     return {"length": len(df.index), "unique": dict(df.nunique())}
 
 
-def load_stats(db_name: str, tables: list[str], aliases: list[str]) -> TStats:
+def load_stats(db_path:str, db_name: str, tables: list[str], aliases: list[str]) -> TStats:
     stats: TStats = {}
 
     for table in tables:
@@ -49,7 +49,7 @@ def load_stats(db_name: str, tables: list[str], aliases: list[str]) -> TStats:
 
         # If there is no cache, calculate new stats and create cache file
         else:
-            df = load_table(db_name, table)
+            df = load_table(db_path, db_name, table)
             table_stats = TableStats(
                 length=len(df.index),
                 column={

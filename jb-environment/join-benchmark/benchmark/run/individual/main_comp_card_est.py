@@ -70,7 +70,7 @@ def measure(
     # Real length
     real_len_1 = [len(dfs_1[name].index) for name in name_1]
     real_len_2 = len(dfs_2[name_2].index)
-    real_selectivity = 1.0 * real_len_2 / np.product(real_len_1)
+    real_selectivity = 1.0 * real_len_2 / np.prod(real_len_1)
     real_len_1.append(0)  # for printing in case len() == 1
 
     # Approximate length
@@ -83,9 +83,9 @@ def measure(
     clusters = [data_1.clusters[tbl_in_cluster] for tbl_in_cluster in tbls_in_cluster]
     approx_len_1 = [
         float(
-            np.product(
+            np.prod(
                 [
-                    np.product(
+                    np.prod(
                         data_1.selects[tbl_orig] + [data_1.stats[tbl_orig].length]
                     )
                     for tbl_orig in cluster
@@ -100,14 +100,14 @@ def measure(
     ]
     cluster = data_2.clusters[tbl_in_cluster]
     approx_len_2 = float(
-        np.product(
+        np.prod(
             [
-                np.product(data_2.selects[tbl_orig] + [data_2.stats[tbl_orig].length])
+                np.prod(data_2.selects[tbl_orig] + [data_2.stats[tbl_orig].length])
                 for tbl_orig in cluster
             ]
         )
     )
-    approx_selectivity = 1.0 * approx_len_2 / np.product(approx_len_1)
+    approx_selectivity = 1.0 * approx_len_2 / np.prod(approx_len_1)
     approx_len_1.append(0)  # for printing in case len() == 1
     # print
     # keys: operation name;T1_real_len;T1_approx_len;T2_real_len;T2_approx_len;R_real_len;R_approx_len;real_selectivity;approx_selectivity

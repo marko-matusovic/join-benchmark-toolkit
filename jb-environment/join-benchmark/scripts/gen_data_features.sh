@@ -11,11 +11,9 @@ GEN_RUN=${2:-$((1000 + $RANDOM % 9000))}
 # DEVICE=${3:-"gpu"}
 # N_REPEAT=${4:-"5"}
 # OTHER_ARGS=${@:5}
-DEVICE="gpu"
-N_REPEAT=10
 OTHER_ARGS=$3
 
-RES_FILE="./results/training_data/$DB_SET/set_${GEN_RUN}_measurement.csv"
+RES_FILE="./results/training_data/$DB_SET/set_${GEN_RUN}_features.csv"
 
 TIMESTAMP=$(date +"[%Y-%m-%dT%H:%M:%S]")
 if [ -f $RES_FILE ]; then
@@ -24,7 +22,7 @@ if [ -f $RES_FILE ]; then
 else
     echo "Starting a new training set_$GEN_RUN"
     mkdir ./results/perms_pos/$DB_SET/$GEN_RUN
-    echo "TIMESTAMP;DB_SET/QUERY;DEVICE[cpu,gpu];TYPE_OF_RUN[1:OVERHEAD,0:JOIN_PERMUTATION];JOIN_PERMUTATION;EXIT_CODE[201:OK_SKIP_JOINS,200:OK,500:PROCESSING_ERROR];PARSING[MS];OVERHEAD[MS];FILTERS[LIST_MS];JOINS[LIST_MS]" >> $RES_FILE
+    echo "TIMESTAMP;DB_SET/QUERY;JOIN_PERMUTATION;JOIN_ID;FEATURES_1;FEATURES_2;FEATURES_MIX" >> $RES_FILE
     echo "// CREATED AT $TIMESTAMP" >> $RES_FILE
 fi;
 
@@ -57,7 +55,7 @@ while : ; do
         NUM_PERMS=$(wc -l < $PERM_FILE)
         NUM_PERMS=$((NUM_PERMS))
 
-        POS_FILE="./results/perms_pos/$DB_SET/$GEN_RUN/$QUERY"
+        POS_FILE="./results/perms_pos/$DB_SET/$GEN_RUN/$QUERY-features"
         if [ ! -f $POS_FILE ]; then
             echo "Creating new file \"$POS_FILE\""
             echo 0 > $POS_FILE
@@ -70,20 +68,9 @@ while : ; do
 
         echo $PERM
 
-        # Run x N_REPEAT (5)
-        for j in $(seq $N_REPEAT); do
-            # START=$(date +%s.%N)
-            TIMESTAMP=$(date +"[%Y-%m-%dT%H:%M:%S]")
-            LOG_START="$TIMESTAMP;$DB_SET/$QUERY;$DEVICE;0;$PERM"
-            python3 main.py run $DB_SET/$QUERY --jo $PERM --$DEVICE --log-time $RES_FILE $LOG_START $OTHER_ARGS
-            RES=$?
-            if [[ $RES -ne 0 ]]; then
-                echo "$LOG_START;$RES;;;;" >> $RES_FILE
-            fi;
-            # RUNTIME=$(echo "$(date +%s.%N) - $START" | bc)
-            # echo "$TIMESTAMP;$DB_SET/$QUERY;$DEVICE;0;$PERM;$RES;$RUNTIME"
-            # echo "$TIMESTAMP;$DB_SET/$QUERY;$DEVICE;0;$PERM;$RES;$RUNTIME" >> $RES_FILE
-        done
+        TIMESTAMP=$(date +"[%Y-%m-%dT%H:%M:%S]")
+        LOG_START="$TIMESTAMP;$DB_SET/$QUERY;$PERM"
+        python3 main.py features $DB_SET/$QUERY --jo $PERM --log-time $RES_FILE $LOG_START $OTHER_ARGS
 
         # store the new POS only when finished, when aborted mid repeat, redo the perm
         echo $POS > $POS_FILE
@@ -93,8 +80,8 @@ while : ; do
 done
 
 # # START WITH
-# ./scripts/gen_data_runtime.sh ssb 2 "--db-path /data/db_data/ssb"
+# ./scripts/gen_data_features.sh ssb 2
 
 # # RESET
-# rm -rf results/perms_pos/ssb/2
-# rm results/training_data/ssb/set_2_measurement.csv 
+# rm -rf results/perms_pos/ssb/2/*-features
+# rm results/training_data/ssb/set_2_features.csv
