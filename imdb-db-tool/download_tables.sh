@@ -16,3 +16,6 @@ rm imdb.tgz
 # Removing invalid characters from the tables
 sed -i 's/\\"//g' tables/*.csv
 sed -i 's/\\,//g' tables/*.csv
+# The command above works on Linux, on MacOS you should use the one below:
+# sed -i '' 's/\\"//g' tables/*.csv
+# sed -i '' 's/\\,//g' tables/*.csv

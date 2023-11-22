@@ -10,8 +10,9 @@ from benchmark.tools.tools import bound
 
 # Constants
 HIST_MIN_ITEMS_COVERAGE = 0.75
-HIST_MEAN_ITEMS_PER_BIN = 10
 HIST_MIN_NUM_BINS = 10
+HIST_MAX_NUM_BINS = 5_000
+HIST_MEAN_ITEMS_PER_BIN = 100
 
 
 # Stats for one column
@@ -76,7 +77,7 @@ def load_stats(db_path:str, db_name: str, tables: list[str], aliases: list[str])
                     num_bins = bound(
                         HIST_MIN_NUM_BINS,  # min val
                         int(table_stats.length / HIST_MEAN_ITEMS_PER_BIN),  # calc val
-                        1 + int(high - low),  # max val
+                        min(1 + int(high - low), HIST_MAX_NUM_BINS),  # max val
                     )
                     # TODO: update histogram to be equi-deep
                     # If at least some % of values pass, make the histogram
