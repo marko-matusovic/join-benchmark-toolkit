@@ -1,5 +1,6 @@
 import pickle
 from os.path import exists
+from os import makedirs
 from typing import NamedTuple, TypeVar
 
 import numpy as np
@@ -38,15 +39,22 @@ def calc_simple_stats(df: DataFrame):
     return {"length": len(df.index), "unique": dict(df.nunique())}
 
 
-def load_stats(db_path:str, db_name: str, tables: list[str], aliases: list[str]) -> TStats:
+def load_stats(
+    db_path: str, db_name: str, tables: list[str], aliases: list[str]
+) -> TStats:
     stats: TStats = {}
 
+    stats_path = f"{db_path}/stats"
+
+    if not exists(stats_path):
+        makedirs(stats_path)
+
     for table in tables:
-        file_name = f"data/{db_name}/stats/{table}.pickle"
+        file_path = f"{stats_path}/{table}.pickle"
 
         # try to load stats from cache
-        if exists(file_name):
-            table_stats: TableStats = pickle.load(open(file_name, "rb"))
+        if exists(file_path):
+            table_stats: TableStats = pickle.load(open(file_path, "rb"))
 
         # If there is no cache, calculate new stats and create cache file
         else:
@@ -71,9 +79,7 @@ def load_stats(db_path:str, db_name: str, tables: list[str], aliases: list[str])
                         bounds=(low, high),
                     )
                     # Select ints and floats for histogram
-                    values = [
-                        v for v in df[column] if type(v) == int or type(v) == float
-                    ]
+                    values = [v for v in df[column] if type(v) == int or type(v) == float]
                     num_bins = bound(
                         HIST_MIN_NUM_BINS,  # min val
                         int(table_stats.length / HIST_MEAN_ITEMS_PER_BIN),  # calc val
@@ -83,9 +89,7 @@ def load_stats(db_path:str, db_name: str, tables: list[str], aliases: list[str])
                     # If at least some % of values pass, make the histogram
                     # Otherwise, ignore it, as it wouldn't be appropriate representation
                     if HIST_MIN_ITEMS_COVERAGE * table_stats.length < len(values):
-                        table_stats.column[column] = table_stats.column[
-                            column
-                        ]._replace(
+                        table_stats.column[column] = table_stats.column[column]._replace(
                             hist=np.histogram(
                                 values,
                                 bins=num_bins,
@@ -96,23 +100,18 @@ def load_stats(db_path:str, db_name: str, tables: list[str], aliases: list[str])
                     pass
                 if table_stats.column[column].hist == None:
                     try:
-                        table_stats.column[column] = table_stats.column[
-                            column
-                        ]._replace(heat_map=dict(df.groupby(by=column).count().T.max()))
+                        table_stats.column[column] = table_stats.column[column]._replace(
+                            heat_map=dict(df.groupby(by=column).count().T.max())
+                        )
                     except:
                         pass
 
-            pickle.dump(table_stats, open(file_name, "wb"))
+                pickle.dump(table_stats, open(file_path, "wb"))
 
         stats[table] = table_stats
 
     # rename stats to use aliases
-    return {
-        alias: TableStats(
-            length=stats[table].length, column=add_prefix(stats[table].column, alias)
-        )
-        for (table, alias) in zip(tables, aliases)
-    }
+    return {alias: stats[table] for (table, alias) in zip(tables, aliases)}
 
 
 T = TypeVar("T")

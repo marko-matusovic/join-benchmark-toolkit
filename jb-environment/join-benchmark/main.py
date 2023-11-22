@@ -131,7 +131,7 @@ if __name__ == "__main__":
         log_file = None
         log_head = ''
         if "--log" in sys.argv:
-            [log_file, log_head] = named_arg("--log-file", 2)
+            [log_file, log_head] = named_arg("--log", 2)
         
         main_features.main(
             db_path,

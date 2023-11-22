@@ -70,7 +70,7 @@ while : ; do
 
         TIMESTAMP=$(date +"[%Y-%m-%dT%H:%M:%S]")
         LOG_START="$TIMESTAMP;$DB_SET/$QUERY;$PERM"
-        python3 main.py features $DB_SET/$QUERY --jo $PERM --log-time $RES_FILE $LOG_START $OTHER_ARGS
+        python3 main.py features $DB_SET/$QUERY --jo $PERM --log $RES_FILE $LOG_START $OTHER_ARGS
 
         # store the new POS only when finished, when aborted mid repeat, redo the perm
         echo $POS > $POS_FILE

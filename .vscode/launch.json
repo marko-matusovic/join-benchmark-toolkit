@@ -171,104 +171,113 @@
         //     "justMyCode": true,
         //     "args": ["time_mem", "job/30a", "--jo", "0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20"]
         // },
+        // {
+        //     "name": "SCHEMA TPCDS",
+        //     "type": "python",
+        //     "request": "launch",
+        //     "program": "jb-environment/join-benchmark/main.py",
+        //     "console": "integratedTerminal",
+        //     "justMyCode": true,
+        //     "args": ["schema", "tpcds"]
+        // },
+        // {
+        //     "name": "PARSE SSB/Q33",
+        //     "type": "python",
+        //     "request": "launch",
+        //     "program": "jb-environment/join-benchmark/main.py",
+        //     "console": "integratedTerminal",
+        //     "justMyCode": true,
+        //     "args": ["parse", "ssb/q33"]
+        // },
+        // {
+        //     "name": "PARSE TPCDS/query_3",
+        //     "type": "python",
+        //     "request": "launch",
+        //     "program": "jb-environment/join-benchmark/main.py",
+        //     "console": "integratedTerminal",
+        //     "justMyCode": true,
+        //     "args": ["parse", "tpcds/query_3"]
+        // },
+        // {
+        //     "name": "RUN TPCDS/query_3",
+        //     "type": "python",
+        //     "request": "launch",
+        //     "program": "jb-environment/join-benchmark/main.py",
+        //     "console": "integratedTerminal",
+        //     "justMyCode": true,
+        //     "args": ["run", "tpcds/query_3", "--jo", "0,1", "--db-path", "~/Developer/tmp/db_data/tpcds"]
+        // },
+        // {
+        //     "name": "RUN SSB Q21 GPU",
+        //     "type": "python",
+        //     "request": "launch",
+        //     "program": "jb-environment/join-benchmark/main.py",
+        //     "console": "integratedTerminal",
+        //     "justMyCode": true,
+        //     "args": ["run", "ssb/q21", "--jo", "0,1,2", "--gpu"]
+        // },
+        // {
+        //     "name": "RUN SSB Q41 CPU",
+        //     "type": "python",
+        //     "request": "launch",
+        //     "program": "jb-environment/join-benchmark/main.py",
+        //     "console": "integratedTerminal",
+        //     "justMyCode": true,
+        //     "args": ["run", "ssb/q41", "--jo", "0,1,2,3", "--cpu"]
+        // },
+        // {
+        //     "name": "RUN JOB",
+        //     "type": "python",
+        //     "request": "launch",
+        //     "program": "jb-environment/join-benchmark/main.py",
+        //     "console": "integratedTerminal",
+        //     "justMyCode": true,
+        //     "args": ["run", "job/1a"]
+        // },
+        // {
+        //     "name": "RUN JOB Q22A CPU",
+        //     "type": "python",
+        //     "request": "launch",
+        //     "program": "jb-environment/join-benchmark/main.py",
+        //     "console": "integratedTerminal",
+        //     "justMyCode": true,
+        //     "args": ["run", "job/22a", "--jo", "0,12,4,7,6,15,10,1,8,11,5,13,14,9,3,2", "--cpu"]
+        // },
+        // {
+        //     "name": "RUN JOB Q22A CPU MANUAL PARSING",
+        //     "type": "python",
+        //     "request": "launch",
+        //     "program": "jb-environment/join-benchmark/main.py",
+        //     "console": "integratedTerminal",
+        //     "justMyCode": true,
+        //     "args": ["run", "job/22a", "--jo", "0,12,4,7,6,15,10,1,8,11,5,13,14,9,3,2", "--cpu", "--manual-parsing"]
+        // },
+        // {
+        //     "name": "RUN JOB Q22A GPU",
+        //     "type": "python",
+        //     "request": "launch",
+        //     "program": "jb-environment/join-benchmark/main.py",
+        //     "console": "integratedTerminal",
+        //     "justMyCode": true,
+        //     "args": ["run", "job/22a", "--jo", "0,12,4,7,6,15,10,1,8,11,5,13,14,9,3,2", "--gpu"]
+        // },
+        // {
+        //     "name": "RUN JOB Q30A GPU",
+        //     "type": "python",
+        //     "request": "launch",
+        //     "program": "jb-environment/join-benchmark/main.py",
+        //     "console": "integratedTerminal",
+        //     "justMyCode": true,
+        //     "args": ["run", "job/30a", "--jo", "0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20", "--gpu"]
+        // },
         {
-            "name": "SCHEMA TPCDS",
+            "name": "FEATURES SSB Q11",
             "type": "python",
             "request": "launch",
             "program": "jb-environment/join-benchmark/main.py",
             "console": "integratedTerminal",
             "justMyCode": true,
-            "args": ["schema", "tpcds"]
-        },
-        {
-            "name": "PARSE SSB/Q33",
-            "type": "python",
-            "request": "launch",
-            "program": "jb-environment/join-benchmark/main.py",
-            "console": "integratedTerminal",
-            "justMyCode": true,
-            "args": ["parse", "ssb/q33"]
-        },
-        {
-            "name": "PARSE TPCDS/query_3",
-            "type": "python",
-            "request": "launch",
-            "program": "jb-environment/join-benchmark/main.py",
-            "console": "integratedTerminal",
-            "justMyCode": true,
-            "args": ["parse", "tpcds/query_3"]
-        },
-        {
-            "name": "RUN TPCDS/query_3",
-            "type": "python",
-            "request": "launch",
-            "program": "jb-environment/join-benchmark/main.py",
-            "console": "integratedTerminal",
-            "justMyCode": true,
-            "args": ["run", "tpcds/query_3", "--jo", "0,1", "--db-path", "~/Developer/tmp/db_data/tpcds"]
-        },
-        {
-            "name": "RUN SSB Q21 GPU",
-            "type": "python",
-            "request": "launch",
-            "program": "jb-environment/join-benchmark/main.py",
-            "console": "integratedTerminal",
-            "justMyCode": true,
-            "args": ["run", "ssb/q21", "--jo", "0,1,2", "--gpu"]
-        },
-        {
-            "name": "RUN SSB Q41 CPU",
-            "type": "python",
-            "request": "launch",
-            "program": "jb-environment/join-benchmark/main.py",
-            "console": "integratedTerminal",
-            "justMyCode": true,
-            "args": ["run", "ssb/q41", "--jo", "0,1,2,3", "--cpu"]
-        },
-        {
-            "name": "RUN JOB",
-            "type": "python",
-            "request": "launch",
-            "program": "jb-environment/join-benchmark/main.py",
-            "console": "integratedTerminal",
-            "justMyCode": true,
-            "args": ["run", "job/1a"]
-        },
-        {
-            "name": "RUN JOB Q22A CPU",
-            "type": "python",
-            "request": "launch",
-            "program": "jb-environment/join-benchmark/main.py",
-            "console": "integratedTerminal",
-            "justMyCode": true,
-            "args": ["run", "job/22a", "--jo", "0,12,4,7,6,15,10,1,8,11,5,13,14,9,3,2", "--cpu"]
-        },
-        {
-            "name": "RUN JOB Q22A CPU MANUAL PARSING",
-            "type": "python",
-            "request": "launch",
-            "program": "jb-environment/join-benchmark/main.py",
-            "console": "integratedTerminal",
-            "justMyCode": true,
-            "args": ["run", "job/22a", "--jo", "0,12,4,7,6,15,10,1,8,11,5,13,14,9,3,2", "--cpu", "--manual-parsing"]
-        },
-        {
-            "name": "RUN JOB Q22A GPU",
-            "type": "python",
-            "request": "launch",
-            "program": "jb-environment/join-benchmark/main.py",
-            "console": "integratedTerminal",
-            "justMyCode": true,
-            "args": ["run", "job/22a", "--jo", "0,12,4,7,6,15,10,1,8,11,5,13,14,9,3,2", "--gpu"]
-        },
-        {
-            "name": "RUN JOB Q30A GPU",
-            "type": "python",
-            "request": "launch",
-            "program": "jb-environment/join-benchmark/main.py",
-            "console": "integratedTerminal",
-            "justMyCode": true,
-            "args": ["run", "job/30a", "--jo", "0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20", "--gpu"]
+            "args": ["features", "ssb/q11", "--log", "test.log", "this_is_a_test_log>"]
         },
         // {
         //     "name": "COST TM JOB Q1B",
