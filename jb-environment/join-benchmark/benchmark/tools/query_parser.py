@@ -23,17 +23,22 @@ keywords = [
     "BETWEEN",
 ]
 
-def load_query(db_path:str, query: str) -> str :
+
+def load_query(db_path: str, query: str) -> str:
     file = open(f"{db_path}/queries/{query}.sql")
     return " ".join([line.strip() for line in file.readlines()])
 
-def parse_file(db_path:str, db_set: str, query: str, operation_set: Operations[I, O]) -> QueryInstructions[I, O]:
+
+def parse_file(
+    db_path: str, db_set: str, query: str, operation_set: Operations[I, O]
+) -> QueryInstructions[I, O]:
     query_str = load_query(db_path, query)
     return parse_string(db_path, db_set, query_str, operation_set)
 
+
 # SELECT column+ FROM (table [AS alias])+ [WHERE clause+]
 def parse_string(
-    db_path:str, db_set: str, query_str: str, operation_set: Operations[I, O]
+    db_path: str, db_set: str, query_str: str, operation_set: Operations[I, O]
 ) -> QueryInstructions[I, O]:
     (_select_clause, from_clause, where_clause) = split_parsing_groups(query_str)
 
@@ -53,21 +58,30 @@ def parse_string(
         ],
     )
 
+
 # This function only parses out the joins
-def get_joins(query_str:str) -> list[tuple[str,str]] :
+def get_joins(query_str: str) -> list[tuple[str, str]]:
     (_select_clause, _from_clause, where_clause) = split_parsing_groups(query_str)
 
     (_filters, joins) = parse_where_clause(where_clause)
-    
+
     return joins
 
 
-def split_parsing_groups(query_str:str):
-    if (query_str.lower().count('select') * query_str.lower().count('from') * query_str.lower().count('where') != 1) or query_str.lower().count(' cast(') != 0:
+def split_parsing_groups(query_str: str):
+    if (
+        query_str.lower().count("select") != 1
+        or query_str.lower().count("from") != 1
+        or query_str.lower().count("where") != 1
+        or query_str.lower().count(" cast(") != 0
+        or query_str.lower().count(" join ") != 0
+    ):
         print("ERROR: The query is too complex!")
         exit(1)
-    
+
     query_str = query_str.strip(" ;")
+
+    # UPPERCASE for all keywords
     query_str = f" {query_str} "
     for kw in keywords:
         query_str = re.sub(
@@ -77,6 +91,12 @@ def split_parsing_groups(query_str:str):
             flags=RegexFlag.IGNORECASE,
         )
     query_str = query_str.strip()
+
+    # Give operations some space
+    for op in ["=", "!=", ">=", "<=", ","]:
+        query_str = re.sub(rf"(\w)\s*{op}\s*(\w)", rf"\1 {op} \2", query_str)
+
+    # Remove too big space
     query_str = re.sub("\\s\\s+", " ", query_str)
 
     (start, select_keyword, rest) = query_str.partition("SELECT")
@@ -110,9 +130,9 @@ def split_parsing_groups(query_str:str):
     return (select_clause.strip(), from_clause.strip(), where_clause.strip())
 
 
-def parse_from_clause(from_clause:str) -> tuple[list[str],list[str]] :
-    tables:list[str] = []
-    aliases:list[str] = []
+def parse_from_clause(from_clause: str) -> tuple[list[str], list[str]]:
+    tables: list[str] = []
+    aliases: list[str] = []
 
     for table in from_clause.split(","):
         table = table.strip()
@@ -125,7 +145,7 @@ def parse_from_clause(from_clause:str) -> tuple[list[str],list[str]] :
         else:
             name = table
             alias = table
-        
+
         tables.append(name.strip())
         aliases.append(alias.strip())
 
@@ -152,7 +172,7 @@ def parse_where_clause(
                 multi_clause = clause.strip("() ").split("OR")
                 field = ""
                 op = ""
-                values:list[TVal | list[TVal]] = []
+                values: list[TVal | list[TVal]] = []
                 for clause in multi_clause:
                     (field_cur, _space, op_and_val) = clause.strip().partition(" ")
                     (op_cur, _space, val_cur) = op_and_val.partition(" ")
@@ -174,7 +194,7 @@ def parse_where_clause(
             (op2, _space, val) = val.partition(" ")
             op = f"{op} {op2}"
 
-        if op == "=" and re.match(f"^([a-zA-Z0-9_]+\\.)?[a-zA-Z0-9_]+$", val) != None:
+        if op == "=" and re.match(f"^[a-zA-Z][\\w_-]*(\\.[\\w_-]+)?$", val) != None:
             # op is a join
             joins.append((tbl, val))
             continue
@@ -193,7 +213,7 @@ def parse_where_clause(
     return (filters, joins)
 
 
-def parse_value(val:str) -> TVal | list[TVal]:
+def parse_value(val: str) -> TVal | list[TVal]:
     # parse the val
     if re.match(r"^\d+$", val) != None:
         return int(val)

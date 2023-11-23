@@ -33,13 +33,42 @@ case $DB_SET in
         NUMS_JOIN=("5" "5" "5" "5" "5" "5" "5" "5" "4" "4" "4" "5" "5" "5" "5" "5" "5" "5" "5" "5" "5" "5" "5" "11" "7" "8" "7" "7" "9" "9" "9" "9" "7" "7" "7" "10" "10" "10" "10" "8" "8" "8" "11" "11" "11" "11" "10" "10" "10" "14" "14" "14" "14" "11" "11" "11" "11" "9" "9" "9" "9" "9" "9" "9" "9" "9" "13" "13" "13" "13" "12" "12" "12" "14" "14" "14" "16" "16" "16" "16" "16" "16" "16" "18" "18" "14" "14" "14" "17" "17" "17" "21" "21" "21" "23" "23" "23" "28" "28" "28" "21" "21" "21" "20" "20" "20" "3" "3" "3" "3" "3" )
         ;;
     'tpcds')
-        QUERIES=("query_3" "query_6" "query_12" "query_16" "query_17" "query_19" "query_20" "query_25" "query_27" "query_29" "query_36" "query_40" "query_42" "query_43" "query_48" "query_50" "query_52" "query_55" "query_62" "query_72" "query_84" "query_86" "query_91" "query_96" "query_98" "query_99")
-        NUMS_JOIN= ("4" "4" "2" "3" "10" "5" "2" "14" "5" "13" "4" "3" "3" "3" "5" "8" "3" "2" "4" "2" "5" "2" "7" "5" "2" "4")
+        QUERIES=("query_3" "query_12" "query_17" "query_20" "query_22" "query_25" "query_27" "query_36" "query_42" "query_43" "query_50" "query_52" "query_55" "query_96") 
+        NUMS_JOIN=("2" "2" "10" "2" "2" "10" "4" "3" "2" "2" "6" "2" "2" "3")
         ;;
     *)
         echo "Unsupported Dataset passed, choose from [\"ssb\", \"job\", \"tpcds\"]"
         exit 1
 esac
+
+# TPCDS - possible to parse:
+# query_3 2
+# query_6 4
+# query_12 2
+# query_17 10
+# query_19 5
+# query_20 2
+# query_22 2
+# query_25 10
+# query_27 4
+# query_29 10
+# query_36 3
+# query_42 2
+# query_43 2
+# query_50 6
+# query_52 2
+# query_55 2
+# query_62 4
+# query_84 5
+# query_86 2
+# query_91 6
+# query_96 3
+# query_99 4
+
+# TPCDS runs: 
+# ("query_3" "query_12" "query_17" "query_20" "query_22" "query_25" "query_27" "query_36" "query_42" "query_43" "query_50" "query_52" "query_55" "query_96") 
+# ("2" "2" "10" "2" "2" "10" "4" "3" "2" "2" "6" "2" "2" "3")
+
 
 # REPEAT UNTIL STOPPED EXTERNALLY
 while : ; do
