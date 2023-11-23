@@ -85,10 +85,10 @@ RUN conda install \
     pandas \
     numpy \
     pymoo \
-    sqlparse
+    scikit-learn
 
 # For AWS setup
-# conda create -n jb --solver=libmamba -c rapidsai -c conda-forge -c nvidia python rapids cudf cuda-version=11.7 pandas numpy pymoo    
+# conda create -n jb --solver=libmamba -c rapidsai -c conda-forge -c nvidia python rapids cudf cuda-version=11.7 pandas numpy pymoo sklearn
 
 WORKDIR /app/join-benchmark
 
