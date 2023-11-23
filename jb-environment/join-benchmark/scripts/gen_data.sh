@@ -77,10 +77,3 @@ while : ; do
     if [[ ! $TOUCHED ]]; then break; fi;
 
 done
-
-# # START WITH
-# ./scripts/gen_data_features.sh ssb 2
-
-# # RESET
-# rm -rf results/perms_pos/ssb/2/*-features
-# rm results/training_data/ssb/set_2_features.csv
