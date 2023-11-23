@@ -1,5 +1,5 @@
 TIMESTAMP;DB_SET/QUERY;JOIN_PERMUTATION;JOIN_ID;FEATURES_1;FEATURES_2;FEATURES_MIX
-// CREATED AT [2023-11-22T15:16:14]
+# CREATED AT [2023-11-22T15:16:14]
 [2023-11-22T15:16:14];job/1a;0,1,2,3,4;0;{"length": 1.0, "unique": 4, "row_size": 2120, "cache_age": 5};{"length": 77099.76195, "unique": 2, "row_size": 2312, "cache_age": 5};{"selectivity": 0.191085658598457}
 [2023-11-22T15:16:14];job/1a;0,1,2,3,4;1;{"length": 2528312.0, "unique": 2528312, "row_size": 12720, "cache_age": 5};{"length": 14732.658790000005, "unique": 1087236, "row_size": 4432, "cache_age": 5};{"selectivity": 0.00013308505015757692}
 [2023-11-22T15:16:14];job/1a;0,1,2,3,4;2;{"length": 4957252.828156463, "unique": 2528312, "row_size": 17152, "cache_age": 5};{"length": 1380035.0, "unique": 459925, "row_size": 2312, "cache_age": 5};{"selectivity": 0.0001310616087405483}

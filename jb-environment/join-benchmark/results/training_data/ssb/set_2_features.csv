@@ -1,5 +1,5 @@
 TIMESTAMP;DB_SET/QUERY;JOIN_PERMUTATION;JOIN_ID;FEATURES_1;FEATURES_2;FEATURES_MIX
-// CREATED AT [2023-11-22T14:46:49]
+# CREATED AT [2023-11-22T14:46:49]
 [2023-11-22T14:46:49];ssb/q11;0;0;{"length": 2725069.2466643276, "unique": 2406, "row_size": 5072, "cache_age": 5};{"length": 365.2857142857143, "unique": 2557, "row_size": 11048, "cache_age": 5};{"selectivity": 0.0007093088955621289}
 [2023-11-22T14:46:50];ssb/q12;0;0;{"length": 4672436.761291965, "unique": 2406, "row_size": 5072, "cache_age": 5};{"length": 30.44047619047619, "unique": 2557, "row_size": 11048, "cache_age": 5};{"selectivity": 0.0007093088955621289}
 [2023-11-22T14:46:50];ssb/q13;0;0;{"length": 4951480.664864763, "unique": 2406, "row_size": 5072, "cache_age": 5};{"length": 6.8921832884097025, "unique": 2557, "row_size": 11048, "cache_age": 5};{"selectivity": 0.0007093088955621289}

@@ -18,12 +18,12 @@ RES_FILE="./results/training_data/$DB_SET/set_${GEN_RUN}_features.csv"
 TIMESTAMP=$(date +"[%Y-%m-%dT%H:%M:%S]")
 if [ -f $RES_FILE ]; then
     echo "Attaching to a training set_$GEN_RUN"
-    echo "// RESUMING RUN AT $TIMESTAMP" >> $RES_FILE
+    echo "# RESUMING RUN AT $TIMESTAMP" >> $RES_FILE
 else
     echo "Starting a new training set_$GEN_RUN"
     mkdir ./results/perms_pos/$DB_SET/$GEN_RUN
     echo "TIMESTAMP;DB_SET/QUERY;JOIN_PERMUTATION;JOIN_ID;FEATURES_1;FEATURES_2;FEATURES_MIX" >> $RES_FILE
-    echo "// CREATED AT $TIMESTAMP" >> $RES_FILE
+    echo "# CREATED AT $TIMESTAMP" >> $RES_FILE
 fi;
 
 case $DB_SET in 
