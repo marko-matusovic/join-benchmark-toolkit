@@ -180,6 +180,15 @@
         //     "justMyCode": true,
         //     "args": ["schema", "tpcds"]
         // },
+        {
+            "name": "PARSE TPC-DS",
+            "type": "python",
+            "request": "launch",
+            "program": "jb-environment/join-benchmark/main.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": ["parse", "tpcds/query_99"]
+        },
         // {
         //     "name": "PARSE SSB/Q33",
         //     "type": "python",
