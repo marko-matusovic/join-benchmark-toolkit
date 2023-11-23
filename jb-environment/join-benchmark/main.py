@@ -172,11 +172,13 @@ if __name__ == "__main__":
         main_comp_card_est.main(db_path, db_set, query, perm)
         
     # start training a model
+    #   2rd arg: a comma separated list of db_set names to train on.
     #   3rd arg: id of the training set [integer]
     elif run_config == "train":
+        db_sets = [db_set.strip() for db_set in sys.argv[2].split(',')]
         training_set = int(sys.argv[3])
         res_path = None if '--res-path' not in sys.argv else named_arg('--res-path',1)[0]
-        main_train_gbdt.main(db_set, training_set, res_path)
+        main_train_gbdt.main(db_sets, training_set, res_path)
 
     else:
         print("Selected RUN configuration not specified.")

@@ -53,7 +53,7 @@ AllMeasurements: TypeAlias = dict[str, dict[str, Measurements]]
 
 
 # TODO: support multiple db_sets
-def main(db_set: str, training_set: int, res_path: str | None = None):
+def main(db_sets: list[str], training_set: int, res_path: str | None = None):
     if res_path == None:
         res_path = "./results"
 
@@ -61,19 +61,26 @@ def main(db_set: str, training_set: int, res_path: str | None = None):
     model = GradientBoostingRegressor(
         n_estimators=100, learning_rate=1.0, max_depth=1, random_state=0
     )
-
-    (features, measurements) = load_all(db_set, training_set, res_path)
-
-    (X, y) = prepare_data(features, measurements)
-
+    
+    X = []
+    y = []
+    ws = []
+    
+    for db_set in db_sets:
+        (features, measurements) = load_all(db_set, training_set, res_path)
+        (Xi, yi) = prepare_data(features, measurements)
+        X += Xi
+        y += yi
+        ws += [1.0 / len(yi)] * len(yi)
+    
     # train the model
-    model.fit(X, y)
+    model.fit(X, y, ws)
 
-    dbs = "".join(f"_{db}" for db in [db_set])
-    with open(
-        f"{res_path}/models/gbdt/set_{training_set}{dbs}.pickle", "wb"
-    ) as file_out:
+    file = f"{res_path}/models/gbdt/set_{training_set}_BS{JOINS_IN_BLOCK}_{'_'.join(db_sets)}.pickle"
+    with open(file, "wb") as file_out:
         pkl.dump(model, file_out)
+        
+    print(model.feature_importances_)
 
 
 def prepare_data(
