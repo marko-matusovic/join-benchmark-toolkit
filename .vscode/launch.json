@@ -396,5 +396,14 @@
         //     "justMyCode": true,
         //     "args": ["optim_nsga_ii", "job/22a"]
         // },
+        {
+                "name": "TRAIN ssb ts:2",
+                "type": "python",
+                "request": "launch",
+                "program": "jb-environment/join-benchmark/main.py",
+                "console": "integratedTerminal",
+                "justMyCode": true,
+                "args": ["train", "ssb", "2", "--res-path", "jb-environment/join-benchmark/results"]
+        },
     ]
 }

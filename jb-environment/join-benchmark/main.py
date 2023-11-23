@@ -10,6 +10,7 @@ from benchmark.run.individual import (
     main_run,
     main_features,
 )
+from benchmark.run.train import main_train_gbdt
 from benchmark.engine.engine import set_engine
 from benchmark.tools.schema_parser import get_schema
 
@@ -67,7 +68,6 @@ if __name__ == "__main__":
     # Loads the schema, usually used for testing
     #     2nd arg: db_set (if provided with '/query' suffix, it's ignored)
     if run_config == "schema":
-        db_set = sys.argv[2]
         schema = json.dumps(get_schema(db_path, db_set), indent="\t")
         print(f"Parsed schema:\n{schema}")
 
@@ -164,13 +164,19 @@ if __name__ == "__main__":
         main_optim_nsga_ii.main(db_path, db_set, query)
 
     # comp_card_est - combination of 'run' and 'approximation' but focus on the accuracy of cardinality estimate
-    #     3rd arg: order of joins
     elif run_config == "comp_card_est":
         if query == None:
             print("No query specified")
             exit(1)
         perm = [int(i) for i in named_arg('--jo', 1)[0].split(",")] if '--jo' in sys.argv else None
         main_comp_card_est.main(db_path, db_set, query, perm)
+        
+    # start training a model
+    #   3rd arg: id of the training set [integer]
+    elif run_config == "train":
+        training_set = int(sys.argv[3])
+        res_path = None if '--res-path' not in sys.argv else named_arg('--res-path',1)[0]
+        main_train_gbdt.main(db_set, training_set, res_path)
 
     else:
         print("Selected RUN configuration not specified.")
