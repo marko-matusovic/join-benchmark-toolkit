@@ -15,10 +15,12 @@ if __name__ == "__main__":
 
     # Print all files and directories in the specified path
     print(f"Files and Directories in {queries_dir}:")
+    lengths = []
     for query in sorted_queries:
         try:
             lines = open(query.path, "r").readlines()
             query_str = " ".join([line.strip() for line in lines])
-            print(f"{query.name}: {len(get_joins(query_str))}")
+            lengths.append(f"{query.name}: {len(get_joins(query_str))}")
         except:
             print(f"{query.name}: failed")
+    print(*lengths, sep="\n")

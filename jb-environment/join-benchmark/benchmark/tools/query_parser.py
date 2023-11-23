@@ -63,6 +63,10 @@ def get_joins(query_str:str) -> list[tuple[str,str]] :
 
 
 def split_parsing_groups(query_str:str):
+    if (query_str.lower().count('select') * query_str.lower().count('from') * query_str.lower().count('where') != 1) or query_str.lower().count(' cast(') != 0:
+        print("ERROR: The query is too complex!")
+        exit(1)
+    
     query_str = query_str.strip(" ;")
     query_str = f" {query_str} "
     for kw in keywords:
@@ -73,7 +77,7 @@ def split_parsing_groups(query_str:str):
             flags=RegexFlag.IGNORECASE,
         )
     query_str = query_str.strip()
-    query_str = re.sub(r"\\s\\s+", " ", query_str)
+    query_str = re.sub("\\s\\s+", " ", query_str)
 
     (start, select_keyword, rest) = query_str.partition("SELECT")
     if select_keyword == "":
@@ -170,7 +174,7 @@ def parse_where_clause(
             (op2, _space, val) = val.partition(" ")
             op = f"{op} {op2}"
 
-        if op == "=" and re.match(f"^([a-zA-Z_]+\\.)?[a-zA-Z_]+$", val) != None:
+        if op == "=" and re.match(f"^([a-zA-Z0-9_]+\\.)?[a-zA-Z0-9_]+$", val) != None:
             # op is a join
             joins.append((tbl, val))
             continue
