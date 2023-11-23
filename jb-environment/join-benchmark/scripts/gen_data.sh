@@ -1,19 +1,16 @@
 #!/bin/bash
 
 # Run from project root, not from scripts folder. So from scripts/../ which is join-benchmark folder
-# 
-# 1st arg: db_set to use to gen data [ssb, job]
 
-DB_SET=$1
-GEN_RUN=${2:-$((1000 + $RANDOM % 9000))}
+SCENARIO=$1
+DB_SET=$2
+GEN_RUN=${3:-$((1000 + $RANDOM % 9000))}
+OTHER_ARGS=$4
 
-# TODO: configure this in such way that once a run is started, the args cannot be canged, they are stored at start and read from a file when resumed
-# DEVICE=${3:-"gpu"}
-# N_REPEAT=${4:-"5"}
-# OTHER_ARGS=${@:5}
-OTHER_ARGS=$3
+# Load in values and executable from scenario
+source $SCENARIO
 
-RES_FILE="./results/training_data/$DB_SET/set_${GEN_RUN}_features.csv"
+RES_FILE="./results/training_data/$DB_SET/set_${GEN_RUN}_${SCENARIO_NAME}.csv"
 
 TIMESTAMP=$(date +"[%Y-%m-%dT%H:%M:%S]")
 if [ -f $RES_FILE ]; then
@@ -22,7 +19,7 @@ if [ -f $RES_FILE ]; then
 else
     echo "Starting a new training set_$GEN_RUN"
     mkdir ./results/perms_pos/$DB_SET/$GEN_RUN
-    echo "TIMESTAMP;DB_SET/QUERY;JOIN_PERMUTATION;JOIN_ID;FEATURES_1;FEATURES_2;FEATURES_MIX" >> $RES_FILE
+    echo $CSV_HEADER >> $RES_FILE
     echo "# CREATED AT $TIMESTAMP" >> $RES_FILE
 fi;
 
@@ -46,6 +43,7 @@ esac
 
 # REPEAT UNTIL STOPPED EXTERNALLY
 while : ; do
+    TOUCHED=false
     for i in "${!QUERIES[@]}"; do
 
         QUERY=${QUERIES[i]}
@@ -55,7 +53,7 @@ while : ; do
         NUM_PERMS=$(wc -l < $PERM_FILE)
         NUM_PERMS=$((NUM_PERMS))
 
-        POS_FILE="./results/perms_pos/$DB_SET/$GEN_RUN/$QUERY-features"
+        POS_FILE="./results/perms_pos/$DB_SET/$GEN_RUN/${QUERY}_${SCENARIO_NAME}"
         if [ ! -f $POS_FILE ]; then
             echo "Creating new file \"$POS_FILE\""
             echo 0 > $POS_FILE
@@ -68,15 +66,16 @@ while : ; do
 
         echo $PERM
 
-        TIMESTAMP=$(date +"[%Y-%m-%dT%H:%M:%S]")
-        LOG_START="$TIMESTAMP;$DB_SET/$QUERY;$PERM"
-        python3 main.py features $DB_SET/$QUERY --jo $PERM --log $RES_FILE $LOG_START $OTHER_ARGS
+        # Run x N_REPEAT
+        for j in $(seq $N_REPEAT); do execute; done
 
         # store the new POS only when finished, when aborted mid repeat, redo the perm
         echo $POS > $POS_FILE
-
+        TOUCHED=true
     done
-    
+
+    if [[ ! $TOUCHED ]]; then break; fi;
+
 done
 
 # # START WITH
