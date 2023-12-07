@@ -10,7 +10,7 @@ from benchmark.run.individual import (
     main_run,
     main_features,
 )
-from benchmark.run.train import main_train_gbdt
+from benchmark.run.train import main_train_gbdt, main_evaluate_model
 from benchmark.engine.engine import set_engine
 from benchmark.tools.schema_parser import get_schema
 
@@ -179,6 +179,17 @@ if __name__ == "__main__":
         training_set = int(sys.argv[3])
         res_path = None if '--res-path' not in sys.argv else named_arg('--res-path',1)[0]
         main_train_gbdt.main(db_sets, training_set, res_path)
+        
+    # Evaluate a trained ML model
+    #   2rd arg: name of the db_set to be evaluated
+    #   3rd arg: id of the training set [integer]
+    #   4th arg: name of the ML model
+    elif run_config == "model-eval":
+        db_sets = sys.argv[2]
+        training_set = int(sys.argv[3])
+        model_name = sys.argv[4]
+        res_path = None if '--res-path' not in sys.argv else named_arg('--res-path',1)[0]
+        main_evaluate_model.main(db_set, training_set, model_name, res_path)
 
     else:
         print("Selected RUN configuration not specified.")
