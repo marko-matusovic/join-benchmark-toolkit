@@ -414,5 +414,15 @@
                 "justMyCode": true,
                 "args": ["train", "ssb", "2", "--res-path", "jb-environment/join-benchmark/results"]
         },
+        {
+                "name": "Eval tpcds 2 gbdt/set_2_BS4_ssb_job",
+                "type": "python",
+                "request": "launch",
+                "program": "jb-environment/join-benchmark/main.py",
+                "console": "integratedTerminal",
+                "justMyCode": true,
+                "args": ["model-eval", "tpcds", "2", "gbdt/set_2_BS4_ssb_job", "--res-path", "jb-environment/join-benchmark/results"]
+                
+        },
     ]
 }

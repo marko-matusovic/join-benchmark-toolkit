@@ -6,6 +6,7 @@ JOINS_IN_BLOCK = 4
 
 # ======== METHODS ===============================================
 
+
 def encode_all(
     features: AllFeatures, measurements: AllMeasurements
 ) -> tuple[list[list[float]], list[float]]:
@@ -18,13 +19,26 @@ def encode_all(
 
     return (X, Y)
 
-def encode_query(features, measurements, query) -> tuple[list[list[float]], list[float]] :
+# Encodes a query into a list of Xs and Ys. 
+# 
+# If no "jo" is given, it iterates through all possible join orders 
+# and encodes blocks of JOINS_IN_BLOCK into each X and Y.
+# If some "jo" is passed, it only encodes that join order.
+def encode_query(
+    features: AllFeatures, measurements: AllMeasurements, query: str, jo=None
+) -> tuple[list[list[float]], list[float]]:
     xs = []
     ys = []
-    for jo in set(features[query].keys()) & set(measurements[query].keys()):
+
+    jos = set(features[query].keys()) & set(measurements[query].keys())
+    if type(jo) == str:
+        jos = set([jo])
+    elif type(jo) == list or type(jo) == set:
+        jos = jos.intersection(set(jo))
+
+    for jo in jos:
         fs = features[query][jo]
         ms = measurements[query][jo]
-
         encoded_fs = [encode_feature(fs[j]) for j in jo.split(",")]
         encoded_ms = ms.joins
 
@@ -45,6 +59,7 @@ def encode_query(features, measurements, query) -> tuple[list[list[float]], list
             xs.append(x)
             ys.append(y)
     return (xs, ys)
+
 
 def encode_feature(features: Features | None = None) -> list[float]:
     if features == None:
