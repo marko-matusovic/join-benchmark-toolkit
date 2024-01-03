@@ -1,4 +1,11 @@
 {
+    // THIS IS A HARDWARE PROBING DATABASE
+    // IT IS USED TO GENERATE HARDWARE FEATURES FOR THE GPU COST MODEL
+    // DO NOT REMOVE
+    "hwp": {
+        "file_suffix": "csv",
+        "column_sep": ","
+    },
     // YOU CAN PUT CONFIGURATION FOR NEW DB SETS HERE
     // THE CONFIG SHOULD FOLLOW THE FORMAT BELOW
     // "default_db": {

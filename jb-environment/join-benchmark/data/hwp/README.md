@@ -1,4 +1,4 @@
-# Hardware Test Database
+# Hardware Probing Database
 
 The purpose of this dataset is to generate a set of dummy scenarios that test various hardware features of the system running the **Join Benchmark Framework**.
 
