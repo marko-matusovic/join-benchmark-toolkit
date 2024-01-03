@@ -18,9 +18,11 @@ TPermStats: TypeAlias = dict[str, Stats]
 
 if __name__ == "__main__":
     query = sys.argv[1]
-    hardware = sys.argv[2] # cpu or gpu
+    hardware = sys.argv[2]  # cpu or gpu
 
-    df_time = pd.read_csv(f"results/external_log/{hardware}/{query}.csv", sep=";", comment="/")
+    df_time = pd.read_csv(
+        f"results/external_log/{hardware}/{query}.csv", sep=";", comment="/"
+    )
 
     stats: TPermStats = {}
 
@@ -37,7 +39,7 @@ if __name__ == "__main__":
     df_approx = pd.read_csv(
         open(f"results/approx_time_mem/{query}.csv", "r"), comment="/", sep=";"
     )
-    scale = lambda x : (((x * 3) ** 4) * 3) # for over-fitting SSB plots
+    scale = lambda x: (((x * 3) ** 4) * 3)  # for over-fitting SSB plots
     cost_model_times: dict[str, float] = {
         df_approx["permutation"][i]: scale(df_approx["time_cost"][i])
         for i in range(len(df_approx.index))
@@ -49,7 +51,9 @@ if __name__ == "__main__":
     method = sys.argv[sys.argv.index("-m") + 1] if "-m" in sys.argv else "bin_width"
 
     if method == "bin_size":
-        real_times_keys_sorted = np.array(sorted(real_times, key=real_times.__getitem__))
+        real_times_keys_sorted = np.array(
+            sorted(real_times, key=real_times.__getitem__)
+        )
         bin_size = len(real_times_keys_sorted) / BINS
         for i, perm in enumerate(real_times_keys_sorted):
             perm_bins[int(i / bin_size)].append(perm)
@@ -61,12 +65,14 @@ if __name__ == "__main__":
         for perm, time in real_times.items():
             perm_bins[int((time - bin_min) / bin_width)].append(perm)
 
-    real_times_bins = [[real_times[perm] for perm in perm_bin] for perm_bin in perm_bins]
+    real_times_bins = [
+        [real_times[perm] for perm in perm_bin] for perm_bin in perm_bins
+    ]
     cost_model_times_bins = [
         [cost_model_times[perm] for perm in perm_bin] for perm_bin in perm_bins
     ]
-    
-    print(f'Stats for query: {query}')
+
+    print(f"Stats for query: {query}")
     # Print results
     for b in range(BINS):
         print("-" * 95)
@@ -81,18 +87,22 @@ if __name__ == "__main__":
         )
     print("-" * 95)
 
-    bin_lables = [f"Bin {i+1} [{len(perm_bins[i])}]" for i in range(BINS)] if BINS < len(real_times) else [bin[0] for bin in perm_bins]
+    bin_lables = (
+        [f"Bin {i+1} [{len(perm_bins[i])}]" for i in range(BINS)]
+        if BINS < len(real_times)
+        else [bin[0] for bin in perm_bins]
+    )
     data = {
         "measurement": real_times_bins,
         "cost model": cost_model_times_bins,
     }
-    
+
     x = np.arange(len(bin_lables))  # the label locations
     width = 0.4  # the width of the bars
     multiplier = 0.5
 
     fig, ax = plt.subplots(layout="constrained")
-    fig.set_size_inches(9,7)
+    fig.set_size_inches(9, 7)
 
     for attribute, bin_data in data.items():
         mean = [np.mean(bin) for bin in bin_data]

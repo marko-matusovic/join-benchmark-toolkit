@@ -15,7 +15,7 @@ from benchmark.operations.query_instructions_service import get_instruction_set
 
 
 class Join_Order_Cost_Model:
-    def __init__(self, db_path:str, db_name: str, query_name: str):
+    def __init__(self, db_path: str, db_name: str, query_name: str):
         instructions = get_time_mem_approx_instructions(db_path, db_name, query_name)
 
         # Load and initialize
@@ -47,19 +47,26 @@ class Join_Order_Cost_Model:
 
 
 class Join_Order_Problem(ElementwiseProblem):
-    def __init__(self, db_path:str, db_name: str, query_name: str):
+    def __init__(self, db_path: str, db_name: str, query_name: str):
         self.cost_model = Join_Order_Cost_Model(db_path, db_name, query_name)
         n_joins = len(self.cost_model.joins)
         xl = np.zeros(n_joins)
         xu = np.ones(n_joins) * (n_joins - 1)
-        super().__init__(elementwise=True, n_var=n_joins, n_obj=2,
-                         n_ieq_constr=0, n_eq_constr=0, xl=xl, xu=xu)
+        super().__init__(
+            elementwise=True,
+            n_var=n_joins,
+            n_obj=2,
+            n_ieq_constr=0,
+            n_eq_constr=0,
+            xl=xl,
+            xu=xu,
+        )
 
     def _evaluate(self, x, out, *args, **kwargs):
-        out['F'] = self.cost_model.evaluate(x)
+        out["F"] = self.cost_model.evaluate(x)
 
 
-def main(db_path:str, db_name: str, query_name: str):
+def main(db_path: str, db_name: str, query_name: str):
     problem = Join_Order_Problem(db_path, db_name, query_name)
 
     algorithm = NSGA2(
@@ -67,7 +74,7 @@ def main(db_path:str, db_name: str, query_name: str):
         sampling=PermutationRandomSampling(),
         mutation=InversionMutation(),
         crossover=OrderCrossover(),
-        eliminate_duplicates=True
+        eliminate_duplicates=True,
     )
 
     result = minimize(problem, algorithm, verbose=False)
@@ -77,8 +84,8 @@ def main(db_path:str, db_name: str, query_name: str):
     # plot.add(result.F, facecolor="none", edgecolor="red")
     # plot.show()
 
-    with open(f'results/optimization/{db_name}/{query_name}.csv', 'a') as file:
-        file.write(f'\\\\Timestamp {time.ctime()}\n')
-        file.write('permutation;time_cost;memory_sum_cost\n')
-        for (perm, [t, m]) in zip(result.X, result.F):
+    with open(f"results/optimization/{db_name}/{query_name}.csv", "a") as file:
+        file.write(f"\\\\Timestamp {time.ctime()}\n")
+        file.write("permutation;time_cost;memory_sum_cost\n")
+        for perm, [t, m] in zip(result.X, result.F):
             file.write(f'{",".join([p.__str__() for p in perm])};{t};{m}\n')

@@ -5,6 +5,7 @@ import sys
 
 COUNT = 10_000
 
+
 def main():
     if len(sys.argv) > 1:
         save(int(sys.argv[1]))
@@ -12,20 +13,23 @@ def main():
         for n in range(1, 21):
             save(n)
 
-def save(n:int):
-    print(f"working on {n}.")
-    perms = gen_all(n) if factorial(n-1) < COUNT else gen_seq(n)
-    with open(f'scripts/perms/{n}.csv', "w") as file:
-        for p in perms[:COUNT]:
-            file.write(",".join([str(i) for i in p])+'\n')
 
-def gen_all(n:int):
+def save(n: int):
+    print(f"working on {n}.")
+    perms = gen_all(n) if factorial(n - 1) < COUNT else gen_seq(n)
+    with open(f"scripts/perms/{n}.csv", "w") as file:
+        for p in perms[:COUNT]:
+            file.write(",".join([str(i) for i in p]) + "\n")
+
+
+def gen_all(n: int):
     perms = [list(p) for p in itertools.permutations(range(n))][1:]
     np.random.shuffle(perms)
     return [list(range(n))] + perms
 
-def gen_seq(n:int) -> list[list[int]]:
-    perms:list[list[int]] = [list(np.arange(n))]
+
+def gen_seq(n: int) -> list[list[int]]:
+    perms: list[list[int]] = [list(np.arange(n))]
     while len(perms) < COUNT:
         p = np.arange(n)
         np.random.shuffle(p)
@@ -34,5 +38,6 @@ def gen_seq(n:int) -> list[list[int]]:
         perms.append(list(p))
     return perms
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

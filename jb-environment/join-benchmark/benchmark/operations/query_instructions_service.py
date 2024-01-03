@@ -9,8 +9,13 @@ from benchmark.queries.job import q1b, q20a, q22a, q28a, q2a, q30a
 I = TypeVar("I")
 O = TypeVar("O")
 
+
 def get_instruction_set(
-    db_path:str, db_set:str, query: str, operation_class: Operations[I, O], manual_parse:bool=False
+    db_path: str,
+    db_set: str,
+    query: str,
+    operation_class: Operations[I, O],
+    manual_parse: bool = False,
 ) -> QueryInstructions[I, O]:
     if manual_parse:
         if db_set == "ssb":

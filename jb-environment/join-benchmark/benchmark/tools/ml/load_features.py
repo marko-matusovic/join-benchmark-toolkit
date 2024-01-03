@@ -4,6 +4,7 @@ import json
 import pandas as pd
 from benchmark.tools.ml.types import Features, TableFeatures, CrossFeatures, AllFeatures
 
+
 def load_features(db_set: str, training_set: int, res_path: str) -> AllFeatures:
     # Read the CSV file
     file = f"{res_path}/training_data/{db_set}/set_{training_set}_features.csv"

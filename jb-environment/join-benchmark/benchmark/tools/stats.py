@@ -79,7 +79,9 @@ def load_stats(
                         bounds=(low, high),
                     )
                     # Select ints and floats for histogram
-                    values = [v for v in df[column] if type(v) == int or type(v) == float]
+                    values = [
+                        v for v in df[column] if type(v) == int or type(v) == float
+                    ]
                     num_bins = bound(
                         HIST_MIN_NUM_BINS,  # min val
                         int(table_stats.length / HIST_MEAN_ITEMS_PER_BIN),  # calc val
@@ -89,7 +91,9 @@ def load_stats(
                     # If at least some % of values pass, make the histogram
                     # Otherwise, ignore it, as it wouldn't be appropriate representation
                     if HIST_MIN_ITEMS_COVERAGE * table_stats.length < len(values):
-                        table_stats.column[column] = table_stats.column[column]._replace(
+                        table_stats.column[column] = table_stats.column[
+                            column
+                        ]._replace(
                             hist=np.histogram(
                                 values,
                                 bins=num_bins,
@@ -100,9 +104,9 @@ def load_stats(
                     pass
                 if table_stats.column[column].hist == None:
                     try:
-                        table_stats.column[column] = table_stats.column[column]._replace(
-                            heat_map=dict(df.groupby(by=column).count().T.max())
-                        )
+                        table_stats.column[column] = table_stats.column[
+                            column
+                        ]._replace(heat_map=dict(df.groupby(by=column).count().T.max()))
                     except:
                         pass
 

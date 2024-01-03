@@ -3,6 +3,7 @@ from typing import Callable, Generic, TypeVar
 I = TypeVar("I")
 O = TypeVar("O")
 
+
 class QueryInstructions(Generic[I, O]):
     def __init__(
         self,

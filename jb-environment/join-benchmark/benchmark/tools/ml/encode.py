@@ -19,9 +19,10 @@ def encode_all(
 
     return (X, Y)
 
-# Encodes a query into a list of Xs and Ys. 
-# 
-# If no "jo" is given, it iterates through all possible join orders 
+
+# Encodes a query into a list of Xs and Ys.
+#
+# If no "jo" is given, it iterates through all possible join orders
 # and encodes blocks of JOINS_IN_BLOCK into each X and Y.
 # If some "jo" is passed, it only encodes that join order.
 def encode_query(

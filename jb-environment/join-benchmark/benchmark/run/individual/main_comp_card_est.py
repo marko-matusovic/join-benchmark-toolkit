@@ -10,16 +10,20 @@ from benchmark.operations.operations_costmodel import Data, Operations_CostModel
 from benchmark.operations.query_instructions_service import get_instruction_set
 
 
-def main(db_path:str, db_set: str, query: str, perm: list[int]|None=None):
+def main(db_path: str, db_set: str, query: str, perm: list[int] | None = None):
     path = f"results/comp_card_est/{db_set}/{query}.csv"
     if not exists(path):
         file = open(path, "a")
-        file.write('operation name;T1_name;T2_name;T1_real_len;T1_approx_len;T2_real_len;T2_approx_len;R_real_len;R_approx_len;real_selectivity;approx_selectivity\n')
+        file.write(
+            "operation name;T1_name;T2_name;T1_real_len;T1_approx_len;T2_real_len;T2_approx_len;R_real_len;R_approx_len;real_selectivity;approx_selectivity\n"
+        )
     else:
         file = open(path, "a")
 
     real_instructions = get_instruction_set(db_path, db_set, query, Operations_Real())
-    approx_instructions = get_instruction_set(db_path, db_set, query, Operations_CostModel())
+    approx_instructions = get_instruction_set(
+        db_path, db_set, query, Operations_CostModel()
+    )
 
     dfs = real_instructions.s1_init()
     data = approx_instructions.s1_init()
@@ -85,9 +89,7 @@ def measure(
         float(
             np.prod(
                 [
-                    np.prod(
-                        data_1.selects[tbl_orig] + [data_1.stats[tbl_orig].length]
-                    )
+                    np.prod(data_1.selects[tbl_orig] + [data_1.stats[tbl_orig].length])
                     for tbl_orig in cluster
                 ]
             )
@@ -118,7 +120,7 @@ def measure(
                 for i in [
                     name_operation,
                     name_1[0],
-                    name_1[1] if len(name_1)>1 else '',
+                    name_1[1] if len(name_1) > 1 else "",
                     real_len_1[0],
                     approx_len_1[0],
                     real_len_1[1],

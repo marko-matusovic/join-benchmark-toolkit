@@ -84,7 +84,7 @@ Res = tuple[float, float]
 
 def find_table(schema: TSchema, field_name: str) -> str:
     for table_name in schema:
-        full_field_name = f'{table_name}.{field_name}'
+        full_field_name = f"{table_name}.{field_name}"
         if field_name in schema[table_name] or full_field_name in schema[table_name]:
             return table_name
     print(f"ERROR: No table with field ({field_name}) found!")
@@ -111,10 +111,7 @@ def calc_age_mult(data: Data, table_name: str) -> float:
 def total_length_of_cluster(data: Data, cluster: set[str]) -> float:
     return float(
         np.prod(
-            [
-                np.prod([data.stats[tbl].length] + data.selects[tbl])
-                for tbl in cluster
-            ]
+            [np.prod([data.stats[tbl].length] + data.selects[tbl]) for tbl in cluster]
         )
     )
 
@@ -203,7 +200,9 @@ def new_history_tuple(data: Data, cluster_name: str):
 
 
 class Operations_CostModel(Operations[Data, Res]):
-    def from_tables(self, db_path:str, db_name: str, tables: list[str], aliases: list[str] = []):
+    def from_tables(
+        self, db_path: str, db_name: str, tables: list[str], aliases: list[str] = []
+    ):
         if len(aliases) != len(tables):
             aliases = tables
 
@@ -236,12 +235,12 @@ class Operations_CostModel(Operations[Data, Res]):
     def filter_field_eq(self, field_name: str, values: TVal | list[TVal]):
         if not isinstance(values, list):
             values = [values]
-            
+
         def filter(data: Data):
             table_name = find_table(data.schema, field_name)
-            short_field_name = field_name.split('.')[-1]
+            short_field_name = field_name.split(".")[-1]
             stats = data.stats[table_name]
-            
+
             # histogram
             # if stats.column[short_field_name].hist is not None :
             # (counts, bounds) = stats.column[short_field_name].hist
@@ -253,7 +252,7 @@ class Operations_CostModel(Operations[Data, Res]):
                     np.sum(
                         [
                             (heat_map[str(value)] if str(value) in heat_map else 0)
-                            for value in values # type: ignore
+                            for value in values  # type: ignore
                         ]
                     )
                     / stats.length
@@ -275,7 +274,7 @@ class Operations_CostModel(Operations[Data, Res]):
     def filter_field_ne(self, field_name: str, value: TVal):
         def filter(data: Data):
             table_name = find_table(data.schema, field_name)
-            short_field_name = field_name.split('.')[-1]
+            short_field_name = field_name.split(".")[-1]
             stats = data.stats[table_name]
 
             # histogram
@@ -307,7 +306,7 @@ class Operations_CostModel(Operations[Data, Res]):
     ):
         def filter(data: Data):
             table_name = find_table(data.schema, field_name)
-            short_field_name = field_name.split('.')[-1]
+            short_field_name = field_name.split(".")[-1]
             table_stats = data.stats[table_name]
             column_stats = table_stats.column[short_field_name]
 
@@ -461,8 +460,8 @@ class Operations_CostModel(Operations[Data, Res]):
             # ========== Logical Merging ==========
             table_name_1 = find_table(data.schema, field_name_1)
             table_name_2 = find_table(data.schema, field_name_2)
-            short_field_name_1 = field_name_1.split('.')[-1]
-            short_field_name_2 = field_name_2.split('.')[-1]
+            short_field_name_1 = field_name_1.split(".")[-1]
+            short_field_name_2 = field_name_2.split(".")[-1]
 
             cluster_name_1 = data.cluster_names[table_name_1]
             cluster_name_2 = data.cluster_names[table_name_2]

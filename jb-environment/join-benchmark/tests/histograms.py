@@ -117,7 +117,9 @@ class TestSum(unittest.TestCase):
         hist_2 = ([2, 2, 2, 2, 2], [1, 2, 3, 4, 5, 6])
         hist_1 = ([5], [1.5, 2.5])
 
-        selectivity = ((5.0 / 2 / 5) * (2.0 / 2 / 10)) + ((5.0 / 2 / 5) * (2.0 / 2 / 10))
+        selectivity = ((5.0 / 2 / 5) * (2.0 / 2 / 10)) + (
+            (5.0 / 2 / 5) * (2.0 / 2 / 10)
+        )
 
         selectivity = Operations_CostModel().sel_join_hist(hist_1, hist_2)
         self.assertEqual(selectivity, selectivity)

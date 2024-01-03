@@ -19,7 +19,7 @@ class Data(NamedTuple):
 
 def find_table(schema: TSchema, field_name: str) -> str:
     for table_name in schema:
-        full_field_name = f'{table_name}.{field_name}'
+        full_field_name = f"{table_name}.{field_name}"
         if field_name in schema[table_name] or full_field_name in schema[table_name]:
             return table_name
     print(f"ERROR: No table with field ({field_name}) found!")
@@ -30,7 +30,9 @@ def find_table(schema: TSchema, field_name: str) -> str:
 
 
 class Operations_ExecutionTree(Operations[Data, None]):
-    def from_tables(self, db_path:str, db_name: str, tables: list[str], aliases: list[str] = []):
+    def from_tables(
+        self, db_path: str, db_name: str, tables: list[str], aliases: list[str] = []
+    ):
         if len(aliases) != len(tables):
             aliases = tables
 

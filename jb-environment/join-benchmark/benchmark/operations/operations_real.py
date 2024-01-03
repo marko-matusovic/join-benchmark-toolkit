@@ -7,7 +7,9 @@ TDFs = dict[str, DataFrame]
 
 
 class Operations_Real(Operations[TDFs, None]):
-    def from_tables(self, db_path:str, db_name: str, tables: list[str], aliases: list[str] = []):
+    def from_tables(
+        self, db_path: str, db_name: str, tables: list[str], aliases: list[str] = []
+    ):
         def load() -> dict[str, DataFrame]:
             dfs = load_named_tables(db_path, db_name, tables, aliases)
             return {f"({tbl})": dfs[tbl] for tbl in dfs}
@@ -25,7 +27,9 @@ class Operations_Real(Operations[TDFs, None]):
             table_2 = dfs[table_name_2]
             del dfs[table_name_1]
             del dfs[table_name_2]
-            dfs[f"({table_name_1}X{table_name_2}ON({field_name_1})=({field_name_2}))"] = table_1.merge(
+            dfs[
+                f"({table_name_1}X{table_name_2}ON({field_name_1})=({field_name_2}))"
+            ] = table_1.merge(
                 table_2, how="inner", left_on=field_name_1, right_on=field_name_2
             )
 
@@ -44,6 +48,7 @@ class Operations_Real(Operations[TDFs, None]):
     def filter_field_eq(self, field_name_in: str, values: TVal | list[TVal]):
         if not isinstance(values, list):
             values = [values]
+
         def filter(dfs: TDFs) -> None:
             (table_name, field_name) = self.find_names(dfs, field_name_in)
             table = dfs[table_name]
@@ -161,12 +166,12 @@ class Operations_Real(Operations[TDFs, None]):
             exit(1)
 
     # PRIVATE
-    def find_names(self, dfs: TDFs, lookup_field: str) -> tuple[str,str]:
+    def find_names(self, dfs: TDFs, lookup_field: str) -> tuple[str, str]:
         for table in dfs:
             if lookup_field in dfs[table]:
                 return (table, lookup_field)
             for field in dfs[table]:
-                if lookup_field == field[field.rfind(".")+1:]:
+                if lookup_field == field[field.rfind(".") + 1 :]:
                     return (table, field)
         print("ERROR: No table found for field '{}'".format(lookup_field))
         exit(1)

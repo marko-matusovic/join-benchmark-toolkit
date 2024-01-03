@@ -1,16 +1,17 @@
 from abc import ABC, abstractmethod
 from typing import Callable, Generic, TypeAlias, TypeVar
 
-I = TypeVar('I')
-O = TypeVar('O')
+I = TypeVar("I")
+O = TypeVar("O")
 
 TVal: TypeAlias = str | int | float | bool
 
 
 class Operations(ABC, Generic[I, O]):
-
     @abstractmethod
-    def from_tables(self, db_path:str, db_name: str, tables: list[str], aliases: list[str] = []) -> Callable[[], I]:
+    def from_tables(
+        self, db_path: str, db_name: str, tables: list[str], aliases: list[str] = []
+    ) -> Callable[[], I]:
         ...
 
     @abstractmethod
@@ -18,7 +19,9 @@ class Operations(ABC, Generic[I, O]):
         ...
 
     @abstractmethod
-    def filter_field_eq(self, field_name: str, values: TVal | list[TVal]) -> Callable[[I], O]:
+    def filter_field_eq(
+        self, field_name: str, values: TVal | list[TVal]
+    ) -> Callable[[I], O]:
         ...
 
     @abstractmethod
@@ -49,17 +52,17 @@ class Operations(ABC, Generic[I, O]):
     def filter_field_not_like(self, field_name: str, value: str) -> Callable[[I], O]:
         ...
 
-    def get_filter(self, op:str):
+    def get_filter(self, op: str):
         ops = {
-            'NOT LIKE': self.filter_field_not_like,
-            'LIKE': self.filter_field_like,
-            'IN': self.filter_field_eq,
-            '=': self.filter_field_eq,
-            '!=': self.filter_field_ne,
-            '<=': self.filter_field_le,
-            '<': self.filter_field_lt,
-            '>': self.filter_field_gt,
-            '>=': self.filter_field_ge,
+            "NOT LIKE": self.filter_field_not_like,
+            "LIKE": self.filter_field_like,
+            "IN": self.filter_field_eq,
+            "=": self.filter_field_eq,
+            "!=": self.filter_field_ne,
+            "<=": self.filter_field_le,
+            "<": self.filter_field_lt,
+            ">": self.filter_field_gt,
+            ">=": self.filter_field_ge,
         }
         if op not in ops:
             print(f"ERROR: Unknown operator '{op}' found!")

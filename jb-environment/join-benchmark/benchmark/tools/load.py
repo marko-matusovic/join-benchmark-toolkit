@@ -5,9 +5,12 @@ from benchmark.engine.engine import DataFrame, get_engine
 from benchmark.tools.schema_parser import get_schema
 
 DB_NAME: TypeAlias = str
+
+
 class DB_CONFIG(NamedTuple):
     file_suffix: str
     column_sep: str
+
 
 def load_db_config() -> dict[DB_NAME, DB_CONFIG]:
     file_path = (
@@ -22,6 +25,7 @@ def load_db_config() -> dict[DB_NAME, DB_CONFIG]:
         ]
         config_dict = json.loads(" ".join(lines))
         return {db_name: DB_CONFIG(**config) for db_name, config in config_dict.items()}
+
 
 def load_named_tables(
     db_path: str, db_name: str, table_names: list[str], table_aliases: list[str] = []
@@ -43,6 +47,7 @@ def load_named_tables(
         )
 
     return dfs
+
 
 def load_table(db_path: str, db_name: str, table_name: str) -> DataFrame:
     db_config = load_db_config()
