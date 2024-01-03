@@ -3,7 +3,7 @@ from benchmark.operations.query_instructions_service import get_instruction_set
 from time import time;
 
 
-def main(db_path:str, db_set:str, query:str, perm:list[int]|None=None, skip_joins=False, manual_parse=False, log_file='', log_head=''):
+def main(db_path:str, db_set:str, query:str, perm:list[int]|None=None, skip_joins=False, manual_parse=False, log_file='', log_head='', save_res=False):
     print(f'Running {db_set}/{query} with perm {perm}')
     
     start = time()
@@ -43,6 +43,9 @@ def main(db_path:str, db_set:str, query:str, perm:list[int]|None=None, skip_join
         if log_file != '':
             with open(log_file, 'a') as file_out:
                 file_out.write(f'{log_head};200;{print_times(start, parse, overhead, filters, joins)}\n')
+        if save_res:
+            print("Saving result to CSV")
+            dfs[tree].to_csv("result.tmp.csv")
     else:
         print('Failed execution')
         if log_file != '':

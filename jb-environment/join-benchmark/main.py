@@ -25,7 +25,7 @@ def named_arg(arg: str, count: int) -> list[str]:
         print(f"ERROR: named argument {arg} must follow with at least {count} values!")
         exit(1)
 
-    return sys.argv[arg_idx+1 : arg_idx+1 + count]
+    return sys.argv[arg_idx + 1 : arg_idx + 1 + count]
 
 
 # This program accepts a number of positional arguments, and optional arguments.
@@ -81,9 +81,12 @@ if __name__ == "__main__":
     #     opt arg --log-time [filename] [start of log]: opens the log file and prints the start of the log and measures times of each operation such as filters and joins
     #     opt arg --log-time-mem [filename] [start of log]: opens the log file and prints the start of the log and measures times of each operation such as filters and joins
     elif run_config == "run":
-        
-        perm = [int(i) for i in named_arg('--jo', 1)[0].split(",")] if '--jo' in sys.argv else None
-        
+        perm = (
+            [int(i) for i in named_arg("--jo", 1)[0].split(",")]
+            if "--jo" in sys.argv
+            else None
+        )
+
         skip_joins = True if "--skip-joins" in sys.argv else False
 
         if "--log-time" in sys.argv and "--log-time-mem" in sys.argv:
@@ -103,6 +106,7 @@ if __name__ == "__main__":
                 manual_parse,
                 log_file,
                 log_head,
+                "--save" in sys.argv,
             )
 
         elif "--log-time-mem" in sys.argv:
@@ -120,19 +124,29 @@ if __name__ == "__main__":
 
         # No logging inside python
         else:
-            main_run.main(db_path, db_set, query, perm, skip_joins, manual_parse)
-    
-    
+            main_run.main(
+                db_path,
+                db_set,
+                query,
+                perm,
+                skip_joins,
+                manual_parse,
+                save_res="--save" in sys.argv,
+            )
+
     # Generates a list of features for training
     elif run_config == "features":
-        
-        perm = [int(i) for i in named_arg('--jo', 1)[0].split(",")] if '--jo' in sys.argv else None
-        
+        perm = (
+            [int(i) for i in named_arg("--jo", 1)[0].split(",")]
+            if "--jo" in sys.argv
+            else None
+        )
+
         log_file = None
-        log_head = ''
+        log_head = ""
         if "--log" in sys.argv:
             [log_file, log_head] = named_arg("--log", 2)
-        
+
         main_features.main(
             db_path,
             db_set,
@@ -149,7 +163,11 @@ if __name__ == "__main__":
         if query == None:
             print("No query specified")
             exit(1)
-        perm = [int(i) for i in named_arg('--jo', 1)[0].split(",")] if '--jo' in sys.argv else None
+        perm = (
+            [int(i) for i in named_arg("--jo", 1)[0].split(",")]
+            if "--jo" in sys.argv
+            else None
+        )
         main_approx_time_mem.main(db_path, db_set, query, perm)
 
     # optim_nsga_ii - use the nsga_ii optimization algorithm and the time_mem cost model to find the pareto front
@@ -168,18 +186,24 @@ if __name__ == "__main__":
         if query == None:
             print("No query specified")
             exit(1)
-        perm = [int(i) for i in named_arg('--jo', 1)[0].split(",")] if '--jo' in sys.argv else None
+        perm = (
+            [int(i) for i in named_arg("--jo", 1)[0].split(",")]
+            if "--jo" in sys.argv
+            else None
+        )
         main_comp_card_est.main(db_path, db_set, query, perm)
-        
+
     # start training a model
     #   2rd arg: a comma separated list of db_set names to train on.
     #   3rd arg: id of the training set [integer]
     elif run_config == "train":
-        db_sets = [db_set.strip() for db_set in sys.argv[2].split(',')]
+        db_sets = [db_set.strip() for db_set in sys.argv[2].split(",")]
         training_set = int(sys.argv[3])
-        res_path = None if '--res-path' not in sys.argv else named_arg('--res-path',1)[0]
+        res_path = (
+            None if "--res-path" not in sys.argv else named_arg("--res-path", 1)[0]
+        )
         main_train_gbdt.main(db_sets, training_set, res_path)
-        
+
     # Evaluate a trained ML model
     #   2rd arg: name of the db_set to be evaluated
     #   3rd arg: id of the training set [integer]
@@ -188,7 +212,9 @@ if __name__ == "__main__":
         db_sets = sys.argv[2]
         training_set = int(sys.argv[3])
         model_name = sys.argv[4]
-        res_path = None if '--res-path' not in sys.argv else named_arg('--res-path',1)[0]
+        res_path = (
+            None if "--res-path" not in sys.argv else named_arg("--res-path", 1)[0]
+        )
         main_evaluate_model.main(db_set, training_set, model_name, res_path)
 
     else:
