@@ -21,6 +21,7 @@ keywords = [
     "GROUP BY",
     "ORDER BY",
     "BETWEEN",
+    "SORT",
 ]
 
 
@@ -72,7 +73,6 @@ def split_parsing_groups(query_str: str):
     if (
         query_str.lower().count("select") != 1
         or query_str.lower().count("from") != 1
-        or query_str.lower().count("where") != 1
         or query_str.lower().count(" cast(") != 0
         or query_str.lower().count(" join ") != 0
     ):
@@ -80,6 +80,22 @@ def split_parsing_groups(query_str: str):
         exit(1)
 
     query_str = query_str.strip(" ;")
+
+    # get rid of "LIMIT", "GROUP BY", "ORDER BY", "SORT"
+    end = min(
+        [
+            x
+            for x in [
+                len(query_str),
+                query_str.find("LIMIT"),
+                query_str.find("GROUP BY"),
+                query_str.find("ORDER BY"),
+                query_str.find("SORT"),
+            ]
+            if x != -1
+        ]
+    )
+    query_str = query_str[:end]
 
     # UPPERCASE for all keywords
     query_str = f" {query_str} "
@@ -111,21 +127,6 @@ def split_parsing_groups(query_str: str):
     (from_clause, where_keyword, where_clause) = rest.partition("WHERE")
     if where_keyword == "":
         where_clause = ""
-
-    # get rid of "LIMIT", "GROUP BY", "ORDER BY"
-    end = min(
-        [
-            x
-            for x in [
-                len(where_clause),
-                where_clause.find("LIMIT"),
-                where_clause.find("GROUP BY"),
-                where_clause.find("ORDER BY"),
-            ]
-            if x != -1
-        ]
-    )
-    where_clause = where_clause[:end]
 
     return (select_clause.strip(), from_clause.strip(), where_clause.strip())
 
@@ -162,6 +163,8 @@ def parse_where_clause(
     while where_clause_i < len(where_clause_parts):
         clause = where_clause_parts[where_clause_i].strip("() ")
         where_clause_i += 1
+        if clause == "":
+            continue
 
         if clause.find("OR") != -1:
             # Currently only (clause1 OR clause2 OR ... OR clauseX) is supported

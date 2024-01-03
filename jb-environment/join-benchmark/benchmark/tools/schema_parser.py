@@ -1,4 +1,3 @@
-import json
 from os.path import exists
 import re
 
@@ -40,7 +39,7 @@ def load_from_file(db_path:str) -> TSchema:
         i = 0
         j = min(columns.find(" "), columns.find(","))
         while True:
-            if j == "-1" :
+            if j == -1 :
                 break
             
             token = columns[i:j].strip()
@@ -62,10 +61,10 @@ def load_from_file(db_path:str) -> TSchema:
             else:
                 i = next_col + 1
                 j = columns.find(" ", i)
-    
+
     return schema
 
-# # ===== CACHING MIGHT PRODUCE INCONSISTENT MEASUREMENTS ===== 
+# # ===== CACHING MIGHT PRODUCE INCONSISTENT MEASUREMENTS =====
 # def load_from_cache(db_path:str, db_name:str) -> TSchema:
 #     with open(f"{db_path}/schema_cached.json", "r") as fin:
 #         return json.load(fin)
