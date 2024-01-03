@@ -8,13 +8,11 @@ The directory `/scripts` contains scripts that generate files in the `/tables` d
 
 Each table has the following columns: `| id | value | some_key |`.
 
-| Field      | Size [Bytes] |
-| ---------- | ------------ |
-| `id`       | 32           |
-| `value`    | 256          |
-| `some_key` | 32           |
-
-> We encode the table in UTF-8, with [a-zA-Z0-9] characters, thus each character is 8 bits = 1byte, so the number of bytes is the same as the number of characters
+| Field      | Data Type |
+| ---------- | --------- |
+| `id`       | int       |
+| `value`    | char(64)  |
+| `some_key` | int       |
 
 Fields `id` and `value` are unique, `some_key` can have duplicates and is sometimes used to reference some other table.
 
@@ -33,9 +31,9 @@ This section describes the different test scenarios that are generated:
 
 In addition, we test each scenario at a scale:
 
-- **small**: 100 rows
-- **medium**: 10 000 rows
-- **large**: 1 000 000 rows
+- **small**: 1 000 rows
+- **medium**: 100 000 rows
+- **large**: 10 000 000 rows
 
 Each query (in `/queries` directory) uses one scenario and one scale. The query name follows the following format: `query_{scenario}_{scale}.sql`
 
