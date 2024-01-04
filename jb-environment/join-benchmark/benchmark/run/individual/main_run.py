@@ -79,7 +79,7 @@ def print_times(
     filters: list[float],
     joins: list[float],
 ):
-    return f"{parse - start};{overhead - parse};{format_times(overhead, filters)};{format_times(filters[-1], joins)}"
+    return f"{parse - start};{overhead - parse};{format_times(overhead, filters)};{format_times(([overhead] + filters)[-1], joins)}"
 
 
 def format_times(fst: float, arr: list[float]):
