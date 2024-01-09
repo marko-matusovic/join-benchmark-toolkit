@@ -7,7 +7,6 @@
 **/__pycache__
 **/.venv
 **/.classpath
-**/.dockerignore
 **/.env
 **/.vs
 **/*.*proj.user
