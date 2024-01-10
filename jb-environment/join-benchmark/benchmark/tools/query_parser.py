@@ -80,6 +80,16 @@ def split_parsing_groups(query_str: str):
         exit(1)
 
     query_str = query_str.strip(" ;")
+    
+    # UPPERCASE for all keywords
+    query_str = f" {query_str} "
+    for kw in keywords:
+        query_str = re.sub(
+            f"\\s+{kw}\\s+",
+            f" {kw} ",
+            query_str,
+            flags=RegexFlag.IGNORECASE,
+        )
 
     # get rid of "LIMIT", "GROUP BY", "ORDER BY", "SORT"
     end = min(
@@ -95,18 +105,7 @@ def split_parsing_groups(query_str: str):
             if x != -1
         ]
     )
-    query_str = query_str[:end]
-
-    # UPPERCASE for all keywords
-    query_str = f" {query_str} "
-    for kw in keywords:
-        query_str = re.sub(
-            f"\\s+{kw}\\s+",
-            f" {kw} ",
-            query_str,
-            flags=RegexFlag.IGNORECASE,
-        )
-    query_str = query_str.strip()
+    query_str = query_str[:end].strip()
 
     # Give operations some space
     for op in ["=", "!=", ">=", "<=", ","]:
