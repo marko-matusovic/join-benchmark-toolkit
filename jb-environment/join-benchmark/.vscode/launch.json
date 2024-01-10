@@ -1,0 +1,13 @@
+{
+    "configurations": [
+        {
+            "name": "RUN",
+            "type": "python",
+            "request": "launch",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "program": "main.py",
+            "args": ["run", "job/3a"]
+        }
+    ]
+}
