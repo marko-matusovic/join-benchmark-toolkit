@@ -55,6 +55,7 @@ function ssb() {
     rm -rf tables
     mkdir tables
     mv $PROJECT_DIR/ssb-dbgen/*.tbl tables
+    mv tables/date.tbl tables/ddate.tbl
     echo "scale: $SCALE" > tables/scale.txt
 }
 
