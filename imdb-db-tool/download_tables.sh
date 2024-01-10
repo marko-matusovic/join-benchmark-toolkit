@@ -19,3 +19,7 @@ sed -i 's/\\,//g' tables/*.csv
 # The command above works on Linux, on MacOS you should use the one below:
 # sed -i '' 's/\\"//g' tables/*.csv
 # sed -i '' 's/\\,//g' tables/*.csv
+
+# remove annoying lines
+sed -i '8718195d' tables/movie_info.csv
+sed -i '9810425d' tables/movie_info.csv
