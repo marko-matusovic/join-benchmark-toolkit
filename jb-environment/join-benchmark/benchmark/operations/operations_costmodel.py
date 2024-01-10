@@ -91,14 +91,20 @@ def find_table(schema: TSchema, field_name: str) -> str:
     exit(1)
 
 
-def calc_age_mult(data: Data, table_name: str) -> float:
+def calc_age_mem(data: Data, table_name: str) -> float:
     if table_name not in data.history:
         return CACHE_MISS_MULTIPLIER
 
     idx = data.history.index(table_name)
-    mem = 0
+    mem = 0.0
     for i in range(0, idx + 1):
         mem += data.history[i].length * data.history[i].row_size
+
+    return mem
+
+
+def calc_age_mult(data: Data, table_name: str) -> float:
+    mem = calc_age_mem(data, table_name)
 
     if mem < CACHE_HIT_GUARANTEE:
         return CACHE_HIT_MULTIPLIER
