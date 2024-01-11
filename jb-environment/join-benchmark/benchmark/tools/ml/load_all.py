@@ -1,12 +1,12 @@
 from benchmark.tools.ml.load_measurements import load_measurements
-from benchmark.tools.ml.load_features import load_features
-from benchmark.tools.ml.types import AllFeatures, AllMeasurements
+from benchmark.tools.ml.load_features import load_data_features
+from benchmark.tools.ml.types import AllDataFeatures, AllMeasurements
 
 
 def load_all(
     db_set: str, training_set: int, res_path: str
-) -> tuple[AllFeatures, AllMeasurements]:
-    features = load_features(db_set, training_set, res_path)
+) -> tuple[AllDataFeatures, AllMeasurements]:
+    features = load_data_features(db_set, training_set, res_path)
     measurements = load_measurements(db_set, training_set, res_path)
 
     # Find the intersection

@@ -37,7 +37,7 @@ do
         python3 main.py run hwp/$QUERY --$DEVICE --log-time $RES_FILE $LOG_START $OTHER_ARGS
         RES=$?
         if [[ $RES -ne 0 ]]; then
-            echo "$LOG_START;$RES;;;;;;#FAILED" >> $RES_FILE
+            echo "$LOG_START;$RES;;;;#FAILED" >> $RES_FILE
         fi;
     done
 done

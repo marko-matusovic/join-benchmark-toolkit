@@ -80,7 +80,7 @@ def split_parsing_groups(query_str: str):
         exit(1)
 
     query_str = query_str.strip(" ;")
-    
+
     # UPPERCASE for all keywords
     query_str = f" {query_str} "
     for kw in keywords:

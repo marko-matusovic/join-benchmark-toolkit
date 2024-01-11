@@ -1,4 +1,4 @@
-from benchmark.tools.ml.types import AllFeatures, AllMeasurements, Features
+from benchmark.tools.ml.types import AllDataFeatures, AllMeasurements, DataFeatures
 
 # ======== TYPES =================================================
 
@@ -8,12 +8,12 @@ JOINS_IN_BLOCK = 4
 
 
 def encode_all(
-    features: AllFeatures, measurements: AllMeasurements
+    data_features: AllDataFeatures, hw_features: list[float], measurements: AllMeasurements
 ) -> tuple[list[list[float]], list[float]]:
     X: list[list[float]] = []
     Y: list[float] = []
-    for query in set(features.keys()) & set(measurements.keys()):
-        (xs, ys) = encode_query(features, measurements, query)
+    for query in set(data_features.keys()) & set(measurements.keys()):
+        (xs, ys) = encode_query(data_features, hw_features, measurements, query)
         X += xs
         Y += ys
 
@@ -26,7 +26,7 @@ def encode_all(
 # and encodes blocks of JOINS_IN_BLOCK into each X and Y.
 # If some "jo" is passed, it only encodes that join order.
 def encode_query(
-    features: AllFeatures, measurements: AllMeasurements, query: str, jo=None
+    features: AllDataFeatures, measurements: AllMeasurements, query: str, jo=None
 ) -> tuple[list[list[float]], list[float]]:
     xs = []
     ys = []
@@ -62,7 +62,7 @@ def encode_query(
     return (xs, ys)
 
 
-def encode_feature(features: Features | None = None) -> list[float]:
+def encode_feature(features: DataFeatures | None = None) -> list[float]:
     if features == None:
         return [0.0] * 9
     else:

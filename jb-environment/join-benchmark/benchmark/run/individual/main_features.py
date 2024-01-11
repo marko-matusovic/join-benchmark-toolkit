@@ -1,5 +1,8 @@
 import json
+from math import nan
+import math
 from benchmark.tools.query_parser import load_query, get_joins
+from benchmark.tools.ml.types import TableFeatures, CrossFeatures, DataFeatures
 from benchmark.operations.operations_costmodel import (
     Data,
     Operations_CostModel,
@@ -48,50 +51,48 @@ def main(
             data, field_1, field_2, features_1, features_2
         )
 
-        features_all = json.dumps(
-            {"left": features_1, "right": features_2, "mix": features_mix}
-        )
+        features_all = json.dumps(DataFeatures(features_1, features_2, features_mix))
 
         with open(log_file, "a") as fout:
             fout.write(f"{log_head};{p};{features_all}\n")
 
 
-def collect_features(data: Data, field_name: str):
+def collect_features(data: Data, field_name: str) -> TableFeatures:
     table = find_table(data.schema, field_name)
     short_field_name = field_name.split(".")[-1]
 
     cluster = data.clusters[table]
-
-    features = {
-        "length": total_length_of_cluster(data, cluster),
-        "unique": data.stats[table].column[short_field_name].unique,
-        "id_size": data.stats[table].column[short_field_name].dtype,
-        "row_size": float(
-            sum([v.dtype for tbl in cluster for v in data.stats[tbl].column.values()])
-        ),
-        "cache_age": calc_age_mem(data, table),
-        "cluster_size": float(len(cluster)),
-        "bounds_low": 0.0,
-        "bounds_high": 0.0,
-        "bounds_range": 0.0,
-    }
     bounds = data.stats[table].column[short_field_name].bounds
     if bounds != None:
-        features = {
-            **features,
-            "bounds_low": float(bounds[0]),
-            "bounds_high": float(bounds[1]),
-            "bounds_range": float(abs(bounds[1] - bounds[0])),
-        }
-
-    assert len(features) == 9
-
-    return features
+        bounds_low = float(bounds[0])
+        bounds_high = float(bounds[1])
+        bounds_range = float(abs(bounds[1] - bounds[0]))
+    else:
+        bounds_low = math.nan
+        bounds_high = math.nan
+        bounds_range = math.nan
+    return TableFeatures(
+        length=total_length_of_cluster(data, cluster),
+        unique=data.stats[table].column[short_field_name].unique,
+        id_size=data.stats[table].column[short_field_name].dtype,
+        row_size=float(
+            sum([v.dtype for tbl in cluster for v in data.stats[tbl].column.values()])
+        ),
+        cache_age=calc_age_mem(data, table),
+        cluster_size=float(len(cluster)),
+        bounds_low=bounds_low,
+        bounds_high=bounds_high,
+        bounds_range=bounds_range,
+    )
 
 
 def collect_mix_features(
-    data: Data, field_1: str, field_2: str, features_1, features_2
-):
+    data: Data,
+    field_1: str,
+    field_2: str,
+    features_1: TableFeatures,
+    features_2: TableFeatures,
+) -> CrossFeatures:
     table_1 = find_table(data.schema, field_1)
     table_2 = find_table(data.schema, field_2)
     # short_field_1 = field_1.split(".")[-1]
@@ -100,22 +101,22 @@ def collect_mix_features(
     cluster = data.clusters[table_1]
     assert cluster == data.clusters[table_2]
 
-    len_pos_max = float(features_1["length"]) * float(features_2["length"])
-    len_unq_max = float(features_1["unique"]) * float(features_2["unique"])
+    len_pos_max = float(features_1.length) * float(features_2.length)
+    len_unq_max = float(features_1.unique) * float(features_2.unique)
     len_res = total_length_of_cluster(data, cluster)
 
-    return {
-        "len_res": len_res,
-        "len_possible_max": len_pos_max,
-        "len_unique_max": len_unq_max,
-        "selectivity": len_res / len_pos_max,
-        "cluster_size": float(len(cluster)),
+    return CrossFeatures(
+        len_res=len_res,
+        len_possible_max=len_pos_max,
+        len_unique_max=len_unq_max,
+        selectivity=len_res / len_pos_max,
+        cluster_size=float(len(cluster)),
         # overlap == 0 if res cluster size = cluster_size of left + cluster_size of right
         # overlap == 1 if res cluster size = max(cluster_size of left, cluster_size of right)
-        "cluster_overlap": 1.0
-        * (features_1["cluster_size"] + features_2["cluster_size"] - len(cluster))
-        / min(float(features_1["cluster_size"]), float(features_2["cluster_size"])),
-    }
+        cluster_overlap=1.0
+        * (features_1.cluster_size + features_2.cluster_size - len(cluster))
+        / min(float(features_1.cluster_size), float(features_2.cluster_size)),
+    )
 
 
 # # Cluster Overlap:
