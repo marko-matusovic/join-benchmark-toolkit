@@ -20,9 +20,10 @@ def main(
     y = []
     ws = []
 
+    hw_features = load_hw_features(hw_name, res_path)
+    
     for db_set in db_sets:
         (features, measurements) = load_all(db_set, training_set, res_path)
-        hw_features = load_hw_features(hw_name, res_path)
         (Xi, yi) = encode_all(features, hw_features, measurements)
         X += Xi
         y += yi

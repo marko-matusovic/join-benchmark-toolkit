@@ -196,26 +196,30 @@ if __name__ == "__main__":
     # start training a model
     #   2rd arg: a comma separated list of db_set names to train on.
     #   3rd arg: id of the training set [integer]
+    #   4th arg: name of the hardware for hw features
     elif run_config == "train":
         db_sets = [db_set.strip() for db_set in sys.argv[2].split(",")]
         training_set = int(sys.argv[3])
+        hw_name = sys.argv[4]
         res_path = (
             None if "--res-path" not in sys.argv else named_arg("--res-path", 1)[0]
         )
-        main_train_gbdt.main(db_sets, training_set, res_path)
+        main_train_gbdt.main(db_sets, training_set, hw_name, res_path)
 
     # Evaluate a trained ML model
     #   2rd arg: name of the db_set to be evaluated
     #   3rd arg: id of the training set [integer]
-    #   4th arg: name of the ML model
+    #   4th arg: name of the hardware for hw features
+    #   5th arg: name of the ML model
     elif run_config == "model-eval":
         db_sets = sys.argv[2]
         training_set = int(sys.argv[3])
-        model_name = sys.argv[4]
+        hw_name = sys.argv[4]
+        model_name = sys.argv[5]
         res_path = (
             None if "--res-path" not in sys.argv else named_arg("--res-path", 1)[0]
         )
-        main_evaluate_model.main(db_set, training_set, model_name, res_path)
+        main_evaluate_model.main(db_set, training_set, model_name, hw_name, res_path)
 
     else:
         print("Selected RUN configuration not specified.")
