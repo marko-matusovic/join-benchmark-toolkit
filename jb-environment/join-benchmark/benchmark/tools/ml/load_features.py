@@ -46,7 +46,7 @@ def load_data_features(
         n1 = str(row["DB_SET/QUERY"])
         n2 = str(row["JOIN_PERMUTATION"])
         n3 = str(int(row["JOIN_ID"]))
-        
+
         if n1 not in all_features:
             all_features[n1] = {}
         if n2 not in all_features[n1]:

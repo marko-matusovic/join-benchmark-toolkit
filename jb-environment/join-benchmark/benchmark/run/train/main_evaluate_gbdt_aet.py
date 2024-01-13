@@ -1,7 +1,7 @@
 import math
 import numpy as np
 import pandas as pd
-from benchmark.tools.ml.encode import encode_query
+from benchmark.tools.ml.encode import encode_query_aet
 from benchmark.tools.ml.load_all import load_all
 from benchmark.tools.ml.load_features import load_hw_features
 from sklearn.ensemble import GradientBoostingRegressor
@@ -25,6 +25,8 @@ def main(
         open(f"{res_path}/models/{model_name}.pickle", "rb")
     )
 
+    join_in_block = int(model_name.split("_")[2][2:])
+
     # load the evaluation set
     (data_features, measurements) = load_all(db_set, training_set, res_path)
     hw_features = load_hw_features(hw_name, res_path)
@@ -38,12 +40,12 @@ def main(
         os.makedirs(dir_path)
 
     times = {}
-    avg_cor=[]
+    avg_cor = []
     for query in data_features:
         times[query] = {}
         for jo in set(data_features[query].keys()) & set(measurements[query].keys()):
-            (X, y_real) = encode_query(
-                data_features, hw_features, measurements, query, jo
+            (X, y_real) = encode_query_aet(
+                data_features, hw_features, measurements, query, join_in_block, jo
             )
 
             y_predict = model.predict(X)  # type: ignore
@@ -93,7 +95,7 @@ def main(
             verticalalignment="top",
             transform=ax.transAxes,
         )
-        
+
         # Calculate the correlation and print it
         s1 = pd.Series(real_values, index=range(len(sorted_keys)))
         s2 = pd.Series(pred_values, index=range(len(sorted_keys)))
@@ -116,7 +118,7 @@ def main(
         plt.legend()
         plt.savefig(f"{res_path}/figs/model-eval/{model_name}/" + query + ".png")
         plt.close()
-        
+
         print(f"Query: {query:12} #jo: {len(times[query]):3}  corr: {correlation:10.6}")
 
     print(f"Average correlation: {np.mean(avg_cor)}")

@@ -10,7 +10,7 @@ from benchmark.run.individual import (
     main_run,
     main_features,
 )
-from benchmark.run.train import main_train_gbdt, main_evaluate_model
+from benchmark.run.train import main_train_gbdt_aet, main_evaluate_gbdt_aet
 from benchmark.engine.engine import set_engine
 from benchmark.tools.schema_parser import get_schema
 
@@ -197,21 +197,31 @@ if __name__ == "__main__":
     #   2rd arg: a comma separated list of db_set names to train on.
     #   3rd arg: id of the training set [integer]
     #   4th arg: name of the hardware for hw features
-    elif run_config == "train":
+    #   opt arg: --joins-in-block {{int}} the number of joins in a single block
+    #   opt arg: --res-path {{str}} path to the res dir
+    elif run_config == "train-aet":
         db_sets = [db_set.strip() for db_set in sys.argv[2].split(",")]
         training_set = int(sys.argv[3])
         hw_name = sys.argv[4]
         res_path = (
             None if "--res-path" not in sys.argv else named_arg("--res-path", 1)[0]
         )
-        main_train_gbdt.main(db_sets, training_set, hw_name, res_path)
+        joins_in_block = (
+            4
+            if "--joins-in-block" not in sys.argv
+            else int(named_arg("--joins-in-block", 1)[0])
+        )
+        main_train_gbdt_aet.main(
+            db_sets, training_set, hw_name, joins_in_block, res_path
+        )
 
     # Evaluate a trained ML model
     #   2rd arg: name of the db_set to be evaluated
     #   3rd arg: id of the training set [integer]
     #   4th arg: name of the hardware for hw features
     #   5th arg: name of the ML model
-    elif run_config == "model-eval":
+    #   opt arg: --res-path {{str}} path to the res dir
+    elif run_config == "eval-aet":
         db_sets = sys.argv[2]
         training_set = int(sys.argv[3])
         hw_name = sys.argv[4]
@@ -219,7 +229,7 @@ if __name__ == "__main__":
         res_path = (
             None if "--res-path" not in sys.argv else named_arg("--res-path", 1)[0]
         )
-        main_evaluate_model.main(db_set, training_set, model_name, hw_name, res_path)
+        main_evaluate_gbdt_aet.main(db_set, training_set, model_name, hw_name, res_path)
 
     else:
         print("Selected RUN configuration not specified.")
