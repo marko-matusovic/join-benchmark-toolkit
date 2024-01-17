@@ -180,15 +180,15 @@
         //     "justMyCode": true,
         //     "args": ["schema", "tpcds"]
         // },
-        {
-            "name": "PARSE TPC-DS",
-            "type": "python",
-            "request": "launch",
-            "program": "jb-environment/join-benchmark/main.py",
-            "console": "integratedTerminal",
-            "justMyCode": true,
-            "args": ["parse", "tpcds/query_22"]
-        },
+        // {
+        //     "name": "PARSE TPC-DS",
+        //     "type": "python",
+        //     "request": "launch",
+        //     "program": "jb-environment/join-benchmark/main.py",
+        //     "console": "integratedTerminal",
+        //     "justMyCode": true,
+        //     "args": ["parse", "tpcds/query_22"]
+        // },
         // {
         //     "name": "PARSE SSB/Q33",
         //     "type": "python",
@@ -207,15 +207,15 @@
         //     "justMyCode": true,
         //     "args": ["parse", "tpcds/query_3"]
         // },
-        {
-            "name": "RUN TPCDS/query_3",
-            "type": "python",
-            "request": "launch",
-            "program": "jb-environment/join-benchmark/main.py",
-            "console": "integratedTerminal",
-            "justMyCode": true,
-            "args": ["run", "tpcds/query_3"]
-        },
+        // {
+        //     "name": "RUN TPCDS/query_3",
+        //     "type": "python",
+        //     "request": "launch",
+        //     "program": "jb-environment/join-benchmark/main.py",
+        //     "console": "integratedTerminal",
+        //     "justMyCode": true,
+        //     "args": ["run", "tpcds/query_3"]
+        // },
         // {
         //     "name": "RUN SSB Q21 GPU",
         //     "type": "python",
@@ -279,15 +279,15 @@
         //     "justMyCode": true,
         //     "args": ["run", "job/30a", "--jo", "0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20", "--gpu"]
         // },
-        {
-            "name": "FEATURES SSB Q11",
-            "type": "python",
-            "request": "launch",
-            "program": "jb-environment/join-benchmark/main.py",
-            "console": "integratedTerminal",
-            "justMyCode": true,
-            "args": ["features", "ssb/q11", "--log", "test.log", "this_is_a_test_log>"]
-        },
+        // {
+        //     "name": "FEATURES SSB Q11",
+        //     "type": "python",
+        //     "request": "launch",
+        //     "program": "jb-environment/join-benchmark/main.py",
+        //     "console": "integratedTerminal",
+        //     "justMyCode": true,
+        //     "args": ["features", "ssb/q11", "--log", "test.log", "this_is_a_test_log>"]
+        // },
         // {
         //     "name": "COST TM JOB Q1B",
         //     "type": "python",
@@ -405,23 +405,24 @@
         //     "justMyCode": true,
         //     "args": ["optim_nsga_ii", "job/22a"]
         // },
+        // {
+        //         "name": "TRAIN ssb ts:2",
+        //         "type": "python",
+        //         "request": "launch",
+        //         "program": "jb-environment/join-benchmark/main.py",
+        //         "console": "integratedTerminal",
+        //         "justMyCode": true,
+        //         "args": ["train", "ssb", "2", "--res-path", "jb-environment/join-benchmark/results"]
+        // },
         {
-                "name": "TRAIN ssb ts:2",
+                "name": "Run",
                 "type": "python",
                 "request": "launch",
                 "program": "jb-environment/join-benchmark/main.py",
                 "console": "integratedTerminal",
                 "justMyCode": true,
-                "args": ["train", "ssb", "2", "--res-path", "jb-environment/join-benchmark/results"]
-        },
-        {
-                "name": "Eval tpcds 2 gbdt/set_2_BS4_ssb_job",
-                "type": "python",
-                "request": "launch",
-                "program": "jb-environment/join-benchmark/main.py",
-                "console": "integratedTerminal",
-                "justMyCode": true,
-                "args": ["model-eval", "tpcds", "2", "gbdt/set_2_BS4_ssb_job", "--res-path", "jb-environment/join-benchmark/results"]
+                // "args": ["model-eval", "tpcds", "2", "gbdt/set_2_BS4_ssb_job", "--res-path", "jb-environment/join-benchmark/results"]
+                "args": ["train-cmp","job,ssb","3","awsG5XL_gpu","--num-joins","3", "--res-path", "jb-environment/join-benchmark/results"]
                 
         },
     ]
