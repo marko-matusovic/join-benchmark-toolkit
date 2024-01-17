@@ -25,7 +25,7 @@ def main(
         open(f"{res_path}/models/{model_name}.pickle", "rb")
     )
 
-    join_in_block = int(model_name.split("_")[2][2:])
+    join_in_block = int(model_name.split('/')[-1].split("_")[2][2:])
 
     # load the evaluation set
     (data_features, measurements) = load_all(db_set, training_set, res_path)

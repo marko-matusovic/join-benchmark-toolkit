@@ -10,7 +10,7 @@ from benchmark.run.individual import (
     main_run,
     main_features,
 )
-from benchmark.run.train import main_train_gbdt_aet, main_evaluate_gbdt_aet
+from benchmark.run.train import main_train_gbdt_aet, main_evaluate_gbdt_aet, main_train_gbdt_cmp, main_evaluate_gbdt_cmp
 from benchmark.engine.engine import set_engine
 from benchmark.tools.schema_parser import get_schema
 
@@ -230,6 +230,42 @@ if __name__ == "__main__":
             None if "--res-path" not in sys.argv else named_arg("--res-path", 1)[0]
         )
         main_evaluate_gbdt_aet.main(db_set, training_set, model_name, hw_name, res_path)
+    
+    # start training a model
+    #   2rd arg: a comma separated list of db_set names to train on.
+    #   3rd arg: id of the training set [integer]
+    #   4th arg: name of the hardware for hw features
+    #   req arg: --num-joins {{int}} the number of joins
+    #   opt arg: --res-path {{str}} path to the res dir
+    elif run_config == "train-cmp":
+        db_sets = [db_set.strip() for db_set in sys.argv[2].split(",")]
+        training_set = int(sys.argv[3])
+        hw_name = sys.argv[4]
+        res_path = (
+            None if "--res-path" not in sys.argv else named_arg("--res-path", 1)[0]
+        )
+        if "--num-joins" not in sys.argv:
+            print("Please specify the number of joins with --num-joins {{int}}")
+        num_joins = int(named_arg("--num-joins", 1)[0])
+        main_train_gbdt_cmp.main(
+            db_sets, training_set, hw_name, num_joins, res_path
+        )
+
+    # Evaluate a trained ML model
+    #   2rd arg: name of the db_set to be evaluated
+    #   3rd arg: id of the training set [integer]
+    #   4th arg: name of the hardware for hw features
+    #   5th arg: name of the ML model
+    #   opt arg: --res-path {{str}} path to the res dir
+    elif run_config == "eval-cmp":
+        db_sets = sys.argv[2]
+        training_set = int(sys.argv[3])
+        hw_name = sys.argv[4]
+        model_name = sys.argv[5]
+        res_path = (
+            None if "--res-path" not in sys.argv else named_arg("--res-path", 1)[0]
+        )
+        main_evaluate_gbdt_cmp.main(db_set, training_set, model_name, hw_name, res_path)
 
     else:
         print("Selected RUN configuration not specified.")

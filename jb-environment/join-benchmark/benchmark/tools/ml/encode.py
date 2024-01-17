@@ -1,3 +1,4 @@
+from itertools import combinations
 from benchmark.tools.ml.types import AllDataFeatures, AllMeasurements, DataFeatures
 import math
 
@@ -47,7 +48,7 @@ def encode_query_aet(
     for jo in jos:
         fs = data_features[query][jo]
         ms = measurements[query][jo]
-        encoded_fs = [encode_feature_aet(fs[j]) for j in jo.split(",")]
+        encoded_fs = [encode_feature(fs[j]) for j in jo.split(",")]
         encoded_hw = [sane_x(x) for x in hw_features]
         encoded_ms = ms.joins
 
@@ -63,7 +64,7 @@ def encode_query_aet(
                     x += encoded_fs[i]
                     y += encoded_ms[i]
                 else:
-                    x += encode_feature_aet()
+                    x += encode_feature()
                     y += 0.0
 
             xs.append(x)
@@ -72,7 +73,7 @@ def encode_query_aet(
     return (xs, ys)
 
 
-def encode_feature_aet(features: DataFeatures | None = None) -> list[float]:
+def encode_feature(features: DataFeatures | None = None) -> list[float]:
     if features == None:
         return [0.0] * 24
     else:
@@ -115,3 +116,70 @@ def sane_x(x: float) -> float:
     if x < -1e25:
         return -1e25
     return x
+
+def encode_all_cmp(
+    data_features: AllDataFeatures,
+    hw_features: list[float],
+    measurements: AllMeasurements,
+    num_joins: int,
+) -> tuple[list[list[float]], list[float]]:
+    X: list[list[float]] = []
+    Y: list[float] = []
+    for query in set(data_features.keys()) & set(measurements.keys()):
+        if num_joins != list(data_features[query].keys())[0].count(',') + 1:
+            continue
+        (xs, ys) = encode_query_cmp(
+            data_features, hw_features, measurements, query
+        )
+        X += xs
+        Y += ys
+
+    return (X, Y)
+
+
+# Encodes a query into a list of Xs and Ys.
+#
+# If no "jo" is given, it iterates through all possible join orders
+# and encodes blocks of JOINS_IN_BLOCK into each X and Y.
+# If some "jo" is passed, it only encodes that join order.
+def encode_query_cmp(
+    data_features: AllDataFeatures,
+    hw_features: list[float],
+    measurements: AllMeasurements,
+    query: str,
+    jos: list[tuple[str,str]] | None = None
+) -> tuple[list[list[float]], list[float]]:
+    xs: list[list[float]] = []
+    ys: list[float] = []
+
+    if jos == None:
+        all_joins = set(data_features[query].keys()) & set(measurements[query].keys())
+        jos = list(combinations(all_joins, 2))
+    
+    encoded_hw = [sane_x(x) for x in hw_features]
+    encoded_fs = {}
+    encoded_ms = {}
+    for jo in set([jo for pair in jos for jo in pair]):
+        encoded_fs[jo] = [encode_feature(data_features[query][jo][j]) for j in jo.split(",")]
+        encoded_ms[jo] = sum(measurements[query][jo].joins)
+
+    for (jo1,jo2) in jos:
+        x: list[float] = []
+        x += encoded_hw.copy()
+        for join_features in encoded_fs[jo1]:
+            x += join_features
+        x += encoded_hw.copy()
+        for join_features in encoded_fs[jo2]:
+            x += join_features
+        
+        if encoded_ms[jo1] < encoded_ms[jo2]:
+            y = -1
+        elif encoded_ms[jo1] > encoded_ms[jo2]:
+            y = 1
+        else: # encoded_ms[jo1] = encoded_ms[jo2]:
+            y = 0
+
+        xs.append(x)
+        ys.append(y)
+
+    return (xs, ys)
