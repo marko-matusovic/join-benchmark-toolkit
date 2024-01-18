@@ -1,10 +1,11 @@
+import json
 import math
 import numpy as np
 import pandas as pd
-from benchmark.tools.ml.encode import encode_all_cmp, encode_query_aet, encode_query_cmp
+from benchmark.tools.ml.encode import encode_all_cls, encode_query_reg, encode_query_cls
 from benchmark.tools.ml.load_all import load_all
 from benchmark.tools.ml.load_features import load_hw_features
-from sklearn.ensemble import GradientBoostingRegressor
+from sklearn.ensemble import GradientBoostingClassifier
 import pickle as pkl
 from matplotlib import pyplot as plt
 import os
@@ -21,7 +22,7 @@ def main(
         res_path = "./results"
 
     # load the model
-    model: GradientBoostingRegressor = pkl.load(
+    model: GradientBoostingClassifier = pkl.load(
         open(f"{res_path}/models/{model_name}.pickle", "rb")
     )
 
@@ -32,10 +33,10 @@ def main(
     hw_features = load_hw_features(hw_name, res_path)
 
     print(f"Model:", model_name)
-    # print("Feature importances:")
-    # print(model.feature_importances_)
+    print("Feature importances:")
+    print(model.feature_importances_)
 
-    (X, y_real) = encode_all_cmp(data_features, hw_features, measurements, num_joins)
+    (X, y_real) = encode_all_cls(data_features, hw_features, measurements, num_joins)
     
     print(f"{db_set} has {len(X)} jo combinations of join length {num_joins}")
     if len(X) == 0:
@@ -46,7 +47,7 @@ def main(
     count = 0
     for (real, pred) in zip(y_real, y_predict):
         print(real, pred)
-        if (real < 0 and pred < 0) or (real > 0 and pred > 0):
+        if real == pred:
             count += 1
     
     print(f"correct {count} / all {len(X)}")
@@ -61,7 +62,7 @@ def main(
     # for query in data_features:
     #     times[query] = {}
     #     for jo in set(data_features[query].keys()) & set(measurements[query].keys()):
-    #         (X, y_real) = encode_query_aet(
+    #         (X, y_real) = encode_query_reg(
     #             data_features, hw_features, measurements, query, join_in_block, jo
     #         )
 

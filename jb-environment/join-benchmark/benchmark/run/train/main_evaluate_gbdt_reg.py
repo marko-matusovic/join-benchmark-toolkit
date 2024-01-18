@@ -1,7 +1,7 @@
 import math
 import numpy as np
 import pandas as pd
-from benchmark.tools.ml.encode import encode_query_aet
+from benchmark.tools.ml.encode import encode_query_reg
 from benchmark.tools.ml.load_all import load_all
 from benchmark.tools.ml.load_features import load_hw_features
 from sklearn.ensemble import GradientBoostingRegressor
@@ -44,7 +44,7 @@ def main(
     for query in data_features:
         times[query] = {}
         for jo in set(data_features[query].keys()) & set(measurements[query].keys()):
-            (X, y_real) = encode_query_aet(
+            (X, y_real) = encode_query_reg(
                 data_features, hw_features, measurements, query, join_in_block, jo
             )
 

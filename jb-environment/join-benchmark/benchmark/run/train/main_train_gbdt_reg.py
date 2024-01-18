@@ -1,4 +1,4 @@
-from benchmark.tools.ml.encode import encode_all_aet
+from benchmark.tools.ml.encode import encode_all_reg
 from benchmark.tools.ml.load_all import load_all
 from benchmark.tools.ml.load_features import load_hw_features
 from sklearn.ensemble import GradientBoostingRegressor
@@ -28,7 +28,7 @@ def main(
 
     for db_set in db_sets:
         (features, measurements) = load_all(db_set, training_set, res_path)
-        (Xi, yi) = encode_all_aet(features, hw_features, measurements, joins_in_block)
+        (Xi, yi) = encode_all_reg(features, hw_features, measurements, joins_in_block)
         X += Xi
         y += yi
         ws += [1.0 / len(yi)] * len(yi)
@@ -36,7 +36,7 @@ def main(
     # train the model
     model.fit(X, y, ws)
 
-    file = f"{res_path}/models/gbdt_aet/set_{training_set}_BS{joins_in_block}_{'_'.join(db_sets)}.pickle"
+    file = f"{res_path}/models/gbdt_reg/set_{training_set}_BS{joins_in_block}_{'_'.join(db_sets)}.pickle"
     with open(file, "wb") as file_out:
         pkl.dump(model, file_out)
 

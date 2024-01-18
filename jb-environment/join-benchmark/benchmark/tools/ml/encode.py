@@ -5,7 +5,7 @@ import math
 # ======== METHODS ===============================================
 
 
-def encode_all_aet(
+def encode_all_reg(
     data_features: AllDataFeatures,
     hw_features: list[float],
     measurements: AllMeasurements,
@@ -14,7 +14,7 @@ def encode_all_aet(
     X: list[list[float]] = []
     Y: list[float] = []
     for query in set(data_features.keys()) & set(measurements.keys()):
-        (xs, ys) = encode_query_aet(
+        (xs, ys) = encode_query_reg(
             data_features, hw_features, measurements, query, joins_in_block
         )
         X += xs
@@ -28,7 +28,7 @@ def encode_all_aet(
 # If no "jo" is given, it iterates through all possible join orders
 # and encodes blocks of JOINS_IN_BLOCK into each X and Y.
 # If some "jo" is passed, it only encodes that join order.
-def encode_query_aet(
+def encode_query_reg(
     data_features: AllDataFeatures,
     hw_features: list[float],
     measurements: AllMeasurements,
@@ -117,7 +117,7 @@ def sane_x(x: float) -> float:
         return -1e25
     return x
 
-def encode_all_cmp(
+def encode_all_cls(
     data_features: AllDataFeatures,
     hw_features: list[float],
     measurements: AllMeasurements,
@@ -125,10 +125,11 @@ def encode_all_cmp(
 ) -> tuple[list[list[float]], list[float]]:
     X: list[list[float]] = []
     Y: list[float] = []
-    for query in set(data_features.keys()) & set(measurements.keys()):
+    queries = sorted(list(set(data_features.keys()) & set(measurements.keys())))
+    for query in queries:
         if num_joins != list(data_features[query].keys())[0].count(',') + 1:
             continue
-        (xs, ys) = encode_query_cmp(
+        (xs, ys) = encode_query_cls(
             data_features, hw_features, measurements, query
         )
         X += xs
@@ -142,7 +143,7 @@ def encode_all_cmp(
 # If no "jo" is given, it iterates through all possible join orders
 # and encodes blocks of JOINS_IN_BLOCK into each X and Y.
 # If some "jo" is passed, it only encodes that join order.
-def encode_query_cmp(
+def encode_query_cls(
     data_features: AllDataFeatures,
     hw_features: list[float],
     measurements: AllMeasurements,
@@ -151,9 +152,9 @@ def encode_query_cmp(
 ) -> tuple[list[list[float]], list[float]]:
     xs: list[list[float]] = []
     ys: list[float] = []
-
+    
     if jos == None:
-        all_joins = set(data_features[query].keys()) & set(measurements[query].keys())
+        all_joins = sorted(list(set(data_features[query].keys()) & set(measurements[query].keys())))
         jos = list(combinations(all_joins, 2))
     
     encoded_hw = [sane_x(x) for x in hw_features]
@@ -165,15 +166,15 @@ def encode_query_cmp(
 
     for (jo1,jo2) in jos:
         x: list[float] = []
-        x += encoded_hw.copy()
+        # x += encoded_hw.copy()
         for join_features in encoded_fs[jo1]:
             x += join_features
-        x += encoded_hw.copy()
+        # x += encoded_hw.copy()
         for join_features in encoded_fs[jo2]:
             x += join_features
         
         if encoded_ms[jo1] < encoded_ms[jo2]:
-            y = -1
+            y = 0
         elif encoded_ms[jo1] > encoded_ms[jo2]:
             y = 1
         else: # encoded_ms[jo1] = encoded_ms[jo2]:
