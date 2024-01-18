@@ -10,7 +10,12 @@ from benchmark.run.individual import (
     main_run,
     main_features,
 )
-from benchmark.run.train import main_train_gbdt_reg, main_evaluate_gbdt_reg, main_train_gbdt_cls, main_evaluate_gbdt_cls
+from benchmark.run.train import (
+    main_train_gbdt_reg,
+    main_evaluate_gbdt_reg,
+    main_train_gbdt_cls,
+    main_evaluate_gbdt_cls,
+)
 from benchmark.engine.engine import set_engine
 from benchmark.tools.schema_parser import get_schema
 
@@ -230,7 +235,7 @@ if __name__ == "__main__":
             None if "--res-path" not in sys.argv else named_arg("--res-path", 1)[0]
         )
         main_evaluate_gbdt_reg.main(db_set, training_set, model_name, hw_name, res_path)
-    
+
     # start training a model
     #   2rd arg: a comma separated list of db_set names to train on.
     #   3rd arg: id of the training set [integer]
@@ -247,9 +252,7 @@ if __name__ == "__main__":
         if "--num-joins" not in sys.argv:
             print("Please specify the number of joins with --num-joins {{int}}")
         num_joins = int(named_arg("--num-joins", 1)[0])
-        main_train_gbdt_cls.main(
-            db_sets, training_set, hw_name, num_joins, res_path
-        )
+        main_train_gbdt_cls.main(db_sets, training_set, hw_name, num_joins, res_path)
 
     # Evaluate a trained ML model
     #   2rd arg: name of the db_set to be evaluated

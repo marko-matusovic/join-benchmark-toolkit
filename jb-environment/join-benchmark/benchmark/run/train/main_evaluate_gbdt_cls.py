@@ -26,7 +26,7 @@ def main(
         open(f"{res_path}/models/{model_name}.pickle", "rb")
     )
 
-    num_joins = int(model_name.split('/')[-1].split("_")[2][3:])
+    num_joins = int(model_name.split("/")[-1].split("_")[2][3:])
 
     # load the evaluation set
     (data_features, measurements) = load_all(db_set, training_set, res_path)
@@ -37,19 +37,19 @@ def main(
     print(model.feature_importances_)
 
     (X, y_real) = encode_all_cls(data_features, hw_features, measurements, num_joins)
-    
+
     print(f"{db_set} has {len(X)} jo combinations of join length {num_joins}")
     if len(X) == 0:
         exit(0)
-        
+
     y_predict = model.predict(X)  # type: ignore
-    
+
     count = 0
-    for (real, pred) in zip(y_real, y_predict):
+    for real, pred in zip(y_real, y_predict):
         print(real, pred)
         if real == pred:
             count += 1
-    
+
     print(f"correct {count} / all {len(X)}")
     print(f"Success rate: {100.0 * count / len(X)}%")
 

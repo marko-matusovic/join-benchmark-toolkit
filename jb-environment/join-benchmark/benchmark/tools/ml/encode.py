@@ -117,6 +117,7 @@ def sane_x(x: float) -> float:
         return -1e25
     return x
 
+
 def encode_all_cls(
     data_features: AllDataFeatures,
     hw_features: list[float],
@@ -127,11 +128,9 @@ def encode_all_cls(
     Y: list[float] = []
     queries = sorted(list(set(data_features.keys()) & set(measurements.keys())))
     for query in queries:
-        if num_joins != list(data_features[query].keys())[0].count(',') + 1:
+        if num_joins != list(data_features[query].keys())[0].count(",") + 1:
             continue
-        (xs, ys) = encode_query_cls(
-            data_features, hw_features, measurements, query
-        )
+        (xs, ys) = encode_query_cls(data_features, hw_features, measurements, query)
         X += xs
         Y += ys
 
@@ -148,23 +147,27 @@ def encode_query_cls(
     hw_features: list[float],
     measurements: AllMeasurements,
     query: str,
-    jos: list[tuple[str,str]] | None = None
+    jos: list[tuple[str, str]] | None = None,
 ) -> tuple[list[list[float]], list[float]]:
     xs: list[list[float]] = []
     ys: list[float] = []
-    
+
     if jos == None:
-        all_joins = sorted(list(set(data_features[query].keys()) & set(measurements[query].keys())))
+        all_joins = sorted(
+            list(set(data_features[query].keys()) & set(measurements[query].keys()))
+        )
         jos = list(combinations(all_joins, 2))
-    
+
     encoded_hw = [sane_x(x) for x in hw_features]
     encoded_fs = {}
     encoded_ms = {}
     for jo in set([jo for pair in jos for jo in pair]):
-        encoded_fs[jo] = [encode_feature(data_features[query][jo][j]) for j in jo.split(",")]
+        encoded_fs[jo] = [
+            encode_feature(data_features[query][jo][j]) for j in jo.split(",")
+        ]
         encoded_ms[jo] = sum(measurements[query][jo].joins)
 
-    for (jo1,jo2) in jos:
+    for jo1, jo2 in jos:
         x: list[float] = []
         # x += encoded_hw.copy()
         for join_features in encoded_fs[jo1]:
@@ -172,12 +175,12 @@ def encode_query_cls(
         # x += encoded_hw.copy()
         for join_features in encoded_fs[jo2]:
             x += join_features
-        
+
         if encoded_ms[jo1] < encoded_ms[jo2]:
             y = 0
         elif encoded_ms[jo1] > encoded_ms[jo2]:
             y = 1
-        else: # encoded_ms[jo1] = encoded_ms[jo2]:
+        else:  # encoded_ms[jo1] = encoded_ms[jo2]:
             y = 0
 
         xs.append(x)

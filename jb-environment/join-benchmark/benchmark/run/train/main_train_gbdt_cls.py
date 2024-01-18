@@ -26,14 +26,16 @@ def main(
     ws = []
 
     hw_features = load_hw_features(hw_name, res_path)
-    
+
     for db_set in db_sets:
         print("Loading features and measurements")
         (features, measurements) = load_all(db_set, training_set, res_path)
         print("Encoding features and measurements")
         (Xi, yi) = encode_all_cls(features, hw_features, measurements, num_joins)
-        print(f"{db_set} has {len(Xi)} join-order combinations of join-length {num_joins}")
-        if len(Xi) == 0 :
+        print(
+            f"{db_set} has {len(Xi)} join-order combinations of join-length {num_joins}"
+        )
+        if len(Xi) == 0:
             continue
         X += Xi
         y += yi
