@@ -14,7 +14,7 @@ def main(
     db_set: str,
     training_set: int,
     model_name: str,
-    hw_name: str,
+    # hw_name: str,
     res_path: str | None = None,
 ):
     if res_path == None:
@@ -29,7 +29,7 @@ def main(
 
     # load the evaluation set
     (data_features, measurements) = load_all(db_set, training_set, res_path)
-    hw_features = load_hw_features(hw_name, res_path)
+    # hw_features = load_hw_features(hw_name, res_path)
 
     print(f"Model:", model_name)
     print("Feature importances:")
@@ -45,7 +45,7 @@ def main(
         times[query] = {}
         for jo in set(data_features[query].keys()) & set(measurements[query].keys()):
             (X, y_real) = encode_query_reg(
-                data_features, hw_features, measurements, query, join_in_block, jo
+                data_features, measurements, query, join_in_block, jo
             )
 
             y_predict = model.predict(X)  # type: ignore

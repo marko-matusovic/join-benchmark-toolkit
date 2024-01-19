@@ -9,7 +9,7 @@ import pickle as pkl
 def main(
     db_sets: list[str],
     training_set: int,
-    hw_name: str,
+    # hw_name: str,
     num_joins: int,
     res_path: str | None = None,
 ):
@@ -18,14 +18,14 @@ def main(
 
     # create a gradient boosting regressor
     model = GradientBoostingClassifier(
-        n_estimators=100, learning_rate=0.1, max_depth=20, random_state=None
+        n_estimators=100, learning_rate=0.1, max_depth=10, random_state=None
     )
 
     X = []
     y = []
-    ws = []
+    # ws = []
 
-    hw_features = load_hw_features(hw_name, res_path)
+    # hw_features = load_hw_features(hw_name, res_path)
 
     for db_set in db_sets:
         print("Loading features and measurements")
@@ -39,7 +39,7 @@ def main(
             continue
         X += Xi
         y += yi
-        ws += [1.0 / len(yi)] * len(yi)
+        # ws += [1.0 / len(yi)] * len(yi)
 
     # train the model
     print("Training")

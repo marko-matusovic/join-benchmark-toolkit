@@ -8,7 +8,7 @@ import pickle as pkl
 def main(
     db_sets: list[str],
     training_set: int,
-    hw_name: str,
+    # hw_name: str,
     joins_in_block: int = 4,
     res_path: str | None = None,
 ):
@@ -24,11 +24,12 @@ def main(
     y = []
     ws = []
 
-    hw_features = load_hw_features(hw_name, res_path)
+    # hw_features = load_hw_features(hw_name, res_path)
 
     for db_set in db_sets:
         (features, measurements) = load_all(db_set, training_set, res_path)
-        (Xi, yi) = encode_all_reg(features, hw_features, measurements, joins_in_block)
+        (Xi, yi) = encode_all_reg(features, measurements, joins_in_block)
+        # (Xi, yi) = encode_all_reg(features, hw_features, measurements, joins_in_block)
         X += Xi
         y += yi
         ws += [1.0 / len(yi)] * len(yi)

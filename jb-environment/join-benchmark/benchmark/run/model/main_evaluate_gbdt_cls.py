@@ -15,7 +15,7 @@ def main(
     db_set: str,
     training_set: int,
     model_name: str,
-    hw_name: str,
+    # hw_name: str,
     res_path: str | None = None,
 ):
     if res_path == None:
@@ -30,13 +30,13 @@ def main(
 
     # load the evaluation set
     (data_features, measurements) = load_all(db_set, training_set, res_path)
-    hw_features = load_hw_features(hw_name, res_path)
+    # hw_features = load_hw_features(hw_name, res_path)
 
     print(f"Model:", model_name)
     print("Feature importances:")
     print(model.feature_importances_)
 
-    (X, y_real) = encode_all_cls(data_features, hw_features, measurements, num_joins)
+    (X, y_real) = encode_all_cls(data_features, measurements, num_joins)
 
     print(f"{db_set} has {len(X)} jo combinations of join length {num_joins}")
     if len(X) == 0:
