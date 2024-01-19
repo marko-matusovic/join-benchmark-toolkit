@@ -18,7 +18,7 @@ def main(
 
     # create a gradient boosting regressor
     model = GradientBoostingClassifier(
-        n_estimators=100, learning_rate=0.1, max_depth=10, random_state=None
+        n_estimators=1000, learning_rate=0.1, max_depth=5
     )
 
     X = []
@@ -31,7 +31,7 @@ def main(
         print("Loading features and measurements")
         (features, measurements) = load_all(db_set, training_set, res_path)
         print("Encoding features and measurements")
-        (Xi, yi) = encode_all_cls(features, hw_features, measurements, num_joins)
+        (Xi, yi) = encode_all_cls(features, measurements, num_joins)
         print(
             f"{db_set} has {len(Xi)} join-order combinations of join-length {num_joins}"
         )

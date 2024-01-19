@@ -13,7 +13,8 @@ def encode_all_reg(
 ) -> tuple[list[list[float]], list[float]]:
     X: list[list[float]] = []
     Y: list[float] = []
-    queries = sorted(list(set(data_features.keys()) & set(measurements.keys())))
+    queries = set(data_features.keys()) & set(measurements.keys())
+    # queries = sorted(list(queries))
     for query in queries:
         (xs, ys) = encode_query_reg(data_features, measurements, query, joins_in_block)
         X += xs
@@ -126,7 +127,8 @@ def encode_all_cls(
 ) -> tuple[list[list[float]], list[float]]:
     X: list[list[float]] = []
     Y: list[float] = []
-    queries = sorted(list(set(data_features.keys()) & set(measurements.keys())))
+    queries = set(data_features.keys()) & set(measurements.keys())
+    # queries = sorted(list(queries))
     for query in queries:
         if num_joins != list(data_features[query].keys())[0].count(",") + 1:
             continue
@@ -154,34 +156,30 @@ def encode_query_cls(
 
     if jo_pairs == None:
         jos = set(data_features[query].keys()) & set(measurements[query].keys())
-        jos = sorted(list(jos))
+        # jos = sorted(list(jos))
         jo_pairs = [(jo1, jo2) for jo1 in jos for jo2 in jos if jo1 != jo2]
     else:
         jos = set([jo for pair in jo_pairs for jo in pair])
-        jos = sorted(list(jos))
+        # jos = sorted(list(jos))
 
-    # encoded_hw = [sane_x(x) for x in hw_features]
-    encoded_fs = {
-        jo: [encode_feature(data_features[query][jo][j]) for j in jo.split(",")]
-        for jo in jos
-    }
-    encoded_ms = {jo: sum(measurements[query][jo].joins) for jo in jos}
-
-    for jo1, jo2 in jo_pairs:
-        x: list[float] = []
-        # x += encoded_hw.copy()
-        x.extend(flatten(encoded_fs[jo1]))
-        # x += encoded_hw.copy()
-        x.extend(flatten(encoded_fs[jo2]))
-
-        if encoded_ms[jo1] < encoded_ms[jo2]:
-            y = 0
-        elif encoded_ms[jo1] > encoded_ms[jo2]:
-            y = 1
-        else:  # encoded_ms[jo1] = encoded_ms[jo2]:
-            y = 0
-
+    for pair in jo_pairs:
+        (x,y) = encode_cls_jo_pair(data_features, measurements, query, pair)
         xs.append(x)
         ys.append(y)
 
     return (xs, ys)
+
+def encode_cls_jo_pair(data_features, measurements, query, jo_pair):
+    (jo1, jo2) = jo_pair
+    x: list[float] = []
+    # x += encoded_hw.copy()
+    x.extend(flatten([encode_feature(data_features[query][jo1][j]) for j in jo1.split(",")]))
+    # x += encoded_hw.copy()
+    x.extend(flatten([encode_feature(data_features[query][jo2][j]) for j in jo2.split(",")]))
+    
+    if sum(measurements[query][jo1].joins) < sum(measurements[query][jo2].joins):
+        y = 0
+    else: # if >=
+        y = 1
+        
+    return (x, y)

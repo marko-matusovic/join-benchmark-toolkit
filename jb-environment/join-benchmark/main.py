@@ -222,14 +222,14 @@ if __name__ == "__main__":
     # Evaluate a trained ML model
     #   2rd arg: name of the db_set to be evaluated
     #   3rd arg: id of the training set [integer]
+    #   4th arg: name of the ML model
     # -REMOVED-  4th arg: name of the hardware for hw features
-    #   5th arg: name of the ML model
     #   opt arg: --res-path {{str}} path to the res dir
     elif run_config == "eval-reg":
         db_sets = sys.argv[2]
         training_set = int(sys.argv[3])
+        model_name = sys.argv[4]
         # hw_name = sys.argv[4]
-        model_name = sys.argv[5]
         res_path = (
             None if "--res-path" not in sys.argv else named_arg("--res-path", 1)[0]
         )
@@ -258,14 +258,14 @@ if __name__ == "__main__":
     # Evaluate a trained ML model
     #   2rd arg: name of the db_set to be evaluated
     #   3rd arg: id of the training set [integer]
+    #   4th arg: name of the ML model
     # -REMOVED-  4th arg: name of the hardware for hw features
-    #   5th arg: name of the ML model
     #   opt arg: --res-path {{str}} path to the res dir
     elif run_config == "eval-cls":
         db_sets = sys.argv[2]
         training_set = int(sys.argv[3])
         # hw_name = sys.argv[4]
-        model_name = sys.argv[5]
+        model_name = sys.argv[4]
         res_path = (
             None if "--res-path" not in sys.argv else named_arg("--res-path", 1)[0]
         )
