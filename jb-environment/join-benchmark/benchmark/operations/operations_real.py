@@ -58,61 +58,31 @@ class Operations_Real(Operations[TDFs, None]):
             ]
 
         return filter
+    
+    def filter_by(self, field_name_in:str, value: TVal, ops: str, op):
+        def filter(dfs: TDFs) -> None:
+            (table_name, field_name) = self.find_names(dfs, field_name_in)
+            table = dfs[table_name]
+            del dfs[table_name]
+            dfs[f"({table_name}S({field_name}){ops}{value})"] = table.loc[
+                op(table[field_name], value)
+            ]
+        return filter
 
     def filter_field_ne(self, field_name_in: str, value: TVal):
-        def filter(dfs: TDFs) -> None:
-            (table_name, field_name) = self.find_names(dfs, field_name_in)
-            table = dfs[table_name]
-            del dfs[table_name]
-            dfs[f"({table_name}S({field_name})!={value})"] = table.loc[
-                table[field_name] != value
-            ]
-
-        return filter
+        return self.filter_by(field_name_in, value, '!=', lambda a,b: a!=b)
 
     def filter_field_ge(self, field_name_in: str, value: TVal):
-        def filter(dfs: TDFs) -> None:
-            (table_name, field_name) = self.find_names(dfs, field_name_in)
-            table = dfs[table_name]
-            del dfs[table_name]
-            dfs[f"({table_name}S({field_name})>={value})"] = table.loc[
-                table[field_name] >= value
-            ]
-
-        return filter
+        return self.filter_by(field_name_in, value, '>=', lambda a,b: a>=b)
 
     def filter_field_gt(self, field_name_in: str, value: TVal):
-        def filter(dfs: TDFs) -> None:
-            (table_name, field_name) = self.find_names(dfs, field_name_in)
-            table = dfs[table_name]
-            del dfs[table_name]
-            dfs[f"({table_name}S({field_name})>{value})"] = table.loc[
-                table[field_name] > value
-            ]
-
-        return filter
+        return self.filter_by(field_name_in, value, '>', lambda a,b: a>b)
 
     def filter_field_le(self, field_name_in: str, value: TVal):
-        def filter(dfs: TDFs) -> None:
-            (table_name, field_name) = self.find_names(dfs, field_name_in)
-            table = dfs[table_name]
-            del dfs[table_name]
-            dfs[f"({table_name}S({field_name})<={value})"] = table.loc[
-                table[field_name] <= value
-            ]
-
-        return filter
+        return self.filter_by(field_name_in, value, '<=', lambda a,b: a<=b)
 
     def filter_field_lt(self, field_name_in: str, value: TVal):
-        def filter(dfs: TDFs) -> None:
-            (table_name, field_name) = self.find_names(dfs, field_name_in)
-            table = dfs[table_name]
-            del dfs[table_name]
-            dfs[f"({table_name}S({field_name})<{value})"] = table.loc[
-                table[field_name] < value
-            ]
-
-        return filter
+        return self.filter_by(field_name_in, value, '<', lambda a,b: a<b)
 
     def filter_field_like(self, field_name_in: str, values: list[str]):
         def filter(dfs: TDFs) -> None:
