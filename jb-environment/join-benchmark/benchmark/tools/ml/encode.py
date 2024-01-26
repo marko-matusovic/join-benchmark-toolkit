@@ -85,8 +85,8 @@ def encode_feature(features: DataFeatures | None = None) -> list[float]:
                 features.table_1.unique,
                 features.table_1.id_size,
                 features.table_1.row_size,
-                features.table_1.cache_age,
-                features.table_1.cluster_size,
+                # features.table_1.cache_age,
+                # features.table_1.cluster_size,
                 features.table_1.bounds_low,
                 features.table_1.bounds_high,
                 features.table_1.bounds_range,
@@ -94,8 +94,8 @@ def encode_feature(features: DataFeatures | None = None) -> list[float]:
                 features.table_2.unique,
                 features.table_2.id_size,
                 features.table_2.row_size,
-                features.table_2.cache_age,
-                features.table_2.cluster_size,
+                # features.table_2.cache_age,
+                # features.table_2.cluster_size,
                 features.table_2.bounds_low,
                 features.table_2.bounds_high,
                 features.table_2.bounds_range,
@@ -103,8 +103,8 @@ def encode_feature(features: DataFeatures | None = None) -> list[float]:
                 features.cross.len_possible_max,
                 features.cross.len_unique_max,
                 features.cross.selectivity,
-                features.cross.cluster_size,
-                features.cross.cluster_overlap,
+                # features.cross.cluster_size,
+                # features.cross.cluster_overlap,
             ]
         ]
 

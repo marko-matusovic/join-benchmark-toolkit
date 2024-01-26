@@ -2,7 +2,7 @@ import numpy as np
 from benchmark.tools.ml.encode import encode_all_reg, encode_all_cls
 from benchmark.tools.ml.load_all import load_all
 from benchmark.tools.ml.load_features import load_hw_features
-from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.ensemble import RandomForestClassifier
 import pickle as pkl
 
 
@@ -17,9 +17,7 @@ def main(
         res_path = "./results"
 
     # create a gradient boosting regressor
-    model = GradientBoostingClassifier(
-        n_estimators=50, learning_rate=0.2, max_depth=3
-    )
+    model = RandomForestClassifier()
 
     X = []
     y = []
@@ -45,7 +43,7 @@ def main(
     print("Training")
     model.fit(X, y)
 
-    file = f"{res_path}/models/gbdt_cls/set_{training_set}_NJO{num_joins}_{'_'.join(db_sets)}.pickle"
+    file = f"{res_path}/models/rf_cls/set_{training_set}_NJO{num_joins}_{'_'.join(db_sets)}.pickle"
     print(f"Saving the model to {file}")
     with open(file, "wb") as file_out:
         pkl.dump(model, file_out)
