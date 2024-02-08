@@ -11,12 +11,12 @@ from benchmark.run.individual import (
     main_features,
 )
 from benchmark.run.model import (
-    main_train_gbdt_reg,
-    main_evaluate_gbdt_reg,
-    main_train_gbdt_cls,
-    main_evaluate_gbdt_cls,
-    main_train_rf_cls,
-    main_evaluate_rf_cls,
+    main_evaluate_cls_fix,
+    main_evaluate_cls_flex,
+    main_evaluate_reg,
+    main_train_cls_fix,
+    main_train_cls_flex,
+    main_train_reg,
 )
 from benchmark.engine.engine import set_engine
 from benchmark.tools.schema_parser import get_schema
@@ -203,23 +203,33 @@ if __name__ == "__main__":
     # start training a model
     #   2rd arg: a comma separated list of db_set names to train on.
     #   3rd arg: id of the training set [integer]
-    # -REMOVED-  4th arg: name of the hardware for hw features
-    #   opt arg: --joins-in-block {{int}} the number of joins in a single block
+    #   (REMOVED) 4th arg: name of the hardware for hw features
+    #   (train-cls only) req arg: --num-joins {{int}} the number of joins
+    #   (train-reg only) req arg: --joins-in-block {{int}} the number of joins in a single block
+    #   opt arg: --ml-model {{str}} name of the ML model to use from set: ["gbdt", "rf", "ex", "bg", "ab", "hgb"]
     #   opt arg: --res-path {{str}} path to the res dir
-    elif run_config == "train-rf-reg":
+    elif run_config == "train-cls" or run_config == "train-reg":
         db_sets = [db_set.strip() for db_set in sys.argv[2].split(",")]
         training_set = int(sys.argv[3])
         # hw_name = sys.argv[4]
+        ml_model = (
+            None if "--ml-model" not in sys.argv else named_arg("--ml-model", 1)[0]
+        )
         res_path = (
             None if "--res-path" not in sys.argv else named_arg("--res-path", 1)[0]
         )
-        joins_in_block = (
-            4
-            if "--joins-in-block" not in sys.argv
-            else int(named_arg("--joins-in-block", 1)[0])
-        )
-        main_train_gbdt_reg.main(db_sets, training_set, joins_in_block, res_path)
-        # main_train_gbdt_reg.main(db_sets, training_set, hw_name, joins_in_block, res_path)
+        normalize = "--normalize" in sys.argv
+        if run_config == "train-cls" :
+            if "--num-joins" in sys.argv:
+                num_joins = int(named_arg("--num-joins", 1)[0])
+                main_train_cls_fix.main(db_sets, training_set, num_joins, ml_model, res_path, normalize)
+            elif "--flex":
+                main_train_cls_flex.main(db_sets, training_set, ml_model, res_path, normalize)
+        else: # run_config == "train-reg"
+            if "--joins-in-block" not in sys.argv:
+                print("Please specify the number of joins with --joins-in-block {{int}}")
+            joins_in_block = int(named_arg("--joins-in-block", 1)[0])
+            main_train_reg.main(db_sets, training_set, joins_in_block, ml_model, res_path, normalize)
 
     # Evaluate a trained ML model
     #   2rd arg: name of the db_set to be evaluated
@@ -227,7 +237,7 @@ if __name__ == "__main__":
     #   4th arg: name of the ML model
     # -REMOVED-  4th arg: name of the hardware for hw features
     #   opt arg: --res-path {{str}} path to the res dir
-    elif run_config == "eval-gbdt-reg":
+    elif run_config == "eval-cls" or run_config == "eval-reg":
         db_sets = sys.argv[2]
         training_set = int(sys.argv[3])
         model_name = sys.argv[4]
@@ -235,80 +245,13 @@ if __name__ == "__main__":
         res_path = (
             None if "--res-path" not in sys.argv else named_arg("--res-path", 1)[0]
         )
-        main_evaluate_gbdt_reg.main(db_set, training_set, model_name, res_path)
-        # main_evaluate_gbdt_reg.main(db_set, training_set, model_name, hw_name, res_path)
-
-    # start training a model
-    #   2rd arg: a comma separated list of db_set names to train on.
-    #   3rd arg: id of the training set [integer]
-    # -REMOVED-  4th arg: name of the hardware for hw features
-    #   req arg: --num-joins {{int}} the number of joins
-    #   opt arg: --res-path {{str}} path to the res dir
-    elif run_config == "train-gbdt-cls":
-        db_sets = [db_set.strip() for db_set in sys.argv[2].split(",")]
-        training_set = int(sys.argv[3])
-        # hw_name = sys.argv[4]
-        res_path = (
-            None if "--res-path" not in sys.argv else named_arg("--res-path", 1)[0]
-        )
-        if "--num-joins" not in sys.argv:
-            print("Please specify the number of joins with --num-joins {{int}}")
-        num_joins = int(named_arg("--num-joins", 1)[0])
-        main_train_gbdt_cls.main(db_sets, training_set, num_joins, res_path)
-        # main_train_gbdt_cls.main(db_sets, training_set, hw_name, num_joins, res_path)
-
-    # Evaluate a trained ML model
-    #   2rd arg: name of the db_set to be evaluated
-    #   3rd arg: id of the training set [integer]
-    #   4th arg: name of the ML model
-    # -REMOVED-  4th arg: name of the hardware for hw features
-    #   opt arg: --res-path {{str}} path to the res dir
-    elif run_config == "eval-gbdt-cls":
-        db_sets = sys.argv[2]
-        training_set = int(sys.argv[3])
-        # hw_name = sys.argv[4]
-        model_name = sys.argv[4]
-        res_path = (
-            None if "--res-path" not in sys.argv else named_arg("--res-path", 1)[0]
-        )
-        main_evaluate_gbdt_cls.main(db_set, training_set, model_name, res_path)
-        # main_evaluate_gbdt_cls.main(db_set, training_set, model_name, hw_name, res_path)
-
-    # start training a model
-    #   2rd arg: a comma separated list of db_set names to train on.
-    #   3rd arg: id of the training set [integer]
-    # -REMOVED-  4th arg: name of the hardware for hw features
-    #   req arg: --num-joins {{int}} the number of joins
-    #   opt arg: --res-path {{str}} path to the res dir
-    elif run_config == "train-rf-cls":
-        db_sets = [db_set.strip() for db_set in sys.argv[2].split(",")]
-        training_set = int(sys.argv[3])
-        # hw_name = sys.argv[4]
-        res_path = (
-            None if "--res-path" not in sys.argv else named_arg("--res-path", 1)[0]
-        )
-        if "--num-joins" not in sys.argv:
-            print("Please specify the number of joins with --num-joins {{int}}")
-        num_joins = int(named_arg("--num-joins", 1)[0])
-        main_train_rf_cls.main(db_sets, training_set, num_joins, res_path)
-        # main_train_gbdt_cls.main(db_sets, training_set, hw_name, num_joins, res_path)
-
-    # Evaluate a trained ML model
-    #   2rd arg: name of the db_set to be evaluated
-    #   3rd arg: id of the training set [integer]
-    #   4th arg: name of the ML model
-    # -REMOVED-  4th arg: name of the hardware for hw features
-    #   opt arg: --res-path {{str}} path to the res dir
-    elif run_config == "eval-rf-cls":
-        db_sets = sys.argv[2]
-        training_set = int(sys.argv[3])
-        # hw_name = sys.argv[4]
-        model_name = sys.argv[4]
-        res_path = (
-            None if "--res-path" not in sys.argv else named_arg("--res-path", 1)[0]
-        )
-        main_evaluate_rf_cls.main(db_set, training_set, model_name, res_path)
-        # main_evaluate_gbdt_cls.main(db_set, training_set, model_name, hw_name, res_path)
-
+        if run_config == "eval-cls" :
+            if "--flex" in sys.argv:
+                main_evaluate_cls_flex.main(db_set, training_set, model_name, res_path)
+            else:
+                main_evaluate_cls_fix.main(db_set, training_set, model_name, res_path)
+        else: # run_config == "train-reg"
+            main_evaluate_reg.main(db_set, training_set, model_name, res_path)
+        
     else:
         print("Selected RUN configuration not specified.")

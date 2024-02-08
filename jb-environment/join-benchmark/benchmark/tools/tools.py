@@ -1,4 +1,5 @@
 from io import TextIOWrapper
+import os
 from typing import TypeVar
 
 from benchmark.operations.operations_real import TDFs
@@ -57,3 +58,8 @@ T = TypeVar("T")
 
 def flatten(arr: list[list[T]]) -> list[T]:
     return [b for a in arr for b in a]
+
+def ensure_dir(file_path):
+    directory = os.path.dirname(file_path)
+    if not os.path.exists(directory):
+        os.makedirs(directory)

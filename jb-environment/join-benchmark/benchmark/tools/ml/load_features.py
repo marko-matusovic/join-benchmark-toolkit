@@ -11,7 +11,7 @@ from benchmark.tools.ml.types import (
 
 
 def load_data_features(
-    db_set: str, training_set: int, res_path: str
+    db_set: str, training_set: int, res_path: str, normalize=False
 ) -> AllDataFeatures:
     # Read the CSV file
     file = f"{res_path}/training_data/{db_set}/set_{training_set}_features_data.csv"
@@ -60,6 +60,9 @@ def load_data_features(
     #         if jo.count(",") + 1 != len(all_features[db_set][jo]):
     #             del all_features[db_set][jo]
 
+    if normalize:
+        return normalize_features(all_features)
+
     return all_features
 
 
@@ -90,3 +93,50 @@ def load_hw_features(hw_name, res_path) -> list[float]:
             joins_mean["query_nn_lg"],
         ]
     ]
+
+
+def normalize_features(all_features: AllDataFeatures) -> AllDataFeatures:
+    max_len = 0
+    max_uni = 0
+    max_rge = 0
+    for query in all_features:
+        for jo in all_features[query]:
+            for jid in all_features[query][jo]:
+                f = all_features[query][jo][jid]
+                max_len = max(max_len, f.table_1.length)
+                max_len = max(max_len, f.table_2.length)
+                max_len = max(max_len, f.cross.len_res)
+                max_len = max(max_len, f.cross.len_possible_max)
+                max_len = max(max_len, f.cross.len_unique_max)
+                max_uni = max(max_len, f.table_1.unique)
+                max_uni = max(max_len, f.table_2.unique)
+                max_rge = max(max_len, f.table_1.bounds_range)
+                max_rge = max(max_len, f.table_2.bounds_range)
+
+    scaling_len = 1.0 / max_len
+    scaling_uni = 1.0 / max_uni
+    scaling_rge = 1.0 / max_rge
+
+    for query in all_features:
+        for jo in all_features[query]:
+            for jid in all_features[query][jo]:
+                f = all_features[query][jo][jid]
+                all_features[query][jo][jid] = DataFeatures(
+                    table_1=f.table_1._replace(
+                        length=f.table_1.length * scaling_len,
+                        unique=f.table_1.unique * scaling_uni,
+                        bounds_range=f.table_1.bounds_range * scaling_rge,
+                    ),
+                    table_2=f.table_2._replace(
+                        length=f.table_2.length * scaling_len,
+                        unique=f.table_2.unique * scaling_uni,
+                        bounds_range=f.table_2.bounds_range * scaling_rge,
+                    ),
+                    cross=f.cross._replace(
+                        len_res=f.cross.len_res * scaling_len,
+                        len_possible_max=f.cross.len_possible_max * scaling_len,
+                        len_unique_max=f.cross.len_unique_max * scaling_len,
+                    ),
+                )
+
+    return all_features

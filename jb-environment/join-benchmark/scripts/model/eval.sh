@@ -2,73 +2,48 @@
 
 CURRENT_DIR=$(dirname "$0")
 
-# 1st {{ml_model: str}}             -> 
-# 2st {{model1,model2: list[str]}}  -> model(s) to train on
-# 3nd {{model3: str}}               -> model to evaluate
-# 4rd {{set: int}}                  -> the set number
-# --reg {{join_in_block: int}}      -> number of joins in a block
-# --cls {{num_joins: int}}          -> number of join
+# 1st {{ML_TYPE: str}}              -> cls or reg
+# 2st {{ML_MODEL: str}}             -> the name of the ML model to use
+# 3st {{model1,model2: list[str]}}  -> model(s) to train on
+# 4nd {{model3: str}}               -> model to evaluate
+# 5rd {{set: int}}                  -> the set number
+# 6th {{number: int}}               -> number (of joins in block (reg) or joins in query (cls))
 # --train                           -> forces the model to train again
 
-ML_MODEL=$1
+ML_TYPE=$1
+ML_MODEL=$2
 
 # Parse the first argument as a string: models to train on
-MODELS_TO_TRAIN_CM="$2"                        # separated with commas
+MODELS_TO_TRAIN_CM="$3"                        # separated with commas
 MODELS_TO_TRAIN_US="${MODELS_TO_TRAIN_CM/,/_}" # separated with underscores
 
-# Parse the second argument as the model to evaluate
-MODEL_TO_EVAL="$3"
-
-# Parse the third argument as the set number
-SET_NUMBER="$4"
+MODEL_TO_EVAL="$4"
+SET_NUMBER="$5"
+NUM_OPTION="$6"
 
 TRAIN=false
 if [[ $@ == *--train* ]]; then
     TRAIN=true
 fi
 
-REG_OPTION=""
-CLS_OPTION=""
+# ====================
 
-while (("$#")); do
-    case "$1" in
-    --reg)
-        REG_OPTION="$2"
-        shift 2
-        ;;
-    --cls)
-        CLS_OPTION="$2"
-        shift 2
-        ;;
-    *)
-        shift
-        ;;
-    esac
-done
 
-# Exit if invalid --cls and --reg options
-if [[ (-z "$CLS_OPTION" && -z "$REG_OPTION") || (! -z "$CLS_OPTION" && ! -z "$REG_OPTION") ]]; then
-    echo "Error, you must specify exactly one of --cls {num_joins: int} or --reg {join_in_block: int} arguments."
-    exit 1
-fi
-
-if [[ (! -z "$CLS_OPTION") ]]; then
-    ML="cls"
-    MODEL_NAME="${ML_MODEL}_cls/set_${SET_NUMBER}_NJO${CLS_OPTION}_${MODELS_TO_TRAIN_US}"
+if [[ "$ML_TYPE" == "cls" ]]; then
+    MODEL_NAME="cls/${ML_MODEL}/set_${SET_NUMBER}_NJO${NUM_OPTION}_${MODELS_TO_TRAIN_US}"
     MODEL_PATH="${CURRENT_DIR}/../../results/models/${MODEL_NAME}.pickle"
-    TRAIN_OPTION="--num-joins ${CLS_OPTION}"
+    TRAIN_OPTION="--num-joins ${NUM_OPTION}"
 fi
-if [[ (! -z "$REG_OPTION") ]]; then
-    ML="reg"
-    MODEL_NAME="${ML_MODEL}_reg/set_${SET_NUMBER}_BS${REG_OPTION}_${MODELS_TO_TRAIN_US}"
+if [[ "$ML_TYPE" == "reg" ]]; then
+    MODEL_NAME="reg/${ML_MODEL}/set_${SET_NUMBER}_BS${NUM_OPTION}_${MODELS_TO_TRAIN_US}"
     MODEL_PATH="${CURRENT_DIR}/../../results/models/${MODEL_NAME}.pickle"
-    TRAIN_OPTION="--joins-in-block ${REG_OPTION}"
+    TRAIN_OPTION="--joins-in-block ${NUM_OPTION}"
 fi
 
 # Parse the --train option
 # also if there is no model file, we have to train!
 if [[ $TRAIN == true ]] || [[ ! -f "$MODEL_PATH" ]]; then
-    python3 main.py train-${ML_MODEL}-${ML} ${MODELS_TO_TRAIN_CM} ${SET_NUMBER} ${TRAIN_OPTION}
+    python3 main.py train-${ML_TYPE} ${MODELS_TO_TRAIN_CM} ${SET_NUMBER} ${TRAIN_OPTION} --ml-model ${ML_MODEL}
 fi
 
-python3 main.py eval-${ML_MODEL}-${ML} ${MODEL_TO_EVAL} ${SET_NUMBER} ${MODEL_NAME}
+python3 main.py eval-${ML_TYPE} ${MODEL_TO_EVAL} ${SET_NUMBER} ${MODEL_NAME}

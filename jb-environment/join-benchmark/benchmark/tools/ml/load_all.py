@@ -4,9 +4,9 @@ from benchmark.tools.ml.types import AllDataFeatures, AllMeasurements
 
 
 def load_all(
-    db_set: str, training_set: int, res_path: str
+    db_set: str, training_set: int, res_path: str, normalize=False
 ) -> tuple[AllDataFeatures, AllMeasurements]:
-    features = load_data_features(db_set, training_set, res_path)
+    features = load_data_features(db_set, training_set, res_path, normalize)
     measurements = load_measurements(db_set, training_set, res_path)
 
     # Find the intersection
