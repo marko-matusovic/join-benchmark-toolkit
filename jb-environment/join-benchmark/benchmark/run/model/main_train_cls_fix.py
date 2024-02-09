@@ -30,7 +30,9 @@ def main(
         res_path = "./results"
 
     if ml_model == "gbdt":  # 56.9  52.9  54.9  # normalized 68.3  62.7  65.0
-        model = GradientBoostingClassifier()
+        model = GradientBoostingClassifier(
+            max_depth=15, learning_rate=0.1
+        )
     elif ml_model == "rf":  # 55.6  64.7  66.0  # normalized 45.1  42.2  37.3
         model = RandomForestClassifier()
     elif ml_model == "et":  # 70.0  73.9  68.3  # normalized 69.3  69.3  69.0

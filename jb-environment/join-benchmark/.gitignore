@@ -3,3 +3,5 @@ data/**/stats
 cufile.log
 
 **/*.tmp*
+
+results/models

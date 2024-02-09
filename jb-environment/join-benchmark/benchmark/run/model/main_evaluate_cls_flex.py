@@ -58,9 +58,6 @@ def main(
         if real == pred:
             count += 1
 
-    print(f"correct {count} / all {len(X)}")
-    print(f"Success rate: {100.0 * count / len(X)}%")
-    
     dir_path = f"{res_path}/figs/model-eval/{model_name}/{db_set}"
     if not os.path.exists(dir_path):
         os.makedirs(dir_path)
@@ -142,7 +139,7 @@ def main(
         s2 = pd.Series(pred_values, index=range(len(real_values)))
         correlation = s1.corr(s2)
         if not math.isnan(correlation):
-            avg_cor.append(correlation)
+            avg_cor.append((correlation, num_jo))
         ax.text(
             0.5,
             0.90,
@@ -161,4 +158,13 @@ def main(
 
         print(f"Query: {query:12} corr: {correlation:10.6}")
 
-    print(f"Average correlation: {np.mean(avg_cor)}")
+    total_cor = 0.0
+    total_jo = 0
+    for (c, n) in avg_cor:
+        total_cor += c * n
+        total_jo += n
+        
+    print(f"Correct {count} / all {len(X)}")
+    print(f"Success rate: {100.0 * count / len(X)}%")
+
+    print(f"Average correlation: {total_cor / total_jo}")
