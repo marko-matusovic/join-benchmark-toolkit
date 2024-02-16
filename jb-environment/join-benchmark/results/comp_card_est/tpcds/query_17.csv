@@ -1,0 +1,9 @@
+operation_name;T1_name;T2_name;T1_real_len;T1_approx_len;T2_real_len;T2_approx_len;R_real_len;R_approx_len;real_selectivity;approx_selectivity
+// Timestamp 2024-02-16T13:33:39
+// Perm: [0,1,2,3,4,5,6,7,8,9]
+((T0)S(d1.d_quarter_name)=['2001Q1']);(d1);;73049;73049.0;0;0;91;91.0;0.001245739161384824;0.001245739161384824
+((T0)S(d2.d_quarter_name)=['2001Q1', '2001Q2', '2001Q3']);(d2);;73049;73049.0;0;0;274;274.0;0.003750906925488371;0.003750906925488371
+((T0)S(d3.d_quarter_name)=['2001Q1', '2001Q2', '2001Q3']);(d3);;73049;73049.0;0;0;274;274.0;0.003750906925488371;0.003750906925488371
+((T0)X(T1)ON(d1.d_date_sk)=(store_sales.ss_sold_date_sk));((d1)S(d1.d_quarter_name)=['2001Q1']);(store_sales);91;91.0;2880404;2880404.0;80124;3571.5375180934534;0.000305680563033351;1.3625750080194998e-05
+((T1)X(T0)ON(item.i_item_sk)=(store_sales.ss_item_sk));(((d1)S(d1.d_quarter_name)=['2001Q1'])X(store_sales)ON(d1.d_date_sk)=(store_sales.ss_sold_date_sk));(item);80124;3571.5375180934534;18000;18000.0;80124;12704.57169709775;5.555555555555556e-05;0.00019762064241297
+((T1)X(T0)ON(store.s_store_sk)=(store_sales.ss_store_sk));((item)X(((d1)S(d1.d_quarter_name)=['2001Q1'])X(store_sales)ON(d1.d_date_sk)=(store_sales.ss_sold_date_sk))ON(item.i_item_sk)=(store_sales.ss_item_sk));(store);80124;12704.57169709775;12;12.0;78239;9995.62870444439;0.08137283044614181;0.06556451319755895

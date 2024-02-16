@@ -180,16 +180,63 @@ fi;
 
 
 
-
 if [ $2 = 'tpcds' ]; then
     $1 tpcds/query_3 2 ${@:3}
-    $1 tpcds/query_6 4 ${@:3}
-    $1 tpcds/query_7 4 ${@:3}
     $1 tpcds/query_12 2 ${@:3}
-    $1 tpcds/query_15 3 ${@:3}
-    $1 tpcds/query_17 7 ${@:3}
-    $1 tpcds/query_18 6 ${@:3}
-    $1 tpcds/query_19 5 ${@:3}
+    $1 tpcds/query_17 10 ${@:3}
     $1 tpcds/query_20 2 ${@:3}
-    # $1 tpcds/query_ ${@:3}
+    $1 tpcds/query_22 2 ${@:3}
+    $1 tpcds/query_25 10 ${@:3}
+    $1 tpcds/query_27 4 ${@:3}
+    $1 tpcds/query_36 3 ${@:3}
+    $1 tpcds/query_42 2 ${@:3}
+    $1 tpcds/query_43 2 ${@:3}
+    $1 tpcds/query_50 6 ${@:3}
+    $1 tpcds/query_52 2 ${@:3}
+    $1 tpcds/query_55 2 ${@:3}
+    $1 tpcds/query_96 3 ${@:3}
+fi;
+
+
+if [ $2 = 'tpcds/query_3' ]; then
+    $1 tpcds/query_3 2 ${@:3}
+fi;
+if [ $2 = 'tpcds/query_12' ]; then
+    $1 tpcds/query_12 2 ${@:3}
+fi;
+if [ $2 = 'tpcds/query_17' ]; then
+    $1 tpcds/query_17 10 ${@:3}
+fi;
+if [ $2 = 'tpcds/query_20' ]; then
+    $1 tpcds/query_20 2 ${@:3}
+fi;
+if [ $2 = 'tpcds/query_22' ]; then
+    $1 tpcds/query_22 2 ${@:3}
+fi;
+if [ $2 = 'tpcds/query_25' ]; then
+    $1 tpcds/query_25 10 ${@:3}
+fi;
+if [ $2 = 'tpcds/query_27' ]; then
+    $1 tpcds/query_27 4 ${@:3}
+fi;
+if [ $2 = 'tpcds/query_36' ]; then
+    $1 tpcds/query_36 3 ${@:3}
+fi;
+if [ $2 = 'tpcds/query_42' ]; then
+    $1 tpcds/query_42 2 ${@:3}
+fi;
+if [ $2 = 'tpcds/query_43' ]; then
+    $1 tpcds/query_43 2 ${@:3}
+fi;
+if [ $2 = 'tpcds/query_50' ]; then
+    $1 tpcds/query_50 6 ${@:3}
+fi;
+if [ $2 = 'tpcds/query_52' ]; then
+    $1 tpcds/query_52 2 ${@:3}
+fi;
+if [ $2 = 'tpcds/query_55' ]; then
+    $1 tpcds/query_55 2 ${@:3}
+fi;
+if [ $2 = 'tpcds/query_96' ]; then
+    $1 tpcds/query_96 3 ${@:3}
 fi;

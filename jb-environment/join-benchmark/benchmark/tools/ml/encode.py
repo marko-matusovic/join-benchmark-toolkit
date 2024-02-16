@@ -101,6 +101,7 @@ def encode_query_reg(
 
     return (xs, ys)
 
+
 # Encodes a query into a list of Xs and Ys.
 #
 # If no "jo" is given, it iterates through all possible join orders
@@ -182,7 +183,7 @@ def encode_cls_jo_pair_flex(
         for _ in range(i):
             x.extend(encode_feature(None))
             x.extend(encode_feature(None))
-        for (j1, j2) in zip(jo1.split(','), jo2.split(',')):
+        for j1, j2 in zip(jo1.split(","), jo2.split(",")):
             x.extend(encode_feature(data_features[query][jo1][j1]))
             x.extend(encode_feature(data_features[query][jo2][j2]))
         for _ in range(20 - num_joins - i):

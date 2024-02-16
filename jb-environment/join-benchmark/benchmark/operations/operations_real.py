@@ -20,6 +20,7 @@ class Operations_Real(Operations[TDFs, None]):
         def join(dfs: TDFs) -> None:
             (table_name_1, field_name_1) = self.find_names(dfs, field_name_1_in)
             (table_name_2, field_name_2) = self.find_names(dfs, field_name_2_in)
+            # print(f"joining: ({table_name_1}) {field_name_1} = ({table_name_2}) {field_name_2}")
             if table_name_1 == table_name_2:
                 self.join_filter_eq(dfs, table_name_1, field_name_1, field_name_2)
                 return
@@ -58,8 +59,8 @@ class Operations_Real(Operations[TDFs, None]):
             ]
 
         return filter
-    
-    def filter_by(self, field_name_in:str, value: TVal, ops: str, op):
+
+    def filter_by(self, field_name_in: str, value: TVal, ops: str, op):
         def filter(dfs: TDFs) -> None:
             (table_name, field_name) = self.find_names(dfs, field_name_in)
             table = dfs[table_name]
@@ -67,22 +68,23 @@ class Operations_Real(Operations[TDFs, None]):
             dfs[f"({table_name}S({field_name}){ops}{value})"] = table.loc[
                 op(table[field_name], value)
             ]
+
         return filter
 
     def filter_field_ne(self, field_name_in: str, value: TVal):
-        return self.filter_by(field_name_in, value, '!=', lambda a,b: a!=b)
+        return self.filter_by(field_name_in, value, "!=", lambda a, b: a != b)
 
     def filter_field_ge(self, field_name_in: str, value: TVal):
-        return self.filter_by(field_name_in, value, '>=', lambda a,b: a>=b)
+        return self.filter_by(field_name_in, value, ">=", lambda a, b: a >= b)
 
     def filter_field_gt(self, field_name_in: str, value: TVal):
-        return self.filter_by(field_name_in, value, '>', lambda a,b: a>b)
+        return self.filter_by(field_name_in, value, ">", lambda a, b: a > b)
 
     def filter_field_le(self, field_name_in: str, value: TVal):
-        return self.filter_by(field_name_in, value, '<=', lambda a,b: a<=b)
+        return self.filter_by(field_name_in, value, "<=", lambda a, b: a <= b)
 
     def filter_field_lt(self, field_name_in: str, value: TVal):
-        return self.filter_by(field_name_in, value, '<', lambda a,b: a<b)
+        return self.filter_by(field_name_in, value, "<", lambda a, b: a < b)
 
     def filter_field_like(self, field_name_in: str, values: list[str]):
         def filter(dfs: TDFs) -> None:
@@ -109,24 +111,26 @@ class Operations_Real(Operations[TDFs, None]):
     # PRIVATE
     def like_index(self, col: Any, value: str) -> Any:
         # disallow regex expresions
-        value = value.replace("\\", "\\\\")
-        value = value.replace(".", "\\.")
-        value = value.replace("(", "\\(")
-        value = value.replace(")", "\\)")
-        value = value.replace("[", "\\[")
-        value = value.replace("]", "\\]")
-        value = value.replace("|", "\\|")
-        value = value.replace("{", "\\{")
-        value = value.replace("}", "\\}")
-        value = value.replace("*", "\\*")
-        value = value.replace("+", "\\+")
-        value = value.replace("?", "\\?")
-        value = value.replace("^", "\\^")
-        value = value.replace("$", "\\$")
-        value = value.replace("/", "\\/")
-        value = value.replace("-", "\\-")
-        # allow wildcards
-        value = value.replace("%", ".*")
+        value = (
+            value.replace("\\", "\\\\")
+            .replace(".", "\\.")
+            .replace("(", "\\(")
+            .replace(")", "\\)")
+            .replace("[", "\\[")
+            .replace("]", "\\]")
+            .replace("|", "\\|")
+            .replace("{", "\\{")
+            .replace("}", "\\}")
+            .replace("*", "\\*")
+            .replace("+", "\\+")
+            .replace("?", "\\?")
+            .replace("^", "\\^")
+            .replace("$", "\\$")
+            .replace("/", "\\/")
+            .replace("-", "\\-")
+            # allow wildcards
+            .replace("%", ".*")
+        )
         if get_engine_name() == "cpu":
             return col.str.contains(f"^{value}$", na=True)
         elif get_engine_name() == "gpu":
@@ -141,7 +145,7 @@ class Operations_Real(Operations[TDFs, None]):
             if lookup_field in dfs[table]:
                 return (table, lookup_field)
             for field in dfs[table]:
-                if lookup_field == field[field.rfind(".") + 1 :]:
+                if lookup_field == field.split(".")[-1]:
                     return (table, field)
         print("ERROR: No table found for field '{}'".format(lookup_field))
         exit(1)

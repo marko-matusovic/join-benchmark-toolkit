@@ -11,5 +11,5 @@ QUERY=$1
 NUM_JOINS=$2
 while read PERM; do
     echo "// Perm: [$PERM]" >> "results/comp_card_est/$1.csv"
-    python3 main.py comp_card_est $QUERY $PERM
+    python3 main.py comp_card_est $QUERY --jo $PERM
 done <scripts/perms/$NUM_JOINS.csv

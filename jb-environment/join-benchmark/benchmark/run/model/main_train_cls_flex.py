@@ -21,7 +21,7 @@ def main(
     # hw_name: str,
     ml_model: str | None = None,
     res_path: str | None = None,
-    normalize: bool = False
+    normalize: bool = False,
 ):
     if ml_model == None:
         ml_model = "gbdt"

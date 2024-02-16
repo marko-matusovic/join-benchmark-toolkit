@@ -82,11 +82,13 @@ class Data(NamedTuple):
 Res = tuple[float, float]
 
 
-def find_table(schema: TSchema, field_name: str) -> str:
+def find_table(schema: TSchema, field_name: str) -> tuple[str, str]:
     for table_name in schema:
+        if field_name in schema[table_name]:
+            return (table_name, field_name)
         full_field_name = f"{table_name}.{field_name}"
-        if field_name in schema[table_name] or full_field_name in schema[table_name]:
-            return table_name
+        if full_field_name in schema[table_name]:
+            return (table_name, full_field_name)
     print(f"ERROR: No table with field ({field_name}) found!")
     exit(1)
 
@@ -243,8 +245,8 @@ class Operations_CostModel(Operations[Data, Res]):
             values = [values]
 
         def filter(data: Data):
-            table_name = find_table(data.schema, field_name)
-            short_field_name = field_name.split(".")[-1]
+            (table_name, full_field_name) = find_table(data.schema, field_name)
+            short_field_name = full_field_name.split(".")[-1]
             stats = data.stats[table_name]
 
             # histogram
@@ -269,7 +271,9 @@ class Operations_CostModel(Operations[Data, Res]):
 
             data.selects[table_name].append(selectivity)
 
-            cluster_name = f"({data.cluster_names[table_name]}S({field_name})={values})"
+            cluster_name = (
+                f"({data.cluster_names[table_name]}S({full_field_name})={values})"
+            )
             for tbl in data.clusters[table_name]:
                 data.cluster_names[tbl] = cluster_name
 
@@ -279,8 +283,8 @@ class Operations_CostModel(Operations[Data, Res]):
 
     def filter_field_ne(self, field_name: str, value: TVal):
         def filter(data: Data):
-            table_name = find_table(data.schema, field_name)
-            short_field_name = field_name.split(".")[-1]
+            (table_name, full_field_name) = find_table(data.schema, field_name)
+            short_field_name = full_field_name.split(".")[-1]
             stats = data.stats[table_name]
 
             # histogram
@@ -296,7 +300,9 @@ class Operations_CostModel(Operations[Data, Res]):
                 selectivity = 1 - (1.0 / stats.column[short_field_name].unique)
 
             data.selects[table_name].append(selectivity)
-            cluster_name = f"({data.cluster_names[table_name]}S({field_name})!={value})"
+            cluster_name = (
+                f"({data.cluster_names[table_name]}S({full_field_name})!={value})"
+            )
             for tbl in data.clusters[table_name]:
                 data.cluster_names[tbl] = cluster_name
 
@@ -311,8 +317,8 @@ class Operations_CostModel(Operations[Data, Res]):
         comp: Callable[[TVal, TVal], bool],
     ):
         def filter(data: Data):
-            table_name = find_table(data.schema, field_name)
-            short_field_name = field_name.split(".")[-1]
+            (table_name, full_field_name) = find_table(data.schema, field_name)
+            short_field_name = full_field_name.split(".")[-1]
             table_stats = data.stats[table_name]
             column_stats = table_stats.column[short_field_name]
 
@@ -388,19 +394,19 @@ class Operations_CostModel(Operations[Data, Res]):
 
             if comp == np.greater_equal:
                 cluster_name = (
-                    f"({data.cluster_names[table_name]}S({field_name})>={value})"
+                    f"({data.cluster_names[table_name]}S({full_field_name})>={value})"
                 )
             elif comp == np.greater:
                 cluster_name = (
-                    f"({data.cluster_names[table_name]}S({field_name})>{value})"
+                    f"({data.cluster_names[table_name]}S({full_field_name})>{value})"
                 )
             elif comp == np.less_equal:
                 cluster_name = (
-                    f"({data.cluster_names[table_name]}S({field_name})<={value})"
+                    f"({data.cluster_names[table_name]}S({full_field_name})<={value})"
                 )
             elif comp == np.less:
                 cluster_name = (
-                    f"({data.cluster_names[table_name]}S({field_name})<{value})"
+                    f"({data.cluster_names[table_name]}S({full_field_name})<{value})"
                 )
             else:
                 print("ERROR: Unsupported comp operation")
@@ -427,13 +433,13 @@ class Operations_CostModel(Operations[Data, Res]):
 
     def filter_field_like(self, field_name: str, values: list[str]):
         def filter(data: Data):
-            table_name = find_table(data.schema, field_name)
-            stats = data.stats[table_name]
+            (table_name, full_field_name) = find_table(data.schema, field_name)
+            stats = data.stats[full_field_name]
             n_matches = sum([1 + value.count("%") for value in values])
             selectivity = bound(0.0, DEFAULT_SEL_MATCH * n_matches, 1.0)
             data.selects[table_name].append(selectivity)
             cluster_name = (
-                f"({data.cluster_names[table_name]}S({field_name})LIKE{values})"
+                f"({data.cluster_names[table_name]}S({full_field_name})LIKE{values})"
             )
             for tbl in data.clusters[table_name]:
                 data.cluster_names[tbl] = cluster_name
@@ -443,8 +449,8 @@ class Operations_CostModel(Operations[Data, Res]):
 
     def filter_field_not_like(self, field_name: str, value: str):
         def filter(data: Data):
-            table_name = find_table(data.schema, field_name)
-            stats = data.stats[table_name]
+            (table_name, full_field_name) = find_table(data.schema, field_name)
+            stats = data.stats[full_field_name]
             n_matches = 1 + value.count("%")
             selectivity = bound(0.0, 1.0 - n_matches * DEFAULT_SEL_MATCH, 1.0)
             data.selects[table_name].append(selectivity)
@@ -464,10 +470,10 @@ class Operations_CostModel(Operations[Data, Res]):
     ) -> Callable[[Data], Res]:
         def join(data: Data) -> Res:
             # ========== Logical Merging ==========
-            table_name_1 = find_table(data.schema, field_name_1)
-            table_name_2 = find_table(data.schema, field_name_2)
-            short_field_name_1 = field_name_1.split(".")[-1]
-            short_field_name_2 = field_name_2.split(".")[-1]
+            (table_name_1, full_field_name_1) = find_table(data.schema, field_name_1)
+            (table_name_2, full_field_name_2) = find_table(data.schema, field_name_2)
+            short_field_name_1 = full_field_name_1.split(".")[-1]
+            short_field_name_2 = full_field_name_2.split(".")[-1]
 
             cluster_name_1 = data.cluster_names[table_name_1]
             cluster_name_2 = data.cluster_names[table_name_2]
@@ -476,11 +482,13 @@ class Operations_CostModel(Operations[Data, Res]):
 
             # Figure out the new cluster name
             if cluster_name_1 != cluster_name_2:
-                cluster_name = f"({data.cluster_names[table_name_1]}X{data.cluster_names[table_name_2]}ON({field_name_1})=({field_name_2}))"
+                cluster_name = f"({data.cluster_names[table_name_1]}X{data.cluster_names[table_name_2]}ON({full_field_name_1})=({full_field_name_2}))"
                 cluster = cluster_1.union(cluster_2)
                 already_joined = False
             else:
-                cluster_name = f"({cluster_name_1}XS({field_name_1})=({field_name_2}))"
+                cluster_name = (
+                    f"({cluster_name_1}XS({full_field_name_1})=({full_field_name_2}))"
+                )
                 cluster = cluster_1
                 already_joined = True
 
@@ -489,8 +497,8 @@ class Operations_CostModel(Operations[Data, Res]):
                 data.clusters[tbl] = cluster
                 data.cluster_names[tbl] = cluster_name
 
-            if already_joined:
-                return (0, 0)
+            # if already_joined:
+            #     return (0, 0)
 
             # ========== Cardinality Estimate ==========
 
@@ -505,16 +513,19 @@ class Operations_CostModel(Operations[Data, Res]):
                 selectivity = sel_join_hist(hist_1, hist_2)
             else:
                 # Cannot use histograms, calculating selectivity naively with # unique values
-                next_cardinality = max(stats_1.length, stats_2.length) * min(
+                len_1 = total_length_of_cluster(data, cluster_1)
+                len_2 = total_length_of_cluster(data, cluster_2)
+                next_cardinality = max(len_1, len_2) * min(
                     col_stats_1.unique, col_stats_2.unique
                 )
-                selectivity = 1.0 * next_cardinality / next_cardinality
+                max_cardinality = len_1 * len_2
+                selectivity = 1.0 * next_cardinality / max_cardinality
 
             # ========== Cost Model ==========
 
             total_length_1 = total_length_of_cluster(data, cluster_1)
             total_length_2 = total_length_of_cluster(data, cluster_2)
-            total_length = total_length_of_cluster(data, cluster)
+            total_length = total_length_of_cluster(data, cluster) * selectivity
 
             # Time Cost Model
             age_1 = calc_age_mult(data, table_name_1)

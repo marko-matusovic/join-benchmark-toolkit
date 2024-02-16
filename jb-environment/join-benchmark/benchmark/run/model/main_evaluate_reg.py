@@ -19,11 +19,9 @@ def main(
     if res_path == None:
         res_path = "./results"
 
-    normalize=False
+    normalize = False
     # load the model
-    model = pkl.load(
-        open(f"{res_path}/models/{model_name}.pickle", "rb")
-    )
+    model = pkl.load(open(f"{res_path}/models/{model_name}.pickle", "rb"))
 
     join_in_block = int(model_name.split("/")[-1].split("_")[2][2:])
 
@@ -123,7 +121,7 @@ def main(
 
     cor_sum = 0.0
     total_jos = 0.0
-    for (cr, cn) in avg_cor:
+    for cr, cn in avg_cor:
         cor_sum += cr * cn
         total_jos += cn
     print(f"Average correlation: {cor_sum / total_jos}")

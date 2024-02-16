@@ -59,6 +59,7 @@ T = TypeVar("T")
 def flatten(arr: list[list[T]]) -> list[T]:
     return [b for a in arr for b in a]
 
+
 def ensure_dir(file_path):
     directory = os.path.dirname(file_path)
     if not os.path.exists(directory):

@@ -6,6 +6,7 @@ TARGET_DIR=${3:-$PROJECT_DIR'/jb-environment/join-benchmark/data'}
 # TPC-DS
 function tpcds() {
     cd $PROJECT_DIR/tpcds-kit
+    rm -rf tmp
     mkdir tmp
     cd tmp
     mkdir tables

@@ -32,11 +32,9 @@ def main(
 
     # create a gradient boosting regressor
     normalize = False
-    
+
     normalize = False
-    model = pkl.load(
-        open(f"{res_path}/models/{model_name}.pickle", "rb")
-    )
+    model = pkl.load(open(f"{res_path}/models/{model_name}.pickle", "rb"))
 
     print(f"Model:", model_name)
 
@@ -62,12 +60,12 @@ def main(
     dir_path = f"{res_path}/figs/model-eval/{model_name}/{db_set}"
     if not os.path.exists(dir_path):
         os.makedirs(dir_path)
-        
+
     avg_cor = []
 
     queries = set(data_features.keys()) & set(measurements.keys())
     for query in queries:
-        if list(data_features[query].keys())[0].count(',') + 1 != num_joins:
+        if list(data_features[query].keys())[0].count(",") + 1 != num_joins:
             continue
         jos = set(data_features[query].keys()) & set(measurements[query].keys())
         jos = sorted(list(jos))
@@ -82,19 +80,19 @@ def main(
         ]
 
         def compare(jo1, jo2):
-            (x,_) = encode_cls_jo_pair(data_features, measurements, query, (jo1, jo2))
+            (x, _) = encode_cls_jo_pair(data_features, measurements, query, (jo1, jo2))
             pred = model.predict(np.array([x]))[0]
             return pred * 2 - 1
 
         pred_order = sorted(jos, key=functools.cmp_to_key(compare))
-        
+
         print(query)
         print("true order (jo)", true_order)
         print("pred order (jo)", pred_order)
-        
+
         real_values = [sum(measurements[query][jo].joins) for jo in true_order]
         pred_values = [sum(measurements[query][jo].joins) for jo in pred_order]
-        
+
         print("true order (time)", real_values)
         print("pred order (time)", pred_values)
 
@@ -163,10 +161,10 @@ def main(
 
     total_cor = 0.0
     total_jo = 0
-    for (c, n) in avg_cor:
+    for c, n in avg_cor:
         total_cor += c * n
         total_jo += n
-        
+
     print(f"Correct {count} / all {len(X)}")
     print(f"Success rate: {100.0 * count / len(X)}%")
 

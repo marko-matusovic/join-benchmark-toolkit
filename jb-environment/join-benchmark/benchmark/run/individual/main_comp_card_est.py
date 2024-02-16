@@ -20,33 +20,45 @@ def main(db_path: str, db_set: str, query: str, perm: list[int] | None = None):
     else:
         file = open(path, "a")
 
+    print("Get real instructions")
     real_instructions = get_instruction_set(db_path, db_set, query, Operations_Real())
+    print("Get cost model instructions")
     approx_instructions = get_instruction_set(
         db_path, db_set, query, Operations_CostModel()
     )
 
+    print("Init real operations")
     dfs = real_instructions.s1_init()
+    print("Init cost model approximations")
     data = approx_instructions.s1_init()
 
+    print("Executing filters", end="")
     for f in range(len(real_instructions.s2_filters)):
+        print(".", end="")
         [dfs_s, data_s] = deepcopy([dfs, data])
         real_instructions.s2_filters[f](dfs)
         approx_instructions.s2_filters[f](data)
         measure(file, dfs_s, data_s, dfs, data)
+    print()
 
+    print("Executing joins", end="")
     if perm == None:
         perm = list(range(len(real_instructions.s3_joins)))
     for p in perm:
+        print(".", end="")
         [dfs_s, data_s] = deepcopy([dfs, data])
         real_instructions.s3_joins[p](dfs)
         approx_instructions.s3_joins[p](data)
         measure(file, dfs_s, data_s, dfs, data)
+    print()
+
+    file.close()
+
+    print(dfs.keys())
 
     if len(dfs) != 1:
         print("ERROR: More than one cluster after all joins")
         exit(1)
-
-    file.close()
 
     print("Completed successfully")
 

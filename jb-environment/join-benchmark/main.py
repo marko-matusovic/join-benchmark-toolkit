@@ -219,17 +219,25 @@ if __name__ == "__main__":
             None if "--res-path" not in sys.argv else named_arg("--res-path", 1)[0]
         )
         normalize = "--normalize" in sys.argv
-        if run_config == "train-cls" :
+        if run_config == "train-cls":
             if "--num-joins" in sys.argv:
                 num_joins = int(named_arg("--num-joins", 1)[0])
-                main_train_cls_fix.main(db_sets, training_set, num_joins, ml_model, res_path, normalize)
+                main_train_cls_fix.main(
+                    db_sets, training_set, num_joins, ml_model, res_path, normalize
+                )
             elif "--flex":
-                main_train_cls_flex.main(db_sets, training_set, ml_model, res_path, normalize)
-        else: # run_config == "train-reg"
+                main_train_cls_flex.main(
+                    db_sets, training_set, ml_model, res_path, normalize
+                )
+        else:  # run_config == "train-reg"
             if "--joins-in-block" not in sys.argv:
-                print("Please specify the number of joins with --joins-in-block {{int}}")
+                print(
+                    "Please specify the number of joins with --joins-in-block {{int}}"
+                )
             joins_in_block = int(named_arg("--joins-in-block", 1)[0])
-            main_train_reg.main(db_sets, training_set, joins_in_block, ml_model, res_path, normalize)
+            main_train_reg.main(
+                db_sets, training_set, joins_in_block, ml_model, res_path, normalize
+            )
 
     # Evaluate a trained ML model
     #   2rd arg: name of the db_set to be evaluated
@@ -245,13 +253,13 @@ if __name__ == "__main__":
         res_path = (
             None if "--res-path" not in sys.argv else named_arg("--res-path", 1)[0]
         )
-        if run_config == "eval-cls" :
+        if run_config == "eval-cls":
             if "--flex" in sys.argv:
                 main_evaluate_cls_flex.main(db_set, training_set, model_name, res_path)
             else:
                 main_evaluate_cls_fix.main(db_set, training_set, model_name, res_path)
-        else: # run_config == "train-reg"
+        else:  # run_config == "train-reg"
             main_evaluate_reg.main(db_set, training_set, model_name, res_path)
-        
+
     else:
         print("Selected RUN configuration not specified.")
