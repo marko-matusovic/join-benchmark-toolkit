@@ -32,29 +32,23 @@ def main(db_path: str, db_set: str, query: str, perm: list[int] | None = None):
     print("Init cost model approximations")
     data = approx_instructions.s1_init()
 
-    print("Executing filters", end="")
+    print("Executing filters")
     for f in range(len(real_instructions.s2_filters)):
-        print(".", end="")
         [dfs_s, data_s] = deepcopy([dfs, data])
         real_instructions.s2_filters[f](dfs)
         approx_instructions.s2_filters[f](data)
         measure(file, dfs_s, data_s, dfs, data)
-    print()
 
-    print("Executing joins", end="")
+    print("Executing joins")
     if perm == None:
         perm = list(range(len(real_instructions.s3_joins)))
     for p in perm:
-        print(".", end="")
         [dfs_s, data_s] = deepcopy([dfs, data])
         real_instructions.s3_joins[p](dfs)
         approx_instructions.s3_joins[p](data)
         measure(file, dfs_s, data_s, dfs, data)
-    print()
 
     file.close()
-
-    print(dfs.keys())
 
     if len(dfs) != 1:
         print("ERROR: More than one cluster after all joins")
@@ -90,12 +84,12 @@ def measure(
     real_len_1.append(0)  # for printing in case len() == 1
 
     # Approximate length
-    tbls_in_cluster = [
+    tbls_in_cluster = set([
         list(data_1.cluster_names.keys())[
             list(data_1.cluster_names.values()).index(name)
         ]
         for name in name_1
-    ]
+    ])
     clusters = [data_1.clusters[tbl_in_cluster] for tbl_in_cluster in tbls_in_cluster]
     approx_len_1 = [
         float(

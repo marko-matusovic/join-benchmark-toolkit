@@ -66,7 +66,7 @@ def load_stats(
                         dtype=get_size_of_type(
                             df[column].dtypes.__str__()
                             if get_engine_name() == "cpu" else 
-                            df[column]._dtypes.__str__()
+                            df[column]._dtypes[column].__str__()
                             ),
                         unique=df[column].nunique(),
                     )
