@@ -5,7 +5,7 @@ from typing import NamedTuple, TypeVar
 
 import numpy as np
 
-from benchmark.engine.engine import DataFrame
+from benchmark.engine.engine import DataFrame, get_engine_name
 from benchmark.tools.load import load_table
 from benchmark.tools.tools import bound
 
@@ -63,7 +63,11 @@ def load_stats(
                 length=len(df.index),
                 column={
                     column: ColumnStats(
-                        dtype=get_size_of_type(df[column].dtypes.__str__()),
+                        dtype=get_size_of_type(
+                            df[column].dtypes.__str__()
+                            if get_engine_name() == "cpu" else 
+                            df[column]._dtypes.__str__()
+                            ),
                         unique=df[column].nunique(),
                     )
                     for column in df
