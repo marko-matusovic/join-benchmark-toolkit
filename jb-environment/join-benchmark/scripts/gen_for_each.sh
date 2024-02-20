@@ -38,8 +38,8 @@ case $DB_SET in
     # QUERIES=("2a" "6f" "9d" "11d" "12a" "13a" "14a" "17e" "18b")
     # NUMS_JOIN=("5" "5" "9" "10" "8" "11" "10" "9" "9")
     ### ⬇️ selected x2
-    QUERIES=("2a" "9d" "12a" "13a" "14a")
-    NUMS_JOIN=("5" "9" "10" "11" "10")
+    QUERIES=("2a" "6f" "9d" "12a" "14a")
+    NUMS_JOIN=("5" "5" "9" "10" "10")
     ;;
 'tpcds')
     # QUERIES=("query_3" "query_12" "query_17" "query_20" "query_22" "query_25" "query_27" "query_36" "query_42" "query_43" "query_50" "query_52" "query_55" "query_96")
