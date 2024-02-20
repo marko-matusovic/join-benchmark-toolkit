@@ -45,14 +45,19 @@ def load_named_tables(
             }
         else:
             args = {}
-        dfs[t_alias] = get_engine().read_csv(
-            f"{db_path}/tables/{t_name}.{db_config[db_name].file_suffix}",
-            sep=db_config[db_name].column_sep,
-            header=None,
-            names=[f"{t_alias}.{col}" for col in schema[t_name]],
-            index_col=False,
-            **args
-        )
+            
+        try:
+            dfs[t_alias] = get_engine().read_csv(
+                f"{db_path}/tables/{t_name}.{db_config[db_name].file_suffix}",
+                sep=db_config[db_name].column_sep,
+                header=None,
+                names=[f"{t_alias}.{col}" for col in schema[t_name]],
+                index_col=False,
+                **args
+            )
+        except Exception as e:
+            print(f"Error! The table {t_name} as {t_alias} cannot be loaded.")
+            print(e)
 
     return dfs
 
