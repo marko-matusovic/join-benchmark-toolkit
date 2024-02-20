@@ -57,7 +57,7 @@ def load_named_tables(
             )
         except Exception as e:
             print(f"Error: The table {t_name} as {t_alias} cannot be loaded.")
-            print(e)
+            raise e
 
     return dfs
 
