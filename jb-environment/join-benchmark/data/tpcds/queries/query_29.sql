@@ -26,12 +26,12 @@ select
  and ss_item_sk             = sr_item_sk
  and ss_ticket_number       = sr_ticket_number
  and sr_returned_date_sk    = d2.d_date_sk
- and d2.d_moy               between 4 and  4 + 3 
+ and d2.d_moy               between 4 and  7 
  and d2.d_year              = 2000
  and sr_customer_sk         = cs_bill_customer_sk
  and sr_item_sk             = cs_item_sk
  and cs_sold_date_sk        = d3.d_date_sk     
- and d3.d_year              in (2000,2000+1,2000+2)
+ and d3.d_year              in (2000,2001,2002)
  group by
     i_item_id
    ,i_item_desc

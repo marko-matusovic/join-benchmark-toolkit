@@ -28,7 +28,7 @@ WHERE cct1.kind = 'cast'
   AND it.info = 'release dates'
   AND it3.info = 'trivia'
   AND k.keyword = 'computer-animation'
-  AND mi.info IS NOT NULL
+  AND mi.info != NULL
   AND (mi.info LIKE 'Japan:%200%'
        OR mi.info LIKE 'USA:%200%')
   AND n.gender = 'f'

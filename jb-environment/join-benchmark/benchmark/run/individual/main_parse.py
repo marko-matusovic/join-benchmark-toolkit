@@ -22,11 +22,11 @@ def main(db_path: str, db_set: str, query: str, manual_parse=False):
     for t, a in zip(tables, aliases):
         print(f"\t{t} AS {a}")
 
-    print("Filters:")
+    print(f"Filters: #{len(filters)}")
     for f1, f2, f3 in filters:
         print(f"\t{f1} {f2} {f3}")
 
-    print("Joins:")
+    print(f"Joins: #{len(joins)}")
     for j1, j2 in joins:
         print(f"\t{j1} = {j2}")
 

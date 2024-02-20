@@ -17,6 +17,8 @@ keywords = [
     "LIKE",
     "AND",
     "OR",
+    "IS",
+    "NULL",
     "LIMIT",
     "GROUP BY",
     "ORDER BY",
@@ -70,9 +72,10 @@ def get_joins(query_str: str) -> list[tuple[str, str]]:
 
 
 def split_parsing_groups(query_str: str):
+    query_str = f" {query_str} "
     if (
-        query_str.lower().count("select") != 1
-        or query_str.lower().count("from") != 1
+        query_str.lower().count(" select ") != 1
+        or query_str.lower().count(" from ") != 1
         or query_str.lower().count(" cast(") != 0
         or query_str.lower().count(" join ") != 0
     ):
@@ -157,6 +160,7 @@ def parse_where_clause(
 ) -> tuple[list[tuple[str, str, Any]], list[tuple[str, str]]]:
     filters: list[tuple[str, str, Any]] = []
     joins: list[tuple[str, str]] = []
+
     where_clause_parts = where_clause.split("AND")
     where_clause_i = 0
     while where_clause_i < len(where_clause_parts):
@@ -190,13 +194,19 @@ def parse_where_clause(
                 print(f'ERROR: Unsupported WHERE clauses: "{big_clause}"')
                 exit(1)
 
+        clause = clause.replace(" IS NOT ", " != ").replace(" IS ", " = ")
+
         (tbl, _space, op_and_val) = clause.partition(" ")
         (op, _space, val) = op_and_val.partition(" ")
         if op == "NOT":
             (op2, _space, val) = val.partition(" ")
             op = f"{op} {op2}"
 
-        if op == "=" and re.match(f"^[a-zA-Z][\\w_-]*(\\.[\\w_-]+)?$", val) != None:
+        if (
+            (op == "=")
+            and (re.match(f"^[a-zA-Z][\\w_-]*(\\.[\\w_-]+)?$", val) != None)
+            and (val.upper() != "NULL")
+        ):
             # op is a join
             joins.append((tbl, val))
             continue

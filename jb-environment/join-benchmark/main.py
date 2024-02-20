@@ -225,10 +225,13 @@ if __name__ == "__main__":
                 main_train_cls_fix.main(
                     db_sets, training_set, num_joins, ml_model, res_path, normalize
                 )
-            elif "--flex":
+            elif "--flex" in sys.argv:
                 main_train_cls_flex.main(
                     db_sets, training_set, ml_model, res_path, normalize
                 )
+            else:
+                print("Error: You must choose from fix or flex models!")
+                exit(1)
         else:  # run_config == "train-reg"
             if "--joins-in-block" not in sys.argv:
                 print(
