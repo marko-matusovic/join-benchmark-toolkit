@@ -1,7 +1,7 @@
 import json
 import os
 from typing import NamedTuple, TypeAlias
-from benchmark.engine.engine import DataFrame, get_engine
+from benchmark.engine.engine import DataFrame, get_engine, get_engine_name
 from benchmark.tools.schema_parser import get_schema
 
 DB_NAME: TypeAlias = str
@@ -38,12 +38,20 @@ def load_named_tables(
 
     schema = get_schema(db_path, db_name)
     for t_name, t_alias in zip(table_names, table_aliases):
+        
+        if get_engine_name() == "cpu":
+            args = {
+                'low_memory': False
+            }
+        else:
+            args = {}
         dfs[t_alias] = get_engine().read_csv(
             f"{db_path}/tables/{t_name}.{db_config[db_name].file_suffix}",
             sep=db_config[db_name].column_sep,
             header=None,
             names=[f"{t_alias}.{col}" for col in schema[t_name]],
             index_col=False,
+            **args
         )
 
     return dfs
