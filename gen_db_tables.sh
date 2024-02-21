@@ -1,3 +1,5 @@
+#! /bin/bash
+
 PROJECT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 DBS=${1:-'all'}
 SCALE=${2:-'10'}
@@ -26,6 +28,7 @@ function tpcds() {
     mkdir tables
 
     mv $PROJECT_DIR/tpcds-kit/tmp/tables/* tables
+    rm -rf $PROJECT_DIR/tpcds-kit/tmp/*
     echo "scale: $SCALE" > tables/scale.txt
 }
 
@@ -39,6 +42,7 @@ function job() {
     rm -rf tables/*
 
     mv $PROJECT_DIR/imdb-db-tool/tables/*.csv tables
+    rm -rf $PROJECT_DIR/imdb-db-tool/tables/*
 }
 
 # SSB
@@ -57,6 +61,7 @@ function ssb() {
     mkdir tables
     mv $PROJECT_DIR/ssb-dbgen/*.tbl tables
     mv tables/date.tbl tables/ddate.tbl
+    rm -rf $PROJECT_DIR/ssb-dbgen/*.tbl
     echo "scale: $SCALE" > tables/scale.txt
 }
 

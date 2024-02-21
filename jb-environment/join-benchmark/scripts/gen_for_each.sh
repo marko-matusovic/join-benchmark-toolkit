@@ -45,8 +45,11 @@ case $DB_SET in
     # QUERIES=("query_3" "query_12" "query_17" "query_20" "query_22" "query_25" "query_27" "query_36" "query_42" "query_43" "query_50" "query_52" "query_55" "query_96")
     # NUMS_JOIN=("2" "2" "10" "2" "2" "10" "4" "3" "2" "2" "6" "2" "2" "3")
     ### ⬆️ all queries, ⬇️ selected
-    QUERIES=("query_17" "query_25" "query_27" "query_29" "query_50")
-    NUMS_JOIN=("10" "10" "4" "10" "6")
+    # QUERIES=("query_17" "query_25" "query_27" "query_29" "query_50")
+    # NUMS_JOIN=("10" "10" "4" "10" "6")
+    ### and working ⬇️
+    QUERIES=("query_27" "query_50")
+    NUMS_JOIN=("4" "6")
     ;;
 *)
     echo "Unsupported Dataset passed, choose from [\"ssb\", \"job\", \"tpcds\"]"
@@ -79,8 +82,18 @@ while :; do
 
         echo $PERM
 
+        FAILS=0
         # Run x N_REPEAT
-        for j in $(seq $N_REPEAT); do execute; done
+        for j in $(seq $N_REPEAT); do 
+            execute
+            RES=$?
+            if [[ $RES -ne 0 ]]; then
+                FAILS=(($FAILS+1))
+            fi;
+            if [[ $FAILS >= 3 ]]; then 
+                break
+            fi;
+        done
 
         # store the new POS only when finished, when aborted mid repeat, redo the perm
         echo $POS >$POS_FILE

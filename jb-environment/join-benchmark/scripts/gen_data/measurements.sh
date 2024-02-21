@@ -13,4 +13,5 @@ function execute(){
     if [[ $RES -ne 0 ]]; then
         echo "$LOG_START;$RES;;;;#FAILED" >> $RES_FILE
     fi;
+    return $RES
 }
