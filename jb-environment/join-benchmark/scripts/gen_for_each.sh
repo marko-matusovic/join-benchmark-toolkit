@@ -82,17 +82,17 @@ while :; do
 
         echo $PERM
 
-        FAILS=0
+        NUM_FAILS=0
         # Run x N_REPEAT
         for j in $(seq $N_REPEAT); do 
             execute
             RES=$?
-            if [[ $RES -ne 0 ]]; then
-                FAILS=(($FAILS+1))
-            fi;
-            if [[ $FAILS >= 3 ]]; then 
+            if [ $RES -ne 0 ]; then
+                NUM_FAILS=$((NUM_FAILS+1))
+            fi
+            if [ $NUM_FAILS -ge 3 ]; then
                 break
-            fi;
+            fi
         done
 
         # store the new POS only when finished, when aborted mid repeat, redo the perm
