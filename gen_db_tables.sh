@@ -23,7 +23,10 @@ function tpcds() {
 
     sleep 3
 
+    cd $TARGET_DIR
+    mkdir tpcds
     cd $TARGET_DIR/tpcds
+
     rm -rf tables
     mkdir tables
 
@@ -37,7 +40,10 @@ function job() {
     cd $PROJECT_DIR/imdb-db-tool
     ./download_tables.sh
 
+    cd $TARGET_DIR
+    mkdir job
     cd $TARGET_DIR/job
+
     mkdir tables
     rm -rf tables/*
 
@@ -55,10 +61,13 @@ function ssb() {
     rm -rf *.tbl
     ./dbgen -v -s $SCALE
 
+    cd $TARGET_DIR
+    mkdir ssb
     cd $TARGET_DIR/ssb
 
     rm -rf tables
     mkdir tables
+    
     mv $PROJECT_DIR/ssb-dbgen/*.tbl tables
     mv tables/date.tbl tables/ddate.tbl
     rm -rf $PROJECT_DIR/ssb-dbgen/*.tbl
