@@ -6,6 +6,7 @@ SCENARIO=$1
 DB_SET=$2
 GEN_RUN=${3:-$((1000 + $RANDOM % 9000))}
 OTHER_ARGS=$4
+NUM_FAILS_TO_BREAK=1
 
 # Load in values and executable from scenario
 source $SCENARIO
@@ -90,7 +91,7 @@ while :; do
             if [ $RES -ne 0 ]; then
                 NUM_FAILS=$((NUM_FAILS+1))
             fi
-            if [ $NUM_FAILS -ge 3 ]; then
+            if [ $NUM_FAILS -ge $NUM_FAILS_TO_BREAK ]; then
                 break
             fi
         done
