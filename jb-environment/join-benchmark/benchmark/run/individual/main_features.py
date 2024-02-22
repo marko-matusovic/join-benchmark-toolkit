@@ -58,11 +58,11 @@ def main(
 
 
 def collect_features(data: Data, field_name: str) -> TableFeatures:
-    table = find_table(data.schema, field_name)
-    short_field_name = field_name.split(".")[-1]
+    (table_name, full_field_name) = find_table(data.schema, field_name)
+    short_field_name = full_field_name.split(".")[-1]
 
-    cluster = data.clusters[table]
-    bounds = data.stats[table].column[short_field_name].bounds
+    cluster = data.clusters[table_name]
+    bounds = data.stats[table_name].column[short_field_name].bounds
     if bounds != None:
         bounds_low = float(bounds[0])
         bounds_high = float(bounds[1])
@@ -73,12 +73,12 @@ def collect_features(data: Data, field_name: str) -> TableFeatures:
         bounds_range = math.nan
     return TableFeatures(
         length=total_length_of_cluster(data, cluster),
-        unique=data.stats[table].column[short_field_name].unique,
-        id_size=data.stats[table].column[short_field_name].dtype,
+        unique=data.stats[table_name].column[short_field_name].unique,
+        id_size=data.stats[table_name].column[short_field_name].dtype,
         row_size=float(
             sum([v.dtype for tbl in cluster for v in data.stats[tbl].column.values()])
         ),
-        cache_age=calc_age_mem(data, table),
+        cache_age=calc_age_mem(data, table_name),
         cluster_size=float(len(cluster)),
         bounds_low=bounds_low,
         bounds_high=bounds_high,
@@ -93,13 +93,13 @@ def collect_mix_features(
     features_1: TableFeatures,
     features_2: TableFeatures,
 ) -> CrossFeatures:
-    table_1 = find_table(data.schema, field_1)
-    table_2 = find_table(data.schema, field_2)
-    # short_field_1 = field_1.split(".")[-1]
-    # short_field_2 = field_2.split(".")[-1]
+    (table_name_1, full_field_name_1) = find_table(data.schema, field_1)
+    (table_name_2, full_field_name_2) = find_table(data.schema, field_2)
+    # short_field_1 = full_field_name_1.split(".")[-1]
+    # short_field_2 = full_field_name_2.split(".")[-1]
 
-    cluster = data.clusters[table_1]
-    assert cluster == data.clusters[table_2]
+    cluster = data.clusters[table_name_1]
+    assert cluster == data.clusters[table_name_2]
 
     len_pos_max = float(features_1.length) * float(features_2.length)
     len_unq_max = float(features_1.unique) * float(features_2.unique)
