@@ -16,7 +16,7 @@ docker run \
     --runtime=nvidia \
     -e NVIDIA_VISIBLE_DEVICES=0 \
     -d --gpus '"device=0"' \
-    -v "/workspace/mmatusovic/projects/jb-environment/join-benchmark:/app/join-benchmark" \
+    -v "/workspace/mmatusovic/msc-wis-test-environment/jb-environment/join-benchmark:/app/join-benchmark" \
     mmatusovic/python:dev
 
 docker exec -it mmatusovic_python_$ext bash
