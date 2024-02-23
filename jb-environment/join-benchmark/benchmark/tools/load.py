@@ -38,14 +38,11 @@ def load_named_tables(
 
     schema = get_schema(db_path, db_name)
     for t_name, t_alias in zip(table_names, table_aliases):
-        
         if get_engine_name() == "cpu":
-            args = {
-                'low_memory': False
-            }
+            args = {"low_memory": False}
         else:
             args = {}
-            
+
         try:
             dfs[t_alias] = get_engine().read_csv(
                 f"{db_path}/tables/{t_name}.{db_config[db_name].file_suffix}",
@@ -53,7 +50,7 @@ def load_named_tables(
                 header=None,
                 names=[f"{t_alias}.{col}" for col in schema[t_name]],
                 index_col=False,
-                **args
+                **args,
             )
         except Exception as e:
             print(f"Error: The table {t_name} as {t_alias} cannot be loaded.")

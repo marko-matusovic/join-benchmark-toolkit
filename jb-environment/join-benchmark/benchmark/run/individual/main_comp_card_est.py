@@ -84,12 +84,14 @@ def measure(
     real_len_1.append(0)  # for printing in case len() == 1
 
     # Approximate length
-    tbls_in_cluster = set([
-        list(data_1.cluster_names.keys())[
-            list(data_1.cluster_names.values()).index(name)
+    tbls_in_cluster = set(
+        [
+            list(data_1.cluster_names.keys())[
+                list(data_1.cluster_names.values()).index(name)
+            ]
+            for name in name_1
         ]
-        for name in name_1
-    ])
+    )
     clusters = [data_1.clusters[tbl_in_cluster] for tbl_in_cluster in tbls_in_cluster]
     approx_len_1 = [
         float(
