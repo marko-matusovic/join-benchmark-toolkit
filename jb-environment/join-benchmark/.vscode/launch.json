@@ -7,7 +7,7 @@
             "console": "integratedTerminal",
             "justMyCode": true,
             "program": "main.py",
-            "args": ["comp_card_est", "tpcds/query_17"]
+            "args": ["train-eval-features", "tpcds,ssb,job", "4"]
         }
     ]
 }

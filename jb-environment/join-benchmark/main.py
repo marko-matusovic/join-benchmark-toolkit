@@ -16,10 +16,13 @@ from benchmark.run.model import (
     main_evaluate_reg,
     main_train_cls_fix,
     main_train_cls_flex,
+    main_train_eval_extra_feature,
     main_train_reg,
 )
 from benchmark.engine.engine import set_engine
 from benchmark.tools.schema_parser import get_schema
+
+DEFAULT_RES_PATH = "./results"
 
 
 # Returns a list of values following a named argument
@@ -216,7 +219,9 @@ if __name__ == "__main__":
             None if "--ml-model" not in sys.argv else named_arg("--ml-model", 1)[0]
         )
         res_path = (
-            None if "--res-path" not in sys.argv else named_arg("--res-path", 1)[0]
+            DEFAULT_RES_PATH
+            if "--res-path" not in sys.argv
+            else named_arg("--res-path", 1)[0]
         )
         normalize = "--normalize" in sys.argv
         if run_config == "train-cls":
@@ -254,7 +259,9 @@ if __name__ == "__main__":
         model_name = sys.argv[4]
         # hw_name = sys.argv[4]
         res_path = (
-            None if "--res-path" not in sys.argv else named_arg("--res-path", 1)[0]
+            DEFAULT_RES_PATH
+            if "--res-path" not in sys.argv
+            else named_arg("--res-path", 1)[0]
         )
         if run_config == "eval-cls":
             if "--flex" in sys.argv:
@@ -263,6 +270,24 @@ if __name__ == "__main__":
                 main_evaluate_cls_fix.main(db_set, training_set, model_name, res_path)
         else:  # run_config == "train-reg"
             main_evaluate_reg.main(db_set, training_set, model_name, res_path)
+
+    elif run_config == "train-eval-features":
+        db_train_sets = sys.argv[2].split(",")
+        training_set = int(sys.argv[3])
+        features = (
+            []
+            if "--features" not in sys.argv
+            else named_arg("--features", 1)[0].split(",")
+        )
+        res_path = (
+            DEFAULT_RES_PATH
+            if "--res-path" not in sys.argv
+            else named_arg("--res-path", 1)[0]
+        )
+        plot = False if "--plot" not in sys.argv else True
+        main_train_eval_extra_feature.main(
+            db_train_sets, training_set, features, res_path, plot
+        )
 
     else:
         print("Selected RUN configuration not specified.")

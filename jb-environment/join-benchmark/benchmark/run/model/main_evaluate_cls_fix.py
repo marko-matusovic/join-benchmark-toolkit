@@ -4,12 +4,9 @@ import math
 import numpy as np
 import pandas as pd
 from benchmark.tools.ml import encode
-from benchmark.tools.ml.encode import (
+from benchmark.tools.ml.encode_cls import (
     encode_all_cls,
     encode_cls_jo_pair,
-    encode_feature,
-    encode_query_reg,
-    encode_query_cls,
 )
 from benchmark.tools.ml.load_all import load_all
 from benchmark.tools.ml.load_features import load_hw_features

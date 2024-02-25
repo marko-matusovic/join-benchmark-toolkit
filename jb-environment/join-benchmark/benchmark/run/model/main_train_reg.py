@@ -1,4 +1,4 @@
-from benchmark.tools.ml.encode import encode_all_reg
+from benchmark.tools.ml.encode_reg import encode_all_reg
 from benchmark.tools.ml.load_all import load_all
 from benchmark.tools.ml.load_features import load_hw_features
 from sklearn.ensemble import (

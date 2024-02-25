@@ -22,6 +22,25 @@ class CrossFeatures(NamedTuple):
     cluster_overlap: float
 
 
+feature_names = [
+    "t_length",
+    "t_unique",
+    "t_id_size",
+    "t_row_size",
+    "t_cache_age",
+    "t_cluster_size",
+    "t_bounds_low",
+    "t_bounds_high",
+    "t_bounds_range",
+    "c_len_res",
+    "c_len_possible_max",
+    "c_len_unique_max",
+    "c_selectivity",
+    "c_cluster_size",
+    "c_cluster_overlap",
+]
+
+
 class DataFeatures(NamedTuple):
     table_1: TableFeatures
     table_2: TableFeatures
