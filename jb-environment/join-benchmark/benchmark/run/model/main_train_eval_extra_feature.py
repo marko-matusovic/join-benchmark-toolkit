@@ -1,24 +1,26 @@
+from datetime import datetime
 import math
+import os
 import numpy as np
 import pandas as pd
 import pickle as pkl
 from benchmark.tools.ml.encode import feature_length
-from benchmark.tools.ml.encode_reg import encode_all_reg, encode_query_reg
+from benchmark.tools.ml.encode_reg import encode_query_reg
 from benchmark.tools.ml.load_all import load_all
-from sklearn.linear_model import LinearRegression
-from matplotlib import pyplot as plt
-
 from benchmark.tools.tools import ensure_dir
+from matplotlib import pyplot as plt
 
 
 def main(
-    db_sets: list[str],
-    training_set: int,
-    extra_features: list[str],
-    res_path: str,
-    plot: bool,
+    eval_db_sets: list[str] = ["ssb", "job", "tpcds"],
+    fit_db_sets: list[str] = [],
+    set_number: int = 4,
+    extra_features: list[str] = ["t_length"],
+    res_path: str = "./results",
+    plot: bool = False,
+    log: bool = False,
 ):
-    if training_set not in [4, 5]:
+    if set_number not in [4, 5]:
         print(
             "Warning: this script was designed to use training sets 4 or 5.",
             "Note that if you're using a different training set, you should know what you're doing.",
@@ -29,16 +31,24 @@ def main(
 
     print("Loading and encoding...")
 
+    all_db_sets = sorted(list(set(eval_db_sets + fit_db_sets)))
+
     db_encoded = {}
-    for db_set in db_sets:
-        (data_features, measurements) = load_all(db_set, training_set, res_path)
+    for db_set in all_db_sets:
+        (data_features, measurements) = load_all(db_set, set_number, res_path)
         db_encoded[db_set] = {}
         for query in sorted(data_features.keys()):
             jos = set(data_features[query].keys()) & set(measurements[query].keys())
             db_encoded[db_set][query] = {}
             for jo in jos:
                 (x, y) = encode_query_reg(
-                    data_features, measurements, query, 1, jo=jo, select=extra_features
+                    data_features,
+                    measurements,
+                    query,
+                    joins_in_block=1,
+                    jo=jo,
+                    select=extra_features,
+                    t_unify=True,
                 )
                 db_encoded[db_set][query][jo] = (np.sum(x, axis=0), np.sum(y))
 
@@ -46,62 +56,123 @@ def main(
 
     print("Exploring coefficients...")
 
-    step = 0.1
+    scaling = np.array(
+        [
+            1 + 1e-3,
+            1 + 1e-2,
+            1 + 1e-1,
+            2,
+            1e1,
+            1e2,
+            1e3,
+            1e6,
+            1e9,
+            1e12,
+            1e15,
+            -1 - 1e-3,
+            -1 - 1e-2,
+            -1 - 1e-1,
+            -2,
+            -1e1,
+            -1e2,
+            -1e3,
+            -1e6,
+            -1e9,
+            -1e12,
+            -1e15,
+        ]
+    )
     min_progress = 1e-24
     gen = 0
 
-    coefs = np.ones(feature_length(select=extra_features)) * 100
+    coefs = np.ones(feature_length(select=extra_features, t_unify=True)) * 100
     max_corr = 0
-    max_explore_i = 0
+    prev_max = 0
+    new_max_found = True
 
-    while max_explore_i != -1:
-        gen += 1
-        # print("Gen")
-        max_explore_i = -1
-        for i in range(len(coefs)):
-            # print("\tExplore")
-            explore = coefs.copy()
-            # explore[i] += step
-            explore[i] *= 1 + step
-            explore_norm = explore / np.sum(explore)
+    if len(fit_db_sets) > 0 and len(coefs) > 1:
+        while new_max_found:
+            gen += 1
+            # print("Gen")
+            new_max_found = False
+            prev_max = max_corr
+            
+            explore_space = []
+            for i in range(len(coefs)):
+                for s in scaling:
+                    # print("\tExplore")
+                    explore_space.append(coefs.copy())
+                    explore_space[-1][i] *= 1 + s
 
-            total_corr = 0.0
-            total_jos = 0
+            for explore in explore_space:
+                explore_norm = explore / np.sum(np.abs(explore))
 
-            for db_set in db_encoded:
-                for query in db_encoded[db_set]:
-                    (X, y_real) = zip(*db_encoded[db_set][query].values())
-                    y_pred = np.sum(X * explore_norm, axis=1)
+                total_corr = 0.0
+                total_jos = 0
 
-                    indeces = np.argsort(y_real)
+                for db_set in fit_db_sets:
+                    for query in db_encoded[db_set]:
+                        (X, y_real) = zip(*db_encoded[db_set][query].values())
+                        y_pred = np.sum(X * explore_norm, axis=1)
 
-                    s1 = pd.Series(np.array(y_real)[indeces])
-                    s2 = pd.Series(np.array(y_pred)[indeces])
-                    total_corr += s1.corr(s2) * len(indeces)
-                    total_jos += len(indeces)
+                        indeces = np.argsort(y_real)
 
-            corr = total_corr / total_jos
-            # print(f"\tAverage correlation: {corr}")
-            # print(f"\tCoefficients: {explore}")
-            if corr >= max_corr + min_progress:
-                max_corr = corr
-                max_explore_i = i
-                coefs = explore
-        print(f"Gen: {gen:4} Corr: {max_corr:<20}", end="\r")
-    print()
+                        s1 = pd.Series(np.array(y_real)[indeces])
+                        s2 = pd.Series(np.array(y_pred)[indeces])
+                        total_corr += s1.corr(s2) * len(indeces)
+                        total_jos += len(indeces)
 
-    coefs /= np.sum(coefs)
+                corr = total_corr / total_jos
+                # print(f"\tAverage correlation: {corr}")
+                # print(f"\tCoefficients: {explore}")
+                if corr > max_corr and corr >= prev_max + min_progress:
+                    max_corr = corr
+                    coefs = explore
+                    new_max_found = True
+            print(f"Gen: {gen:4} Corr: {max_corr:<20}", end="\r")
+        print()
+
+    coefs /= np.sum(np.abs(coefs))
 
     print(f"Took {gen} generations")
-    print(f"Found max correlation: {max_corr}")
+    print(f"Found max (fit) correlation: {max_corr}")
     print("Coefficients:")
     for c in coefs:
         print("\t", c)
 
+    # === Setup Logging ============================================
+
+    if log:
+        log_path = f"{res_path}/model_eval/extra_features/set_{set_number}.csv"
+        ensure_dir(log_path)
+        if not os.path.exists(log_path):
+            with open(log_path, "w") as f:
+                f.write(
+                    "TIMESTAMP;EVAL_DB_SETS;FIT_DB_SETS;GEN_COUNT;FEATURES;MEAN_FIT_CORRELATION;COEFFICIENTS;MEAN_EVAL_CORRELATION;QUERY_CORRELATION...\n"
+                )
+                f.write(f"# CREATED AT {datetime.now().isoformat()}\n")
+        log_file = open(log_path, "a")
+        queries = []
+        for db_set in sorted(list(eval_db_sets)):
+            for query in sorted(list(db_encoded[db_set])):
+                queries.append(query)
+        queries = ";".join(queries)
+        log_file.write(
+            f"# TIMESTAMP;EVAL_DB_SETS;FIT_DB_SETS;GEN_COUNT;FEATURES;MEAN_FIT_CORRELATION;COEFFICIENTS;MEAN_EVAL_CORRELATION;{queries}\n"
+        )
+        log_file.write(
+            f"{datetime.now().isoformat()};{eval_db_sets};{fit_db_sets};{gen};{extra_features};{max_corr};{coefs}"
+        )
+
     # === Printing individual correlations =========================
 
-    for db_set in db_sets:
-        for query in db_encoded[db_set]:
+    log_individual = ""
+
+    total_corr = 0.0
+    total_jos = 0
+
+    for db_set in sorted(list(eval_db_sets)):
+        for query in sorted(list(db_encoded[db_set])):
             # Data processing
 
             sorted_keys = list(db_encoded[db_set][query].keys())
@@ -123,12 +194,24 @@ def main(
                 f"corr: {correlation:-10.6}",
             )
 
+            log_individual = f"{log_individual};{correlation}"
+
+            if db_set in eval_db_sets:
+                total_corr += correlation * len(sorted_keys)
+                total_jos += len(sorted_keys)
+
+    print(f"Total (eval) correlation: {total_corr / total_jos}")
+
+    if log:
+        log_file.write(f";{total_corr / total_jos}{log_individual}\n")
+        log_file.close()
+
     # === Evaluate =================================================
 
     if plot:
         print("Plotting figures...")
 
-        for db_set in db_sets:
+        for db_set in all_db_sets:
             for query in db_encoded[db_set]:
                 # Data processing
 
@@ -208,7 +291,7 @@ def main(
                 plt.xticks([i + width / 2 for i in indices], sorted_keys, rotation=45)
                 plt.legend()
 
-                model_name = f"lin_reg/{'+'.join(extra_features)}/set_{training_set}"
+                model_name = f"lin_reg/{'+'.join(extra_features)}/set_{set_number}"
                 dir_path = f"{res_path}/figs/model-eval/{model_name}/{query}.png"
                 ensure_dir(dir_path)
                 plt.savefig(dir_path)

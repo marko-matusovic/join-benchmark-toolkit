@@ -213,7 +213,7 @@ if __name__ == "__main__":
     #   opt arg: --res-path {{str}} path to the res dir
     elif run_config == "train-cls" or run_config == "train-reg":
         db_sets = [db_set.strip() for db_set in sys.argv[2].split(",")]
-        training_set = int(sys.argv[3])
+        set_number = int(sys.argv[3])
         # hw_name = sys.argv[4]
         ml_model = (
             None if "--ml-model" not in sys.argv else named_arg("--ml-model", 1)[0]
@@ -228,11 +228,11 @@ if __name__ == "__main__":
             if "--num-joins" in sys.argv:
                 num_joins = int(named_arg("--num-joins", 1)[0])
                 main_train_cls_fix.main(
-                    db_sets, training_set, num_joins, ml_model, res_path, normalize
+                    db_sets, set_number, num_joins, ml_model, res_path, normalize
                 )
             elif "--flex" in sys.argv:
                 main_train_cls_flex.main(
-                    db_sets, training_set, ml_model, res_path, normalize
+                    db_sets, set_number, ml_model, res_path, normalize
                 )
             else:
                 print("Error: You must choose from fix or flex models!")
@@ -244,7 +244,7 @@ if __name__ == "__main__":
                 )
             joins_in_block = int(named_arg("--joins-in-block", 1)[0])
             main_train_reg.main(
-                db_sets, training_set, joins_in_block, ml_model, res_path, normalize
+                db_sets, set_number, joins_in_block, ml_model, res_path, normalize
             )
 
     # Evaluate a trained ML model
@@ -255,7 +255,7 @@ if __name__ == "__main__":
     #   opt arg: --res-path {{str}} path to the res dir
     elif run_config == "eval-cls" or run_config == "eval-reg":
         db_sets = sys.argv[2]
-        training_set = int(sys.argv[3])
+        set_number = int(sys.argv[3])
         model_name = sys.argv[4]
         # hw_name = sys.argv[4]
         res_path = (
@@ -265,15 +265,20 @@ if __name__ == "__main__":
         )
         if run_config == "eval-cls":
             if "--flex" in sys.argv:
-                main_evaluate_cls_flex.main(db_set, training_set, model_name, res_path)
+                main_evaluate_cls_flex.main(db_set, set_number, model_name, res_path)
             else:
-                main_evaluate_cls_fix.main(db_set, training_set, model_name, res_path)
+                main_evaluate_cls_fix.main(db_set, set_number, model_name, res_path)
         else:  # run_config == "train-reg"
-            main_evaluate_reg.main(db_set, training_set, model_name, res_path)
+            main_evaluate_reg.main(db_set, set_number, model_name, res_path)
 
     elif run_config == "train-eval-features":
-        db_train_sets = sys.argv[2].split(",")
-        training_set = int(sys.argv[3])
+        eval_db_sets = sys.argv[2].split(",")
+        set_number = int(sys.argv[3])
+        fit_db_sets = (
+            []  # train on these sets
+            if "--fit" not in sys.argv
+            else named_arg("--fit", 1)[0].split(",")
+        )
         features = (
             []
             if "--features" not in sys.argv
@@ -285,8 +290,9 @@ if __name__ == "__main__":
             else named_arg("--res-path", 1)[0]
         )
         plot = False if "--plot" not in sys.argv else True
+        log = False if "--log" not in sys.argv else True
         main_train_eval_extra_feature.main(
-            db_train_sets, training_set, features, res_path, plot
+            eval_db_sets, fit_db_sets, set_number, features, res_path, plot, log
         )
 
     else:

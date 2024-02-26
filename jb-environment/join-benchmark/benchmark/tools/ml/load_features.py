@@ -39,7 +39,49 @@ def load_data_features(
         features = DataFeatures(
             TableFeatures(*features[0]),
             TableFeatures(*features[1]),
-            CrossFeatures(*features[2]),
+            CrossFeatures(*(features[2] + ([0] * 15))),
+        )
+        # TODO: Remove this auto-calculation when I rerun features for sets 4 and 5.
+        features = features._replace(
+            cross=features.cross._replace(
+                tbl_ratio_length=1.0
+                * features.table_1.length
+                / features.table_2.length,
+                tbl_ratio_unique=1.0
+                * features.table_1.unique
+                / features.table_2.unique,
+                tbl_ratio_row_size=1.0
+                * features.table_1.row_size
+                / features.table_2.row_size,
+                tbl_ratio_cache_age=1.0
+                * features.table_1.cache_age
+                / features.table_2.cache_age,
+                tbl_ratio_bounds_range=1.0
+                * features.table_1.bounds_range
+                / features.table_2.bounds_range,
+                tbl_min_length=min(features.table_1.length, features.table_2.length),
+                tbl_min_unique=min(features.table_1.unique, features.table_2.unique),
+                tbl_min_row_size=min(
+                    features.table_1.row_size, features.table_2.row_size
+                ),
+                tbl_min_cache_age=min(
+                    features.table_1.cache_age, features.table_2.cache_age
+                ),
+                tbl_min_bounds_range=min(
+                    features.table_1.bounds_range, features.table_2.bounds_range
+                ),
+                tbl_max_length=max(features.table_1.length, features.table_2.length),
+                tbl_max_unique=max(features.table_1.unique, features.table_2.unique),
+                tbl_max_row_size=max(
+                    features.table_1.row_size, features.table_2.row_size
+                ),
+                tbl_max_cache_age=max(
+                    features.table_1.cache_age, features.table_2.cache_age
+                ),
+                tbl_max_bounds_range=max(
+                    features.table_1.bounds_range, features.table_2.bounds_range
+                ),
+            )
         )
 
         # Add the Features namedtuple to the AllFeatures dictionary

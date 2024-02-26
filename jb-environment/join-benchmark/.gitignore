@@ -5,3 +5,6 @@ cufile.log
 **/*.tmp*
 
 results/models
+
+# TMP Excel files
+**/~$*

@@ -1,5 +1,10 @@
 from math import isnan
-from benchmark.tools.ml.types import DataFeatures
+from benchmark.tools.ml.types import (
+    DataFeatures,
+    extract_c,
+    extract_t,
+    get_feature_names,
+)
 
 
 # select
@@ -8,64 +13,31 @@ from benchmark.tools.ml.types import DataFeatures
 #   [f1...] -> include cardinality estimates, f1 and all the rest
 #   - must be from the feature_names set
 def encode_feature(
-    features: DataFeatures | None = None, select: None | list[str] = None
+    features: DataFeatures | None = None,
+    select: None | list[str] = None,
+    t_unify: bool = False,
 ) -> list[float]:
+    if select is None:
+        select = get_feature_names()
+
     if features == None:
-        return [0.0] * feature_length(select)
+        return [0.0] * feature_length(select, t_unify)
     else:
         encoded = []
-        if select == None or "t_length" in select:
-            encoded.append(features.table_1.length)
-        if select == None or "t_unique" in select:
-            encoded.append(features.table_1.unique)
-        if select == None or "t_id_size" in select:
-            encoded.append(features.table_1.id_size)
-        if select == None or "t_row_size" in select:
-            encoded.append(features.table_1.row_size)
-        if select == None or "t_cache_age" in select:
-            encoded.append(features.table_1.cache_age)
-        if select == None or "t_cluster_size" in select:
-            encoded.append(features.table_1.cluster_size)
-        if select == None or "t_bounds_low" in select:
-            encoded.append(features.table_1.bounds_low)
-        if select == None or "t_bounds_high" in select:
-            encoded.append(features.table_1.bounds_high)
-        if select == None or "t_bounds_range" in select:
-            encoded.append(features.table_1.bounds_range)
 
-        if select == None or "t_length" in select:
-            encoded.append(features.table_2.length)
-        if select == None or "t_unique" in select:
-            encoded.append(features.table_2.unique)
-        if select == None or "t_id_size" in select:
-            encoded.append(features.table_2.id_size)
-        if select == None or "t_row_size" in select:
-            encoded.append(features.table_2.row_size)
-        if select == None or "t_cache_age" in select:
-            encoded.append(features.table_2.cache_age)
-        if select == None or "t_cluster_size" in select:
-            encoded.append(features.table_2.cluster_size)
-        if select == None or "t_bounds_low" in select:
-            encoded.append(features.table_2.bounds_low)
-        if select == None or "t_bounds_high" in select:
-            encoded.append(features.table_2.bounds_high)
-        if select == None or "t_bounds_range" in select:
-            encoded.append(features.table_2.bounds_range)
+        for s in select:
+            if s.startswith("t_"):
+                if not t_unify:
+                    encoded.append(extract_t(features.table_1, s))
+                    encoded.append(extract_t(features.table_2, s))
+                else:
+                    encoded.append(
+                        extract_t(features.table_1, s) + extract_t(features.table_2, s)
+                    )
+            elif s.startswith("c_"):
+                encoded.append(extract_c(features.cross, s))
 
-        if select == None or "c_len_res" in select:
-            encoded.append(features.cross.len_res)
-        if select == None or "c_len_possible_max" in select:
-            encoded.append(features.cross.len_possible_max)
-        if select == None or "c_len_unique_max" in select:
-            encoded.append(features.cross.len_unique_max)
-        if select == None or "c_selectivity" in select:
-            encoded.append(features.cross.selectivity)
-        if select == None or "c_cluster_size" in select:
-            encoded.append(features.cross.cluster_size)
-        if select == None or "c_cluster_overlap" in select:
-            encoded.append(features.cross.cluster_overlap)
-
-    if feature_length(select) != len(encoded):
+    if feature_length(select, t_unify) != len(encoded):
         print("Error: unexpected feature length!")
         exit(1)
     return [sane_x(x) for x in encoded]
@@ -82,9 +54,13 @@ def sane_x(x: float) -> float:
 
 
 # Closely coupled with encode_feature
-def feature_length(select: None | list[str] = None) -> int:
+def feature_length(select: None | list[str] = None, t_unify=False) -> int:
     if select is None:
         return 24
+
+    if t_unify is True:
+        return len(select)
+
     num_features = 0
     for f in select:
         if f.startswith("t_"):

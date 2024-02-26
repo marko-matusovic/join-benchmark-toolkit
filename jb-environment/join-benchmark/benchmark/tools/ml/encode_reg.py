@@ -8,6 +8,7 @@ def encode_all_reg(
     measurements: AllMeasurements,
     joins_in_block: int,
     select: None | list[str] = None,
+    t_unify=False,
 ) -> tuple[list[list[float]], list[float]]:
     X: list[list[float]] = []
     Y: list[float] = []
@@ -15,7 +16,12 @@ def encode_all_reg(
     # queries = sorted(list(queries))
     for query in queries:
         (xs, ys) = encode_query_reg(
-            data_features, measurements, query, joins_in_block, select=select
+            data_features,
+            measurements,
+            query,
+            joins_in_block,
+            select=select,
+            t_unify=t_unify,
         )
         X += xs
         Y += ys
@@ -36,6 +42,7 @@ def encode_query_reg(
     joins_in_block: int,
     jo=None,
     select: None | list[str] = None,
+    t_unify=False,
 ) -> tuple[list[list[float]], list[float]]:
     xs: list[list[float]] = []
     ys: list[float] = []
@@ -51,7 +58,9 @@ def encode_query_reg(
     for jo in jos:
         fs = data_features[query][jo]
         ms = measurements[query][jo]
-        encoded_fs = [encode_feature(fs[j], select=select) for j in jo.split(",")]
+        encoded_fs = [
+            encode_feature(fs[j], select=select, t_unify=t_unify) for j in jo.split(",")
+        ]
         # encoded_hw = [sane_x(x) for x in hw_features]
         encoded_ms = ms.joins
 
@@ -68,7 +77,7 @@ def encode_query_reg(
                     x += encoded_fs[i]
                     y += encoded_ms[i]
                 else:
-                    x += encode_feature(select=select)
+                    x += encode_feature(select=select, t_unify=t_unify)
                     y += 0.0
 
             xs.append(x)
