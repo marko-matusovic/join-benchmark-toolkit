@@ -96,7 +96,7 @@ def main(
             # print("Gen")
             new_max_found = False
             prev_max = max_corr
-            
+
             explore_space = []
             for i in range(len(coefs)):
                 for s in scaling:
@@ -147,19 +147,19 @@ def main(
         ensure_dir(log_path)
         if not os.path.exists(log_path):
             with open(log_path, "w") as f:
+                queries = []
+                for db_set in sorted(list(eval_db_sets)):
+                    for query in sorted(list(db_encoded[db_set])):
+                        queries.append(query)
+                queries = ";".join(queries)
                 f.write(
-                    "TIMESTAMP;EVAL_DB_SETS;FIT_DB_SETS;GEN_COUNT;FEATURES;MEAN_FIT_CORRELATION;COEFFICIENTS;MEAN_EVAL_CORRELATION;QUERY_CORRELATION...\n"
+                    "TIMESTAMP;EVAL_DB_SETS;FIT_DB_SETS;GEN_COUNT"
+                    + ";FEATURES;MEAN_FIT_CORRELATION;COEFFICIENTS"
+                    + f";MEAN_EVAL_CORRELATION;{queries}\n"
                 )
                 f.write(f"# CREATED AT {datetime.now().isoformat()}\n")
         log_file = open(log_path, "a")
-        queries = []
-        for db_set in sorted(list(eval_db_sets)):
-            for query in sorted(list(db_encoded[db_set])):
-                queries.append(query)
-        queries = ";".join(queries)
-        log_file.write(
-            f"# TIMESTAMP;EVAL_DB_SETS;FIT_DB_SETS;GEN_COUNT;FEATURES;MEAN_FIT_CORRELATION;COEFFICIENTS;MEAN_EVAL_CORRELATION;{queries}\n"
-        )
+
         log_file.write(
             f"{datetime.now().isoformat()};{eval_db_sets};{fit_db_sets};{gen};{extra_features};{max_corr};{coefs}"
         )
@@ -250,7 +250,7 @@ def main(
                     alpha=0.9,
                 )
                 ax1.set_ylabel("Real Values")
-                ax1.set_ylim(bottom=min(real_values))
+                ax1.set_ylim(bottom=min(real_values), top=max(real_values))
 
                 # Create a second y-axis that shares the same x-axis
                 ax2 = plt.twinx()
@@ -265,7 +265,7 @@ def main(
                     alpha=0.9,
                 )
                 ax2.set_ylabel("Predicted Values")
-                ax2.set_ylim(bottom=min(pred_values))
+                ax2.set_ylim(bottom=min(pred_values), top=max(pred_values))
 
                 num_jo = len(real_values)
                 ax1.text(
