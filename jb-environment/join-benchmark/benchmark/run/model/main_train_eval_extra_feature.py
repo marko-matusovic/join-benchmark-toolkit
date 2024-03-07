@@ -288,7 +288,7 @@ def main(
 
                 plt.title("Comparison of Real and Predicted Values for Query: " + query)
                 plt.xlabel("Join Order")
-                plt.xticks([i + width / 2 for i in indices], sorted_keys, rotation=45)
+                plt.xticks([i + width / 2 for i in indices], sorted_keys, rotation=90)
                 plt.legend()
 
                 model_name = f"lin_reg/{'+'.join(extra_features)}/set_{set_number}"
