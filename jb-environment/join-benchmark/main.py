@@ -6,6 +6,7 @@ from benchmark.run.individual import (
     main_approx_time_mem,
     main_comp_card_est,
     main_parse,
+    main_plot_exec_times,
     main_run_time_mem,
     main_run,
     main_features,
@@ -294,6 +295,16 @@ if __name__ == "__main__":
         main_train_eval_extra_feature.main(
             eval_db_sets, fit_db_sets, set_number, features, res_path, plot, log
         )
+        
+    elif run_config == "plot-exec-times":
+        db_sets = sys.argv[2].split(",")
+        set_number = int(sys.argv[3])
+        res_path = (
+            DEFAULT_RES_PATH
+            if "--res-path" not in sys.argv
+            else named_arg("--res-path", 1)[0]
+        )
+        main_plot_exec_times.main(db_sets, set_number, res_path=res_path)
 
     else:
         print("Selected RUN configuration not specified.")

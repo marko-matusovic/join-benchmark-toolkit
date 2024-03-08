@@ -2,12 +2,12 @@
     "configurations": [
         {
             "name": "RUN",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "console": "integratedTerminal",
             "justMyCode": true,
             "program": "main.py",
-            "args": ["train-eval-features", "tpcds,ssb,job", "4"]
+            "args": ["plot-exec-times", "tpcds,ssb,job", "4"]
         }
     ]
 }
