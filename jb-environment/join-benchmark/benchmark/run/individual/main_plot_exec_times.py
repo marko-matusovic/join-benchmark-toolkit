@@ -101,7 +101,7 @@ def main(
             bottom_margin = 0.1 + label_length * 0.006
             plt.subplots_adjust(bottom=bottom_margin)
 
-            plt.title("Execution Times of Various Join-orders for Query: " + query)
+            plt.title(("CPU" if set_number == 4 else "GPU") + " Execution Times of Various Join-orders for Query: " + query)
             plt.xlabel("Join Order")
 
             dir_path = f"{res_path}/figs/exec-times/set_{set_number}/{query}.png"
