@@ -251,7 +251,7 @@ def main(
                 )
                 ax1.set_ylabel("Real Values")
                 ax1.set_ylim(bottom=min(real_values), top=max(real_values))
-                
+
                 # Create a second y-axis that shares the same x-axis
                 ax2 = plt.twinx()
 
@@ -266,7 +266,7 @@ def main(
                 )
                 ax2.set_ylabel("Predicted Values")
                 ax2.set_ylim(bottom=min(pred_values), top=max(pred_values))
-                
+
                 num_jo = len(real_values)
                 ax1.text(
                     0.1,
@@ -288,18 +288,17 @@ def main(
 
                 ax1.set_xticks([i + width / 2 for i in indices])
                 ax1.set_xticklabels(sorted_keys, rotation=30)
-                
+
                 # Assuming each character is approximately 0.01 inches wide, adjust as needed
                 # Since all labels are guaranteed to be the same length, you can use the length of any label
                 label_length = len(sorted_keys[0])
                 bottom_margin = 0.02 + label_length * 0.008
                 plt.subplots_adjust(bottom=bottom_margin)
-                
+
                 plt.title("Comparison of Real and Predicted Values for Query: " + query)
                 plt.xlabel("Join Order")
                 plt.legend()
-                
-                
+
                 model_name = f"lin_reg/{'+'.join(extra_features)}/set_{set_number}"
                 dir_path = f"{res_path}/figs/model-eval/{model_name}/{query}.png"
                 ensure_dir(dir_path)
@@ -307,5 +306,5 @@ def main(
 
                 plt.close()
                 # Data processing
-    
+
     print("Done!")

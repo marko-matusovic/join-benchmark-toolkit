@@ -295,7 +295,7 @@ if __name__ == "__main__":
         main_train_eval_extra_feature.main(
             eval_db_sets, fit_db_sets, set_number, features, res_path, plot, log
         )
-        
+
     elif run_config == "plot-exec-times":
         db_sets = sys.argv[2].split(",")
         set_number = int(sys.argv[3])

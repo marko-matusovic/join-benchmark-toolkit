@@ -1,13 +1,4 @@
-import ast
-from datetime import datetime
-import math
-import os
-import numpy as np
 import pandas as pd
-import pickle as pkl
-from benchmark.tools.ml.encode import feature_length
-from benchmark.tools.ml.encode_reg import encode_query_reg
-from benchmark.tools.ml.load_all import load_all
 from benchmark.tools.tools import ensure_dir
 from matplotlib import pyplot as plt
 
@@ -39,7 +30,7 @@ def main(
         # grouped_df = df.groupby(['DB_SET/QUERY', 'JOIN_PERMUTATION'])['JOINS'].agg(['mean', 'std'])
 
         for query in df["DB_SET/QUERY"].unique():
-            print("Working on",query,"...")
+            print("Working on", query, "...")
             # ======================== DATA EXTRACTION ========================
             df_q = df[df["DB_SET/QUERY"] == query]
 
@@ -101,7 +92,11 @@ def main(
             bottom_margin = 0.1 + label_length * 0.006
             plt.subplots_adjust(bottom=bottom_margin)
 
-            plt.title(("CPU" if set_number == 4 else "GPU") + " Execution Times of Various Join-orders for Query: " + query)
+            plt.title(
+                ("CPU" if set_number == 4 else "GPU")
+                + " Execution Times of Various Join-orders for Query: "
+                + query
+            )
             plt.xlabel("Join Order")
 
             dir_path = f"{res_path}/figs/exec-times/set_{set_number}/{query}.png"
