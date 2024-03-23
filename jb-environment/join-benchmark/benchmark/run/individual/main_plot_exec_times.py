@@ -62,13 +62,13 @@ def main(
 
             # ======================== PLOTTING ========================
 
-            plt.figure(figsize=(10, 6))
+            plt.figure(figsize=(10, 8))
 
             # Plot the real values on the first y-axis
             plt.bar(
                 sorted_keys,
                 sorted_means,
-                color="#1f77b4",
+                color="#1f77b4" if set_number == 4 else "#ff7f0e", # blue for GPU, ref for GPU
                 alpha=0.9,
             )
             plt.errorbar(sorted_keys, sorted_means, yerr=sorted_stds, fmt="r+")

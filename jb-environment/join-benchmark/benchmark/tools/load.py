@@ -69,3 +69,4 @@ def load_table(db_path: str, db_name: str, table_name: str) -> DataFrame:
         names=schema[table_name],
         index_col=False,
     )
+

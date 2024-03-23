@@ -9,7 +9,7 @@ from benchmark.tools.ml.encode_reg import encode_query_reg
 from benchmark.tools.ml.load_all import load_all
 from benchmark.tools.tools import ensure_dir
 from matplotlib import pyplot as plt
-
+from scipy.stats import pearsonr
 
 def main(
     eval_db_sets: list[str] = ["ssb", "job", "tpcds"],
@@ -184,14 +184,16 @@ def main(
             ]
 
             # Correlation
-            s1 = pd.Series(real_values, index=range(len(sorted_keys)))
-            s2 = pd.Series(pred_values, index=range(len(sorted_keys)))
-            correlation = s1.corr(s2)
+            # s1 = pd.Series(real_values, index=range(len(sorted_keys)))
+            # s2 = pd.Series(pred_values, index=range(len(sorted_keys)))
+            # correlation = s1.corr(s2)
+            correlation, p_value = pearsonr(real_values, pred_values)
 
             print(
                 f"Query: {query:16}",
                 f"#jo: {len(db_encoded[db_set][query]):3}",
-                f"corr: {correlation:-10.6}",
+                f"corr: {correlation:-15.06}",
+                f"p-val: {p_value:-15.06}",
             )
 
             log_individual = f"{log_individual};{correlation}"
@@ -231,7 +233,7 @@ def main(
 
                 # ======================== PLOTTING ========================
 
-                plt.figure(figsize=(10, 6))
+                plt.figure(figsize=(10, 8))
                 width = 0.35  # the width of the bars
 
                 # Create a list of indices for the x-axis
@@ -245,8 +247,8 @@ def main(
                     indices,
                     real_values,
                     width,
-                    label="Real",
-                    color="#1f77b4",
+                    label="Real Values",
+                    color="#1f77b4" if set_number == 4 else "#ff7f0e", # blue for GPU, ref for GPU
                     alpha=0.9,
                 )
                 ax1.set_ylabel("Real Values")
@@ -260,31 +262,12 @@ def main(
                     [i + width for i in indices],
                     pred_values,
                     width,
-                    label="Predicted",
-                    color="#ff7f0e",
+                    label="Predicted Values",
+                    color="green",
                     alpha=0.9,
                 )
                 ax2.set_ylabel("Predicted Values")
                 ax2.set_ylim(bottom=min(pred_values), top=max(pred_values))
-
-                num_jo = len(real_values)
-                ax1.text(
-                    0.1,
-                    0.95,
-                    f"#join-orders: {num_jo}",
-                    horizontalalignment="left",
-                    verticalalignment="top",
-                    transform=ax1.transAxes,
-                )
-
-                ax1.text(
-                    0.1,
-                    0.90,
-                    f"Correlation: {correlation}",
-                    horizontalalignment="left",
-                    verticalalignment="top",
-                    transform=ax1.transAxes,
-                )
 
                 ax1.set_xticks([i + width / 2 for i in indices])
                 ax1.set_xticklabels(sorted_keys, rotation=30)
@@ -292,13 +275,34 @@ def main(
                 # Assuming each character is approximately 0.01 inches wide, adjust as needed
                 # Since all labels are guaranteed to be the same length, you can use the length of any label
                 label_length = len(sorted_keys[0])
-                bottom_margin = 0.02 + label_length * 0.008
+                bottom_margin = 0.1 + label_length * 0.006
                 plt.subplots_adjust(bottom=bottom_margin)
 
-                plt.title("Comparison of Real and Predicted Values for Query: " + query)
-                plt.xlabel("Join Order")
-                plt.legend()
+                ax1.set_xlabel("Join Order")
+                ax1.legend(loc='upper left', bbox_to_anchor=(0.01, 0.99))
+                ax2.legend(loc='upper left', bbox_to_anchor=(0.01, 0.94))
+                
+                num_jo = len(real_values)
+                ax1.text(
+                    0.03,
+                    0.85,
+                    f"#join-orders: {num_jo}",
+                    horizontalalignment="left",
+                    verticalalignment="top",
+                    transform=ax1.transAxes,
+                )
 
+                ax1.text(
+                    0.03,
+                    0.8,
+                    f"Correlation: {correlation}",
+                    horizontalalignment="left",
+                    verticalalignment="top",
+                    transform=ax1.transAxes,
+                )
+
+                plt.title("Comparison of Real and Predicted Values for Query: " + query)
+                
                 model_name = f"lin_reg/{'+'.join(extra_features)}/set_{set_number}"
                 dir_path = f"{res_path}/figs/model-eval/{model_name}/{query}.png"
                 ensure_dir(dir_path)

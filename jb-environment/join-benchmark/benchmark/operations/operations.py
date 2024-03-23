@@ -6,7 +6,6 @@ O = TypeVar("O")
 
 TVal: TypeAlias = str | int | float | bool
 
-
 class Operations(ABC, Generic[I, O]):
     @abstractmethod
     def from_tables(

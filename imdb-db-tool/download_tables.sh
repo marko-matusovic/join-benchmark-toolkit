@@ -13,13 +13,21 @@ tar zxvf imdb.tgz -C tables
 rm -rf tables/schematext.sql
 rm imdb.tgz
 
-# Removing invalid characters from the tables
-sed -i 's/\\"//g' tables/*.csv
-sed -i 's/\\,//g' tables/*.csv
-# The command above works on Linux, on MacOS you should use the one below:
-# sed -i '' 's/\\"//g' tables/*.csv
-# sed -i '' 's/\\,//g' tables/*.csv
-
-# remove annoying lines
-sed -i '8718195d' tables/movie_info.csv
-sed -i '9810425d' tables/movie_info.csv
+if pwd | grep -q "/Users/marko-mac/"; then
+    echo "Running on marko's macbook"
+    # Works only on my laptop (macs are weird)
+    # Removing invalid characters from the tables
+    sed -i '' 's/\\"//g' tables/*.csv
+    sed -i '' 's/\\"//g' tables/*.csv
+    # remove annoying lines
+    sed -i '' '8718195d' tables/movie_info.csv
+    sed -i '' '9810425d' tables/movie_info.csv
+else
+    # Works on Linux
+    # Removing invalid characters from the tables
+    sed -i 's/\\"//g' tables/*.csv
+    sed -i 's/\\"//g' tables/*.csv
+    # remove annoying lines
+    sed -i '8718195d' tables/movie_info.csv
+    sed -i '9810425d' tables/movie_info.csv
+fi

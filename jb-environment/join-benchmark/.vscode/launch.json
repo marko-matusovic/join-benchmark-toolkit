@@ -7,7 +7,7 @@
             "console": "integratedTerminal",
             "justMyCode": true,
             "program": "main.py",
-            "args": ["plot-exec-times", "tpcds,ssb,job", "4"]
+            "args": ["plot-query-times", "job"]
         }
     ]
 }

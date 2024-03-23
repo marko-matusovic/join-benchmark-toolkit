@@ -7,6 +7,7 @@ from benchmark.run.individual import (
     main_comp_card_est,
     main_parse,
     main_plot_exec_times,
+    main_plot_query_times,
     main_run_time_mem,
     main_run,
     main_features,
@@ -305,6 +306,14 @@ if __name__ == "__main__":
             else named_arg("--res-path", 1)[0]
         )
         main_plot_exec_times.main(db_sets, set_number, res_path=res_path)
+    
+    elif run_config == "plot-query-times":
+        res_path = (
+            DEFAULT_RES_PATH
+            if "--res-path" not in sys.argv
+            else named_arg("--res-path", 1)[0]
+        )
+        main_plot_query_times.main(db_set, res_path=res_path)
 
     else:
         print("Selected RUN configuration not specified.")
